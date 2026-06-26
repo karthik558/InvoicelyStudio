@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId } from '../types';
 import { sampleInvoice } from '../data/sampleInvoice';
+import { DatePicker } from './DatePicker';
 import { 
   FileText, 
   Users, 
@@ -433,25 +434,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Issue Date</label>
-                  <input
-                    type="date"
-                    value={invoice.issueDate}
-                    onChange={(e) => updateField(null, 'issueDate', e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] focus:bg-white rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
-                  />
-                </div>
+                <DatePicker
+                  label="Issue Date"
+                  value={invoice.issueDate}
+                  onChange={(val) => updateField(null, 'issueDate', val)}
+                  align="left"
+                />
 
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Due Date</label>
-                  <input
-                    type="date"
-                    value={invoice.dueDate}
-                    onChange={(e) => updateField(null, 'dueDate', e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] focus:bg-white rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
-                  />
-                </div>
+                <DatePicker
+                  label="Due Date"
+                  value={invoice.dueDate}
+                  onChange={(val) => updateField(null, 'dueDate', val)}
+                  align="right"
+                />
               </div>
             </div>
 
