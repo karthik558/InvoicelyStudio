@@ -702,7 +702,7 @@ export default function App() {
       </main>
 
       {/* Sleek footer */}
-      <footer className="py-2.5 sm:h-10 bg-[#0A2323] border-t border-white/5 flex flex-col sm:flex-row items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 gap-2 sm:gap-4">
+      <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 gap-4">
         <div className="flex items-center gap-4">
           <span className="text-[10px] text-gray-500 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
@@ -710,21 +710,9 @@ export default function App() {
           </span>
         </div>
         
-        <div className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
-          <span>Designed & Developed by</span>
-          <a 
-            href="https://karthiklal.in" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="font-bold text-[#C69A5D] hover:text-[#E2B77A] underline hover:no-underline transition-colors"
-          >
-            Karthik Lal
-          </a>
-        </div>
-
         <div className="flex gap-4">
           <span className="text-[10px] text-gray-500 font-medium">v2.4.2-stable</span>
-          <span className="text-[10px] text-gray-500 font-medium hidden sm:inline">Shortcuts: ⌘S Save</span>
+          <span className="text-[10px] text-gray-500 font-medium">Shortcuts: ⌘S Save</span>
         </div>
       </footer>
 

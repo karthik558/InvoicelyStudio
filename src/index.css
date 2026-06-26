@@ -128,3 +128,9 @@
   }
 }
 
+/* Perfect mobile tap highlight reset */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+

@@ -322,7 +322,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+    <div className="flex flex-col h-full bg-white lg:border-r border-gray-200">
       
       {/* Action Toolbar Header */}
       <div className="px-5 py-3.5 bg-gray-50/50 border-b border-gray-200 flex items-center justify-between">
@@ -363,36 +363,46 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Editor Main Tabs */}
-      <div className="flex bg-gray-50/20 border-b border-gray-200 px-3 overflow-x-auto no-scrollbar">
-        {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
-          const isActive = activeTab === tab;
-          const label = tab.charAt(0).toUpperCase() + tab.slice(1);
-          const icons = {
-            details: <FileText className="w-3.5 h-3.5" />,
-            parties: <Users className="w-3.5 h-3.5" />,
-            items: <Plus className="w-3.5 h-3.5" />,
-            payment: <CreditCard className="w-3.5 h-3.5" />,
-            design: <Palette className="w-3.5 h-3.5" />,
-            settings: <Settings className="w-3.5 h-3.5" />
-          };
+      <div className="hidden lg:flex bg-gray-50/20 border-b border-gray-200 px-3 overflow-x-auto no-scrollbar justify-between items-center">
+        <div className="flex">
+          {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
+            const isActive = activeTab === tab;
+            const label = tab.charAt(0).toUpperCase() + tab.slice(1);
+            const icons = {
+              details: <FileText className="w-3.5 h-3.5" />,
+              parties: <Users className="w-3.5 h-3.5" />,
+              items: <Plus className="w-3.5 h-3.5" />,
+              payment: <CreditCard className="w-3.5 h-3.5" />,
+              design: <Palette className="w-3.5 h-3.5" />,
+              settings: <Settings className="w-3.5 h-3.5" />
+            };
 
-          return (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`
-                flex items-center space-x-2 py-3 px-3.5 text-xs font-semibold tracking-wide border-b-2 transition-all cursor-pointer whitespace-nowrap
-                ${isActive 
-                  ? 'border-[#0D2C2C] text-[#0D2C2C] bg-[#F0F7F7]/50' 
-                  : 'border-transparent text-gray-400 hover:text-[#0D2C2C] hover:bg-gray-50/40'
-                }
-              `}
-            >
-              {icons[tab]}
-              <span>{label}</span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`
+                  flex items-center space-x-2 py-3 px-3.5 text-xs font-semibold tracking-wide border-b-2 transition-all cursor-pointer whitespace-nowrap rounded-none outline-none focus:outline-none focus:ring-0 select-none
+                  ${isActive 
+                    ? 'border-[#0D2C2C] text-[#0D2C2C] bg-[#F0F7F7]/50' 
+                    : 'border-transparent text-gray-400 hover:text-[#0D2C2C] hover:bg-gray-50/40'
+                  }
+                `}
+              >
+                {icons[tab]}
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Live Auto-save status to fill blank space elegantly */}
+        <div className="flex items-center space-x-2 pr-3 shrink-0 select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider font-mono">
+            Auto-saved
+          </span>
+        </div>
       </div>
 
       {/* Editor Fields Area (Scrollable) */}
@@ -1276,6 +1286,50 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         >
           <span>Save Changes</span>
         </button>
+      </div>
+
+      {/* Mobile Navigation Bar UI Sector */}
+      <div className="lg:hidden bg-[#0A2323] border-t border-white/10 py-2.5 px-3 flex items-center justify-between z-20 shrink-0 no-print w-full">
+        {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
+          const isActive = activeTab === tab;
+          const label = tab.charAt(0).toUpperCase() + tab.slice(1);
+          const icons = {
+            details: <FileText className="w-4 h-4" />,
+            parties: <Users className="w-4 h-4" />,
+            items: <Plus className="w-4 h-4" />,
+            payment: <CreditCard className="w-4 h-4" />,
+            design: <Palette className="w-4 h-4" />,
+            settings: <Settings className="w-4 h-4" />
+          };
+
+          return (
+            <div
+              key={tab}
+              role="button"
+              onClick={() => setActiveTab(tab)}
+              className={`
+                flex flex-col items-center justify-center flex-1 py-1 transition-all duration-300 relative cursor-pointer outline-none select-none rounded-none
+                ${isActive ? 'text-[#C69A5D] scale-105' : 'text-slate-400 active:scale-95'}
+              `}
+            >
+              <div className={`p-1.5 rounded-lg transition-all duration-300 transform ${
+                isActive 
+                  ? 'bg-white/10 text-[#C69A5D] -translate-y-0.5 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}>
+                {icons[tab]}
+              </div>
+              <span className={`text-[8px] font-bold mt-1 tracking-wider uppercase transition-colors ${
+                isActive ? 'text-[#C69A5D] font-extrabold' : 'text-slate-500'
+              }`}>
+                {label}
+              </span>
+              {isActive && (
+                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#C69A5D] shadow-[0_0_8px_rgba(198,154,93,0.8)]"></span>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
