@@ -45,12 +45,64 @@
   to { transform: scale(1); opacity: 1; }
 }
 
+@keyframes dotBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-9px) scale(1.15);
+    background-color: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+  }
+  50% {
+    transform: translateY(1.5px) scale(0.85);
+  }
+  70% {
+    transform: translateY(-2.5px) scale(1.05);
+  }
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 12px rgba(198, 154, 93, 0.3);
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.18s ease-out forwards;
 }
 
 .animate-scaleUp {
   animation: scaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-dotBounce {
+  animation: dotBounce 1.4s infinite ease-in-out;
+  transform-origin: bottom center;
+}
+
+.animate-textGlow {
+  animation: textGlow 2s infinite ease-in-out;
+}
+
+@keyframes infiniteProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-infiniteProgress {
+  animation: infiniteProgress 1.6s infinite ease-in-out;
 }
 
 /* Print Overrides */

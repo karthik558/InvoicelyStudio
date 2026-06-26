@@ -119,6 +119,26 @@ export default function App() {
   const [activeMobileView, setActiveMobileView] = useState<'edit' | 'preview'>('edit');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Initial preloader states
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isFadeOut, setIsFadeOut] = useState(false);
+
+  // Preloader transition controller
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => {
+      setIsFadeOut(true);
+    }, 1800);
+
+    const removeTimer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 2500);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
   // Custom Confirmation & Alert Modal States
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -500,6 +520,21 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen bg-[#F3F5F5] text-slate-800 overflow-hidden font-sans">
       
+      {/* Aesthetic Brand Preloader */}
+      {isInitialLoading && (
+        <div className={`fixed inset-0 bg-[#0D2C2C] z-[100] flex items-center justify-center transition-all duration-700 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
+          <div className="flex items-center text-3xl sm:text-5xl font-bold tracking-tight text-white select-none">
+            <span>Invo</span>
+            <span className="relative inline-block">
+              ı
+              <span className="absolute top-[8px] sm:top-[10px] left-[3.5px] sm:left-[4px] w-[5.5px] sm:w-[7px] h-[5.5px] sm:h-[7px] bg-[#C69A5D] rounded-[0.8px] sm:rounded-[1px] animate-dotBounce"></span>
+            </span>
+            <span>ce</span>
+            <span className="font-light text-slate-300 ml-2">Studio</span>
+          </div>
+        </div>
+      )}
+
       {/* Dynamic Toast Notice */}
       {toastMessage && (
         <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[#0D2C2C] border border-[#1A3F3F] px-5 py-3 rounded-lg shadow-xl shadow-slate-950/20 z-50 flex items-center space-x-3 text-sm font-semibold text-white tracking-wide animate-slideUp">
