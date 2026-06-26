@@ -1,0 +1,743 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React from 'react';
+import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
+import { Invoice, InvoiceTheme } from '../types';
+
+// Register standard fonts
+try {
+  Font.register({
+    family: 'Inter',
+    fonts: [
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf', fontWeight: 400 },
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-500-normal.ttf', fontWeight: 500 },
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.ttf', fontWeight: 700 },
+    ],
+  });
+
+  Font.register({
+    family: 'Space Grotesk',
+    fonts: [
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/space-grotesk@latest/latin-400-normal.ttf', fontWeight: 400 },
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/space-grotesk@latest/latin-500-normal.ttf', fontWeight: 500 },
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/space-grotesk@latest/latin-700-normal.ttf', fontWeight: 700 },
+    ],
+  });
+
+  Font.register({
+    family: 'Playfair Display',
+    fonts: [
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/playfair-display@latest/latin-400-normal.ttf', fontWeight: 400 },
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/playfair-display@latest/latin-700-normal.ttf', fontWeight: 700 },
+    ],
+  });
+
+  Font.register({
+    family: 'JetBrains Mono',
+    fonts: [
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.ttf', fontWeight: 400 },
+      { src: 'https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-700-normal.ttf', fontWeight: 700 },
+    ],
+  });
+} catch (e) {
+  console.warn('Could not register external fonts in react-pdf:', e);
+}
+
+// Function to register custom uploaded font if present
+export const registerCustomFont = (name: string, dataUrl: string) => {
+  try {
+    Font.register({
+      family: name,
+      src: dataUrl,
+    });
+  } catch (e) {
+    console.error('Failed to register custom font in PDF:', e);
+  }
+};
+
+// Formatter helper
+const formatCurrency = (val: number) => {
+  return `$${val.toFixed(2)}`;
+};
+
+const getStyles = (theme: InvoiceTheme) => {
+  const primary = theme.primaryColor || '#0f766e';
+  const accent = theme.accentColor || '#b45309';
+  const templateId = theme.templateId || 'teal';
+  const isDark = templateId === 'dark';
+  
+  // Font fallback matching
+  let selectedFont = 'Helvetica';
+  if (theme.fontFamily === 'custom' && theme.customFontName) {
+    selectedFont = theme.customFontName;
+  } else if (['Inter', 'Space Grotesk', 'Playfair Display', 'JetBrains Mono'].includes(theme.fontFamily)) {
+    selectedFont = theme.fontFamily;
+  }
+
+  return StyleSheet.create({
+    page: {
+      padding: 40,
+      fontFamily: selectedFont,
+      fontSize: 9,
+      lineHeight: 1.4,
+      backgroundColor: isDark ? '#111827' : '#ffffff',
+      color: isDark ? '#f3f4f6' : '#1f2937',
+    },
+    
+    // Header Structures based on Templates
+    headerTeal: {
+      backgroundColor: primary,
+      padding: 24,
+      marginHorizontal: -40,
+      marginTop: -40,
+      marginBottom: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    headerTealLeft: {
+      flexDirection: 'column',
+    },
+    headerTealRight: {
+      alignItems: 'flex-end',
+    },
+    headerTealTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#ffffff',
+      letterSpacing: 1,
+      lineHeight: 1.25,
+    },
+    headerTealSubtitle: {
+      fontSize: 10,
+      color: '#e2e8f0',
+      marginTop: 6,
+      lineHeight: 1.2,
+    },
+
+    headerClassic: {
+      borderBottomWidth: 3,
+      borderBottomColor: primary,
+      paddingBottom: 15,
+      marginBottom: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+
+    headerModern: {
+      marginBottom: 25,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+    modernBar: {
+      width: 4,
+      backgroundColor: primary,
+      position: 'absolute',
+      left: -40,
+      top: 0,
+      bottom: 0,
+    },
+
+    headerSimple: {
+      borderBottomWidth: 1,
+      borderBottomColor: '#e5e7eb',
+      paddingBottom: 12,
+      marginBottom: 16,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+
+    headerDark: {
+      backgroundColor: '#1f2937',
+      padding: 24,
+      marginHorizontal: -40,
+      marginTop: -40,
+      marginBottom: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderBottomWidth: 2,
+      borderBottomColor: primary,
+    },
+
+    // Standard elements
+    logo: {
+      width: 60,
+      height: 60,
+      objectFit: 'contain',
+    },
+    logoContainer: {
+      marginBottom: 10,
+    },
+    
+    titleText: {
+       fontSize: 20,
+       fontWeight: 'bold',
+       color: isDark ? '#ffffff' : primary,
+       lineHeight: 1.25,
+    },
+    invoiceMetaContainer: {
+      marginTop: 5,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      marginBottom: 3,
+    },
+    metaLabel: {
+      fontWeight: 'bold',
+      width: 80,
+      color: isDark ? '#9ca3af' : '#6b7280',
+    },
+    metaValue: {
+      fontWeight: 'bold',
+      color: isDark ? '#ffffff' : '#1f2937',
+    },
+    statusBadge: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 4,
+      fontSize: 8,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      marginTop: 5,
+    },
+
+    // Addresses Block
+    addressSection: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 20,
+    },
+    addressBlock: {
+      width: '46%',
+    },
+    addressTitle: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      color: isDark ? accent : primary,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#374151' : '#e5e7eb',
+      paddingBottom: 4,
+      marginBottom: 6,
+    },
+    addressText: {
+      fontSize: 8,
+      color: isDark ? '#d1d5db' : '#4b5563',
+      lineHeight: 1.3,
+    },
+
+    // Table elements
+    table: {
+      marginTop: 10,
+      marginBottom: 20,
+    },
+    tableHeader: {
+      flexDirection: 'row',
+      backgroundColor: templateId === 'teal' ? '#f0fdfa' : (isDark ? '#1f2937' : '#f9fafb'),
+      borderBottomWidth: 2,
+      borderBottomColor: primary,
+      paddingVertical: 6,
+      paddingHorizontal: 8,
+    },
+    tableHeaderDark: {
+      flexDirection: 'row',
+      backgroundColor: '#1f2937',
+      borderBottomWidth: 2,
+      borderBottomColor: primary,
+      paddingVertical: 6,
+      paddingHorizontal: 8,
+    },
+    tableRow: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#374151' : '#f3f4f6',
+      paddingVertical: 8,
+      paddingHorizontal: 8,
+      alignItems: 'center',
+    },
+    colDesc: {
+      flex: 3,
+      paddingRight: 10,
+    },
+    colQty: {
+      width: 50,
+      textAlign: 'center',
+    },
+    colRate: {
+      width: 80,
+      textAlign: 'right',
+    },
+    colAmt: {
+      width: 90,
+      textAlign: 'right',
+      fontWeight: 'bold',
+    },
+    headerText: {
+      fontWeight: 'bold',
+      color: isDark ? '#ffffff' : primary,
+      fontSize: 8,
+      textTransform: 'uppercase',
+    },
+    itemDescText: {
+      fontSize: 8.5,
+      color: isDark ? '#ffffff' : '#1f2937',
+    },
+    itemNumText: {
+      fontSize: 8.5,
+      color: isDark ? '#d1d5db' : '#4b5563',
+    },
+
+    // Summary block
+    summarySection: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 10,
+      marginBottom: 20,
+    },
+    notesBlock: {
+      width: '52%',
+    },
+    totalsBlock: {
+      width: '40%',
+      backgroundColor: isDark ? '#1f2937' : '#f9fafb',
+      padding: 10,
+      borderRadius: 4,
+    },
+    totalRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 4,
+      fontSize: 8.5,
+    },
+    grandTotalRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderTopWidth: 1,
+      borderTopColor: isDark ? '#374151' : '#e5e7eb',
+      paddingTop: 6,
+      marginTop: 6,
+      fontSize: 10,
+      fontWeight: 'bold',
+    },
+    grandTotalText: {
+      color: primary,
+    },
+
+    // Bank and terms section
+    footerSection: {
+      marginTop: 15,
+      borderTopWidth: 1,
+      borderTopColor: isDark ? '#374151' : '#e5e7eb',
+      paddingTop: 10,
+    },
+    sectionTitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      color: isDark ? accent : primary,
+      marginBottom: 4,
+    },
+    footerText: {
+      fontSize: 7.5,
+      color: isDark ? '#9ca3af' : '#6b7280',
+      lineHeight: 1.3,
+    },
+    bankGrid: {
+      flexDirection: 'row',
+      marginTop: 4,
+      marginBottom: 4,
+    },
+    bankCol: {
+      width: '33%',
+      fontSize: 7.5,
+    },
+    bankLabel: {
+      color: '#6b7280',
+      fontSize: 7,
+    },
+    bankVal: {
+      fontWeight: 'bold',
+      color: isDark ? '#ffffff' : '#1f2937',
+    },
+    platformWatermark: {
+      marginTop: 20,
+      paddingTop: 8,
+      borderTopWidth: 1,
+      borderTopColor: isDark ? '#1e293b' : '#f1f5f9',
+      borderTopStyle: 'dashed',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      opacity: 0.35,
+    },
+    platformWatermarkText: {
+      fontSize: 6.5,
+      color: isDark ? '#94a3b8' : '#64748b',
+    }
+  });
+};
+
+interface InvoicePDFDocumentProps {
+  invoice: Invoice;
+}
+
+export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice }) => {
+  const { theme, sender, receiver, items, invoiceNumber, issueDate, dueDate, status, taxRate, discountRate, shippingFee, notes, terms } = invoice;
+  const styles = getStyles(theme);
+  const isDark = theme.templateId === 'dark';
+  
+  // Calculate Totals
+  const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
+  const discountAmount = subtotal * (discountRate / 100);
+  const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
+  const total = subtotal - discountAmount + taxAmount + shippingFee;
+
+  // Status colors
+  const statusColors = {
+    paid: { bg: '#dcfce7', text: '#166534' },
+    pending: { bg: '#fef3c7', text: '#92400e' },
+    overdue: { bg: '#fee2e2', text: '#991b1b' },
+  };
+
+  const currentStatusStyle = statusColors[status] || statusColors.pending;
+
+  // Custom font registration hook-like action
+  if (theme.fontFamily === 'custom' && theme.customFontName && theme.customFontUrl) {
+    registerCustomFont(theme.customFontName, theme.customFontUrl);
+  }
+
+  // Render Teal template header
+  const renderTealHeader = () => (
+    <View style={styles.headerTeal} fixed>
+      <View style={styles.headerTealLeft}>
+        <Text style={styles.headerTealTitle}>INVOICE</Text>
+        <Text style={styles.headerTealSubtitle}>No: {invoiceNumber}</Text>
+      </View>
+      <View style={styles.headerTealRight}>
+        {sender.logoUrl ? (
+          <Image src={sender.logoUrl} style={styles.logo} />
+        ) : (
+          <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 14 }}>
+            {sender.name.substring(0, 3).toUpperCase()}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+
+  // Render Dark template header
+  const renderDarkHeader = () => (
+    <View style={styles.headerDark} fixed>
+      <View style={{ flexDirection: 'column' }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff' }}>INVOICE</Text>
+        <Text style={{ fontSize: 9, color: theme.primaryColor, marginTop: 2 }}>{invoiceNumber}</Text>
+      </View>
+      <View>
+        {sender.logoUrl ? (
+          <Image src={sender.logoUrl} style={styles.logo} />
+        ) : (
+          <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 14 }}>
+            {sender.name.substring(0, 3).toUpperCase()}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+
+  // Render Classic template header
+  const renderClassicHeader = () => (
+    <View style={styles.headerClassic} fixed>
+      <View>
+        {sender.logoUrl ? (
+          <Image src={sender.logoUrl} style={styles.logo} />
+        ) : (
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.primaryColor }}>
+            {sender.name}
+          </Text>
+        )}
+      </View>
+      <View style={{ alignItems: 'flex-end' }}>
+        <Text style={styles.titleText}>INVOICE</Text>
+        <Text style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>#{invoiceNumber}</Text>
+      </View>
+    </View>
+  );
+
+  // Render Modern template header
+  const renderModernHeader = () => (
+    <View style={styles.headerModern} fixed>
+      <View style={styles.modernBar} />
+      <View>
+        {sender.logoUrl && <Image src={sender.logoUrl} style={[styles.logo, { marginBottom: 5 }]} />}
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#111827' }}>{sender.name}</Text>
+        <Text style={{ fontSize: 8, color: '#6b7280' }}>{sender.email}</Text>
+      </View>
+      <View style={{ alignItems: 'flex-end' }}>
+        <Text style={[styles.titleText, { letterSpacing: 2 }]}>INVOICE</Text>
+        <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 3 }}>#{invoiceNumber}</Text>
+        <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, color: currentStatusStyle.text }]}>
+          <Text>{status}</Text>
+        </View>
+      </View>
+    </View>
+  );
+
+  // Render Simple template header
+  const renderSimpleHeader = () => (
+    <View style={styles.headerSimple} fixed>
+      <View>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#111827' }}>{sender.name}</Text>
+        <Text style={{ fontSize: 8, color: '#4b5563' }}>Invoice No: {invoiceNumber}</Text>
+      </View>
+      <View style={{ alignItems: 'right' }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', textTransform: 'uppercase', color: '#111827' }}>INVOICE</Text>
+        <Text style={{ fontSize: 8, color: '#4b5563' }}>Issue Date: {issueDate}</Text>
+      </View>
+    </View>
+  );
+
+  const renderHeaderByTemplate = () => {
+    switch (theme.templateId) {
+      case 'teal':
+        return renderTealHeader();
+      case 'dark':
+        return renderDarkHeader();
+      case 'classic':
+        return renderClassicHeader();
+      case 'modern':
+        return renderModernHeader();
+      case 'simple':
+        return renderSimpleHeader();
+      default:
+        return renderTealHeader();
+    }
+  };
+
+  return (
+    <Document title={`Invoice_${invoiceNumber}`}>
+      <Page size="A4" style={styles.page}>
+        
+        {/* Dynamic Header */}
+        {renderHeaderByTemplate()}
+
+        {/* Invoice Meta details (Only for layouts that don't have them in header already) */}
+        {theme.templateId !== 'modern' && theme.templateId !== 'simple' && (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#1f2937' }}>
+                Invoice Details
+              </Text>
+              <View style={styles.invoiceMetaContainer}>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Invoice No:</Text>
+                  <Text style={styles.metaValue}>{invoiceNumber}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Issue Date:</Text>
+                  <Text style={styles.metaValue}>{issueDate}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Due Date:</Text>
+                  <Text style={styles.metaValue}>{dueDate}</Text>
+                </View>
+              </View>
+            </View>
+            
+            <View style={{ alignItems: 'right' }}>
+              <Text style={{ fontSize: 8.5, color: theme.templateId === 'dark' ? '#9ca3af' : '#6b7280', textTransform: 'uppercase' }}>
+                Status
+              </Text>
+              <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, color: currentStatusStyle.text }]}>
+                <Text>{status}</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* If Simple, we show compact dates */}
+        {theme.templateId === 'simple' && (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+            <Text style={{ fontSize: 8 }}><Text style={{ fontWeight: 'bold' }}>Invoice Date:</Text> {issueDate}</Text>
+            <Text style={{ fontSize: 8 }}><Text style={{ fontWeight: 'bold' }}>Due Date:</Text> {dueDate}</Text>
+            <Text style={{ fontSize: 8, textTransform: 'uppercase', fontWeight: 'bold', color: currentStatusStyle.text }}>
+              {status}
+            </Text>
+          </View>
+        )}
+
+        {/* Addresses Section */}
+        <View style={styles.addressSection}>
+          {/* Bill From (Seller) */}
+          <View style={styles.addressBlock}>
+            <Text style={styles.addressTitle}>Bill From</Text>
+            <Text style={[styles.addressText, { fontWeight: 'bold', marginBottom: 2, fontSize: 8.5, color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }]}>
+              {sender.name}
+            </Text>
+            <Text style={styles.addressText}>{sender.address}</Text>
+            <Text style={styles.addressText}>Email: {sender.email}</Text>
+            {sender.phone && <Text style={styles.addressText}>Phone: {sender.phone}</Text>}
+            {sender.taxId && <Text style={styles.addressText}>Tax ID / VAT: {sender.taxId}</Text>}
+          </View>
+
+          {/* Bill To (Buyer) */}
+          <View style={styles.addressBlock}>
+            <Text style={styles.addressTitle}>Bill To</Text>
+            <Text style={[styles.addressText, { fontWeight: 'bold', marginBottom: 2, fontSize: 8.5, color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }]}>
+              {receiver.name}
+            </Text>
+            <Text style={styles.addressText}>{receiver.address}</Text>
+            <Text style={styles.addressText}>Email: {receiver.email}</Text>
+            {receiver.phone && <Text style={styles.addressText}>Phone: {receiver.phone}</Text>}
+            {receiver.taxId && <Text style={styles.addressText}>Tax ID / VAT: {receiver.taxId}</Text>}
+          </View>
+        </View>
+
+        {/* Line Items Table */}
+        <View style={styles.table}>
+          {/* Table Header */}
+          <View style={styles.tableHeader}>
+            <View style={styles.colDesc}>
+              <Text style={styles.headerText}>Item & Description</Text>
+            </View>
+            <View style={styles.colQty}>
+              <Text style={[styles.headerText, { textAlign: 'center' }]}>Qty</Text>
+            </View>
+            <View style={styles.colRate}>
+              <Text style={[styles.headerText, { textAlign: 'right' }]}>Rate</Text>
+            </View>
+            <View style={styles.colAmt}>
+              <Text style={[styles.headerText, { textAlign: 'right' }]}>Amount</Text>
+            </View>
+          </View>
+
+          {/* Table Rows */}
+          {items.map((item, index) => (
+            <View key={item.id || index} style={styles.tableRow}>
+              <View style={styles.colDesc}>
+                <Text style={styles.itemDescText}>{item.description}</Text>
+              </View>
+              <View style={styles.colQty}>
+                <Text style={[styles.itemNumText, { textAlign: 'center' }]}>{item.quantity}</Text>
+              </View>
+              <View style={styles.colRate}>
+                <Text style={[styles.itemNumText, { textAlign: 'right' }]}>{formatCurrency(item.rate)}</Text>
+              </View>
+              <View style={styles.colAmt}>
+                <Text style={[styles.itemNumText, { textAlign: 'right', fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }]}>
+                  {formatCurrency(item.quantity * item.rate)}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Summary and Notes section */}
+        <View style={styles.summarySection}>
+          {/* Notes and terms */}
+          <View style={styles.notesBlock}>
+            {notes ? (
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.sectionTitle}>Notes</Text>
+                <Text style={styles.footerText}>{notes}</Text>
+              </View>
+            ) : null}
+            
+            {terms ? (
+              <View>
+                <Text style={styles.sectionTitle}>Terms & Conditions</Text>
+                <Text style={styles.footerText}>{terms}</Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Totals Summary */}
+          <View style={styles.totalsBlock}>
+            <View style={styles.totalRow}>
+              <Text style={{ color: '#6b7280' }}>Subtotal:</Text>
+              <Text style={{ fontWeight: 'bold' }}>{formatCurrency(subtotal)}</Text>
+            </View>
+            
+            {discountRate > 0 && (
+              <View style={styles.totalRow}>
+                <Text style={{ color: '#6b7280' }}>Discount ({discountRate}%):</Text>
+                <Text style={{ color: '#b91c1c', fontWeight: 'bold' }}>-{formatCurrency(discountAmount)}</Text>
+              </View>
+            )}
+
+            {taxRate > 0 && (
+              <View style={styles.totalRow}>
+                <Text style={{ color: '#6b7280' }}>Tax ({taxRate}%):</Text>
+                <Text style={{ fontWeight: 'bold' }}>{formatCurrency(taxAmount)}</Text>
+              </View>
+            )}
+
+            {shippingFee > 0 && (
+              <View style={styles.totalRow}>
+                <Text style={{ color: '#6b7280' }}>Shipping:</Text>
+                <Text style={{ fontWeight: 'bold' }}>{formatCurrency(shippingFee)}</Text>
+              </View>
+            )}
+
+            <View style={styles.grandTotalRow}>
+              <Text style={{ fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }}>Total Due:</Text>
+              <Text style={[styles.grandTotalText, { color: theme.primaryColor }]}>
+                {formatCurrency(total)}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Payment / Bank Details if enabled */}
+        {(sender.bankName || sender.bankAccount || sender.paymentDetails) && (
+          <View style={styles.footerSection} wrap={false}>
+            <Text style={styles.sectionTitle}>Payment Information</Text>
+            
+            {sender.bankName && (
+              <View style={styles.bankGrid}>
+                <View style={styles.bankCol}>
+                  <Text style={styles.bankLabel}>Bank Name</Text>
+                  <Text style={styles.bankVal}>{sender.bankName}</Text>
+                </View>
+                {sender.bankAccount && (
+                  <View style={styles.bankCol}>
+                    <Text style={styles.bankLabel}>Account Number</Text>
+                    <Text style={styles.bankVal}>{sender.bankAccount}</Text>
+                  </View>
+                )}
+                {sender.bankRouting && (
+                  <View style={styles.bankCol}>
+                    <Text style={styles.bankLabel}>Routing Number</Text>
+                    <Text style={styles.bankVal}>{sender.bankRouting}</Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {sender.paymentDetails && (
+              <Text style={[styles.footerText, { marginTop: 4 }]}>
+                <Text style={{ fontWeight: 'bold', color: isDark ? '#ffffff' : '#374151' }}>Payment Instructions: </Text>
+                {sender.paymentDetails}
+              </Text>
+            )}
+          </View>
+        )}
+
+        {/* Platform Watermark */}
+        <View style={styles.platformWatermark} wrap={false}>
+          <Text style={styles.platformWatermarkText}>Invoice generated using Invoicely Studio</Text>
+          <Text style={styles.platformWatermarkText}>invoicely.samsproject.in</Text>
+        </View>
+
+      </Page>
+    </Document>
+  );
+};

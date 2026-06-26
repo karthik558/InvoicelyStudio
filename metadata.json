@@ -1,0 +1,6 @@
+{
+  "name": "Invoicely Studio",
+  "description": "A premium, fully featured invoice generator with custom branding, multiple layouts, local persistence, and high-fidelity PDF exports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
