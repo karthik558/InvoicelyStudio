@@ -13,7 +13,6 @@ import { InvoicePDFDocument } from './components/InvoicePDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { 
   Download, 
-  Share2, 
   FileText, 
   AlertCircle,
   ClipboardCheck,
@@ -511,81 +510,75 @@ export default function App() {
 
       {/* Main SaaS App Bar Header */}
       <header className="h-16 bg-[#0D2C2C] text-white flex items-center justify-between px-3 sm:px-6 border-b border-[#1A3F3F] shrink-0 z-20 no-print">
-        <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+        <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
           {/* Mobile Hamburger toggle */}
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="lg:hidden p-1.5 rounded hover:bg-white/10 text-gray-300 hover:text-white cursor-pointer"
+            className="lg:hidden p-1.5 rounded hover:bg-white/10 text-gray-300 hover:text-white cursor-pointer shrink-0"
           >
             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-            <div className="w-8 h-8 bg-[#C69A5D] rounded flex items-center justify-center shrink-0">
-              <FileText className="w-5 h-5 text-[#0D2C2C]" />
-            </div>
+          <div className="flex items-center min-w-0 select-none">
             <div className="flex items-center min-w-0">
-              <span className="text-sm font-bold tracking-tight text-white hidden sm:block">INVOICELY STUDIO</span>
+              <div className="flex items-center text-base sm:text-lg font-bold tracking-tight text-white mr-1 sm:mr-2 shrink-0">
+                <span>Invo</span>
+                <span className="relative inline-block">
+                  ı
+                  <span className="absolute top-[4px] left-[2px] w-[3.5px] h-[3.5px] bg-[#C69A5D] rounded-[0.5px]"></span>
+                </span>
+                <span>ce</span>
+                <span className="font-light text-slate-300 ml-1.5">Studio</span>
+              </div>
               <div className="h-4 w-px bg-white/20 mx-2 hidden lg:block"></div>
               <span className="text-xs text-gray-400 font-medium truncate hidden lg:block max-w-[150px] xl:max-w-none">Workspace / Global Digital Agency</span>
             </div>
           </div>
         </div>
 
-        {/* Center Mobile View Tabs (Form vs Preview) */}
-        <div className="flex lg:hidden bg-slate-950/80 p-1 rounded-lg border border-white/5 mx-1.5 shrink-0">
-          <button
-            onClick={() => setActiveMobileView('edit')}
-            className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'edit' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
-            title="Editor"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setActiveMobileView('preview')}
-            className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'preview' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
-            title="Preview"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Global actions: Share, Export PDF, Save */}
-        <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
-          <button
-            onClick={handleShareLink}
-            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm border border-white/10 transition-colors text-white cursor-pointer"
-            title="Share custom state link"
-          >
-            <Share2 className="w-4 h-4 text-[#C69A5D]" />
-            <span className="hidden xl:inline ml-1.5 text-xs font-semibold">Share Link</span>
-          </button>
+        {/* Global actions: Switcher & Operations */}
+        <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
+          {/* Mobile View Tabs (Form vs Preview) */}
+          <div className="flex lg:hidden bg-slate-950/80 p-1 rounded-lg border border-white/5 shrink-0">
+            <button
+              onClick={() => setActiveMobileView('edit')}
+              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'edit' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
+              title="Editor"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setActiveMobileView('preview')}
+              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'preview' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
+              title="Preview"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          </div>
 
           {/* Dynamic react-pdf Download Link Trigger */}
           <PDFDownloadLink
             key={`${activeInvoice?.id}-${activeInvoice?.updatedAt}`}
             document={<InvoicePDFDocument invoice={activeInvoice} />}
             fileName={`Invoice_${activeInvoice?.invoiceNumber || 'draft'}.pdf`}
-            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm border border-white/10 transition-colors text-white cursor-pointer"
+            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm border border-white/10 transition-colors text-white cursor-pointer shrink-0"
             title="Export PDF"
           >
             {({ loading }) => (
               <div className="flex items-center">
-                <Download className="w-4 h-4" />
-                <span className="hidden md:inline ml-1.5 text-xs font-semibold">{loading ? 'Compiling...' : 'Export PDF'}</span>
+                <Download className="w-4 h-4 text-[#C69A5D]" />
+                <span className="hidden sm:inline ml-1.5 text-xs font-semibold">{loading ? 'Compiling...' : 'Export PDF'}</span>
               </div>
             )}
           </PDFDownloadLink>
 
-          {/* Golden Save Button */}
+          {/* Golden Save Button (Icon-only) */}
           <button
             onClick={handleSave}
-            className="flex items-center justify-center px-2.5 py-2 sm:px-4 sm:py-2 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] font-bold rounded-lg text-xs sm:text-sm shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer"
+            className="flex items-center justify-center p-2 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] rounded-lg shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer shrink-0"
             title="Save Invoice"
           >
-            <Save className="w-4 h-4 text-[#0D2C2C] md:hidden" />
-            <span className="hidden md:inline">Save Invoice</span>
-            <span className="inline md:hidden ml-1 font-bold">Save</span>
+            <Save className="w-4 h-4 text-[#0D2C2C]" />
           </button>
         </div>
       </header>
