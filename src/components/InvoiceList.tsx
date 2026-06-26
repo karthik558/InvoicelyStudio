@@ -15,7 +15,8 @@ import {
   Upload, 
   FileText,
   DollarSign,
-  Share2
+  Share2,
+  Database
 } from 'lucide-react';
 
 interface InvoiceListProps {
@@ -227,28 +228,33 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                 key={inv.id}
                 onClick={() => onSelectInvoice(inv.id)}
                 className={`
-                  p-3 rounded-lg border text-left cursor-pointer transition-all relative group
+                  p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-200 relative group select-none
                   ${isSelected
-                    ? 'bg-[#F0F7F7] border-l-4 border-[#0D2C2C] border-y-gray-200 border-r-gray-200 shadow-sm'
-                    : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50/60'
+                    ? 'bg-gradient-to-r from-emerald-50/20 to-[#F0F7F7] border-[#0D2C2C] shadow-md shadow-[#0D2C2C]/5 translate-x-[2px]'
+                    : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
                   }
                 `}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className={`text-xs font-bold font-mono transition-colors ${
-                      isSelected ? 'text-[#0D2C2C]' : 'text-gray-700 group-hover:text-[#0D2C2C]'
+                {/* Visual Accent Bar for Selected Items */}
+                {isSelected && (
+                  <div className="absolute left-0 top-3 bottom-3 w-1.5 bg-[#0D2C2C] rounded-r-md"></div>
+                )}
+
+                <div className="flex justify-between items-start pl-1.5">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <h4 className={`text-xs font-bold font-mono transition-colors truncate ${
+                      isSelected ? 'text-[#0D2C2C]' : 'text-gray-800 group-hover:text-[#0D2C2C]'
                     }`}>
                       {inv.invoiceNumber}
                     </h4>
-                    <p className={`text-[11px] truncate max-w-[140px] mt-0.5 font-medium ${
+                    <p className={`text-[11px] truncate mt-0.5 font-semibold ${
                       isSelected ? 'text-gray-600' : 'text-gray-500'
                     }`}>
                       {inv.receiver.name || 'Draft Client'}
                     </p>
                   </div>
                   
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <span className={`text-xs font-bold font-mono ${
                       isSelected ? 'text-[#0D2C2C]' : 'text-gray-900'
                     }`}>
@@ -258,17 +264,20 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-gray-100">
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold border uppercase tracking-wider ${getBadgeStyle(inv.status)}`}>
+                <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100 pl-1.5">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${getBadgeStyle(inv.status)}`}>
+                    <span className={`w-1 h-1 rounded-full mr-1.5 ${
+                      inv.status === 'paid' ? 'bg-green-500' : inv.status === 'pending' ? 'bg-amber-500' : 'bg-rose-500'
+                    }`} />
                     {inv.status}
                   </span>
                   
                   <button
                     onClick={(e) => onDeleteInvoice(inv.id, e)}
-                    className="p-1 text-gray-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-rose-50 cursor-pointer"
+                    className="p-1 text-gray-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-rose-50 cursor-pointer shrink-0"
                     title="Delete permanently"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -278,41 +287,51 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
       </div>
 
       {/* Backup Utility Buttons (Bottom rail) */}
-      <div className="p-4 border-t border-gray-200/80 bg-slate-50 text-xs">
-        <div className="grid grid-cols-2 gap-2.5 mb-2.5">
-          <button
-            onClick={exportAllInvoices}
-            className="flex items-center justify-center space-x-1.5 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg cursor-pointer transition-all shadow-sm font-semibold text-[10px] uppercase tracking-wider"
-            title="Download full backup file"
-          >
-            <Download className="w-3.5 h-3.5 text-[#C69A5D]" />
-            <span>Export Backup</span>
-          </button>
+      <div className="p-4 border-t border-gray-200/80 bg-gradient-to-b from-white to-gray-50 text-xs">
+        <div className="bg-gray-100/50 border border-gray-200/60 rounded-xl p-3.5 space-y-3">
+          <div className="flex items-center justify-between text-[9px] font-bold text-gray-400 uppercase tracking-wider px-0.5">
+            <span className="flex items-center gap-1.5">
+              <Database className="w-3 h-3 text-[#C69A5D]" /> Storage Engine
+            </span>
+            <span className="font-mono text-gray-300">v1.0</span>
+          </div>
           
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={exportAllInvoices}
+              className="flex items-center justify-center space-x-1 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
+              title="Download full backup file"
+            >
+              <Download className="w-3 h-3 text-[#C69A5D]" />
+              <span>Export</span>
+            </button>
+            
+            <button
+              onClick={handleImportClick}
+              className="flex items-center justify-center space-x-1 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
+              title="Restore from JSON backup file"
+            >
+              <Upload className="w-3 h-3 text-[#0D2C2C]" />
+              <span>Import</span>
+            </button>
+          </div>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImportFile}
+            accept=".json"
+            className="hidden"
+          />
+
           <button
-            onClick={handleImportClick}
-            className="flex items-center justify-center space-x-1.5 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg cursor-pointer transition-all shadow-sm font-semibold text-[10px] uppercase tracking-wider"
-            title="Restore from JSON backup file"
+            onClick={onClearAll}
+            className="w-full flex items-center justify-center space-x-1.5 py-1.5 bg-rose-50 hover:bg-rose-100/80 active:bg-rose-200/70 border border-rose-100 text-rose-600 rounded-lg text-[9px] font-bold tracking-wider uppercase transition-all cursor-pointer text-center"
           >
-            <Upload className="w-3.5 h-3.5 text-[#0D2C2C]" />
-            <span>Import Backup</span>
+            <Trash2 className="w-3 h-3 text-rose-500" />
+            <span>Wipe Database & Reset</span>
           </button>
         </div>
-
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleImportFile}
-          accept=".json"
-          className="hidden"
-        />
-
-        <button
-          onClick={onClearAll}
-          className="w-full py-2 hover:bg-rose-50 hover:text-rose-600 text-rose-500 rounded-lg text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer border border-dashed border-rose-200 hover:border-rose-300 text-center block"
-        >
-          Wipe Database & Reset
-        </button>
       </div>
 
     </div>
