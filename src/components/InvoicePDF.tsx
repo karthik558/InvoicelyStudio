@@ -166,6 +166,32 @@ const getStyles = (theme: InvoiceTheme) => {
       borderBottomColor: primary,
     },
 
+    headerIndigo: {
+      backgroundColor: '#1e1b4b',
+      padding: 24,
+      marginHorizontal: -40,
+      marginTop: -40,
+      marginBottom: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderBottomWidth: 3,
+      borderBottomColor: '#fda4af',
+    },
+
+    headerEmerald: {
+      backgroundColor: '#064e3b',
+      padding: 24,
+      marginHorizontal: -40,
+      marginTop: -40,
+      marginBottom: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderBottomWidth: 3,
+      borderBottomColor: '#fef08a',
+    },
+
     // Standard elements
     logo: {
       width: 60,
@@ -453,6 +479,44 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
     </View>
   );
 
+  // Render Indigo template header
+  const renderIndigoHeader = () => (
+    <View style={styles.headerIndigo} fixed>
+      <View style={{ flexDirection: 'column' }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff', letterSpacing: 1.5 }}>INVOICE</Text>
+        <Text style={{ fontSize: 9, color: '#fda4af', marginTop: 4, fontWeight: 'bold' }}>No: {invoiceNumber}</Text>
+      </View>
+      <View>
+        {sender.logoUrl ? (
+          <Image src={sender.logoUrl} style={styles.logo} />
+        ) : (
+          <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 14 }}>
+            {sender.name.substring(0, 3).toUpperCase()}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+
+  // Render Emerald template header
+  const renderEmeraldHeader = () => (
+    <View style={styles.headerEmerald} fixed>
+      <View style={{ flexDirection: 'column' }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff', letterSpacing: 1 }}>INVOICE</Text>
+        <Text style={{ fontSize: 9, color: '#fef08a', marginTop: 4, fontWeight: 'bold' }}>No: {invoiceNumber}</Text>
+      </View>
+      <View>
+        {sender.logoUrl ? (
+          <Image src={sender.logoUrl} style={styles.logo} />
+        ) : (
+          <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 14 }}>
+            {sender.name.substring(0, 3).toUpperCase()}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+
   // Render Classic template header
   const renderClassicHeader = () => (
     <View style={styles.headerClassic} fixed>
@@ -511,6 +575,10 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
         return renderTealHeader();
       case 'dark':
         return renderDarkHeader();
+      case 'indigo':
+        return renderIndigoHeader();
+      case 'emerald':
+        return renderEmeraldHeader();
       case 'classic':
         return renderClassicHeader();
       case 'modern':

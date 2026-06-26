@@ -917,7 +917,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   { id: 'classic', label: 'Classic Corporate', desc: 'Symmetrical traditional style' },
                   { id: 'modern', label: 'Modern Minimal', desc: 'Contemporary side-accent bar' },
                   { id: 'simple', label: 'Clean Simple', desc: 'Direct, clear, ink-friendly' },
-                  { id: 'dark', label: 'Premium Dark', desc: 'Sleek contrast charcoal theme' }
+                  { id: 'dark', label: 'Premium Dark', desc: 'Sleek contrast charcoal theme' },
+                  { id: 'indigo', label: 'Royal Indigo', desc: 'Deep indigo royal styling' },
+                  { id: 'emerald', label: 'Emerald Luxe', desc: 'Executive rich forest green theme' }
                 ].map((item) => {
                   const isSelected = invoice.theme.templateId === item.id;
                   return (

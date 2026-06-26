@@ -12,7 +12,6 @@ import { InvoiceList } from './components/InvoiceList';
 import { InvoicePDFDocument } from './components/InvoicePDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { 
-  Printer, 
   Download, 
   Share2, 
   FileText, 
@@ -497,10 +496,7 @@ export default function App() {
     }
   };
 
-  const handlePrint = () => {
-    // Standard window print (targets the printer styling inside index.css)
-    window.print();
-  };
+
 
   return (
     <div className="flex flex-col h-screen bg-[#F3F5F5] text-slate-800 overflow-hidden font-sans">
@@ -554,7 +550,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* Global actions: Share, Print, Export PDF, Save */}
+        {/* Global actions: Share, Export PDF, Save */}
         <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
           <button
             onClick={handleShareLink}
@@ -563,15 +559,6 @@ export default function App() {
           >
             <Share2 className="w-4 h-4 text-[#C69A5D]" />
             <span className="hidden xl:inline ml-1.5 text-xs font-semibold">Share Link</span>
-          </button>
-
-          <button
-            onClick={handlePrint}
-            className="hidden sm:flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm border border-white/10 transition-colors text-white cursor-pointer"
-            title="Standard Web Printer"
-          >
-            <Printer className="w-4 h-4 text-[#C69A5D]" />
-            <span className="hidden xl:inline ml-1.5 text-xs font-semibold">Print</span>
           </button>
 
           {/* Dynamic react-pdf Download Link Trigger */}
@@ -709,7 +696,7 @@ export default function App() {
 
         <div className="flex gap-4">
           <span className="text-[10px] text-gray-500 font-medium">v2.4.2-stable</span>
-          <span className="text-[10px] text-gray-500 font-medium hidden sm:inline">Shortcuts: ⌘S Save | ⌘P Export</span>
+          <span className="text-[10px] text-gray-500 font-medium hidden sm:inline">Shortcuts: ⌘S Save</span>
         </div>
       </footer>
 

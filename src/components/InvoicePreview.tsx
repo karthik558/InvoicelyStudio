@@ -399,6 +399,94 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
             </div>
           )}
 
+          {/* Template 6: Royal Indigo */}
+          {theme.templateId === 'indigo' && (
+            <div className="w-full">
+              <div 
+                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 bg-indigo-950 text-white"
+                style={{ borderBottomColor: '#fda4af' }}
+              >
+                <div>
+                  <h1 className="text-2xl font-black tracking-wider uppercase">Invoice</h1>
+                  <p className="text-xs mt-1 text-rose-200">No: {invoiceNumber}</p>
+                </div>
+                <div>
+                  {sender.logoUrl ? (
+                    <img
+                      src={sender.logoUrl}
+                      alt="Company Logo"
+                      className="max-h-14 max-w-36 object-contain bg-white/10 p-1 rounded"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="text-indigo-950 text-lg font-bold bg-white px-3 py-1.5 rounded font-mono">
+                      {sender.name.substring(0, 3).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-between mb-8 text-xs bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
+                <div className="space-y-1 text-slate-700">
+                  <p className="text-indigo-900 font-bold uppercase tracking-wider text-[9px]">Invoice Details</p>
+                  <p><span className="text-slate-400 font-medium">Invoice No:</span> <strong className="text-slate-800 font-mono">{invoiceNumber}</strong></p>
+                  <p><span className="text-slate-400 font-medium">Issue Date:</span> <strong className="text-slate-800">{issueDate}</strong></p>
+                  <p><span className="text-slate-400 font-medium">Due Date:</span> <strong className="text-slate-800" style={{ color: theme.primaryColor }}>{dueDate}</strong></p>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-400 block mb-1">Status</span>
+                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusClasses()}`}>
+                    {status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Template 7: Emerald Luxe */}
+          {theme.templateId === 'emerald' && (
+            <div className="w-full">
+              <div 
+                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 bg-emerald-950 text-white"
+                style={{ borderBottomColor: '#fef08a' }}
+              >
+                <div>
+                  <h1 className="text-2xl font-black tracking-wider uppercase">Invoice</h1>
+                  <p className="text-xs mt-1 text-yellow-200">No: {invoiceNumber}</p>
+                </div>
+                <div>
+                  {sender.logoUrl ? (
+                    <img
+                      src={sender.logoUrl}
+                      alt="Company Logo"
+                      className="max-h-14 max-w-36 object-contain bg-white/10 p-1 rounded"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="text-emerald-950 text-lg font-bold bg-white px-3 py-1.5 rounded font-mono">
+                      {sender.name.substring(0, 3).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-between mb-8 text-xs bg-emerald-50/50 p-4 rounded-lg border border-emerald-100">
+                <div className="space-y-1 text-slate-700">
+                  <p className="text-emerald-900 font-bold uppercase tracking-wider text-[9px]">Invoice Details</p>
+                  <p><span className="text-slate-400 font-medium">Invoice No:</span> <strong className="text-slate-800 font-mono">{invoiceNumber}</strong></p>
+                  <p><span className="text-slate-400 font-medium">Issue Date:</span> <strong className="text-slate-800">{issueDate}</strong></p>
+                  <p><span className="text-slate-400 font-medium">Due Date:</span> <strong className="text-slate-800" style={{ color: theme.primaryColor }}>{dueDate}</strong></p>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-400 block mb-1">Status</span>
+                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusClasses()}`}>
+                    {status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Core Content Layout (Addresses) */}
           <div className="grid grid-cols-2 gap-8 mb-8">
             {/* Bill From */}
@@ -469,7 +557,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
               </div>
 
               {/* Rows */}
-              <div className="divide-y divide-slate-100 border-b border-slate-100">
+              <div className={`divide-y border-b ${theme.templateId === 'dark' ? 'divide-slate-800 border-slate-800' : 'divide-slate-100 border-slate-100'}`}>
                 {items.map((item, idx) => (
                   <div 
                     key={item.id || idx} 
@@ -480,10 +568,10 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     <div className={`col-span-6 leading-relaxed font-medium ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>
                       {item.description || <span className="text-slate-300 italic">No description</span>}
                     </div>
-                    <div className="col-span-2 text-center font-mono text-slate-500">
+                    <div className={`col-span-2 text-center font-mono ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                       {item.quantity}
                     </div>
-                    <div className="col-span-2 text-right font-mono text-slate-500">
+                    <div className={`col-span-2 text-right font-mono ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                       {formatCurrency(item.rate)}
                     </div>
                     <div className={`col-span-2 text-right font-mono font-bold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-900'}`}>
@@ -534,29 +622,29 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 theme.templateId === 'dark' ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'
               }`}
             >
-              <div className="flex justify-between text-slate-500">
+              <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                 <span>Subtotal:</span>
-                <span className="font-mono font-semibold">{formatCurrency(subtotal)}</span>
+                <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(subtotal)}</span>
               </div>
 
               {discountRate > 0 && (
-                <div className="flex justify-between text-rose-600 font-semibold">
+                <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-rose-400 font-medium' : 'text-rose-600 font-semibold'}`}>
                   <span>Discount ({discountRate}%):</span>
                   <span className="font-mono">-{formatCurrency(discountAmount)}</span>
                 </div>
               )}
 
               {taxRate > 0 && (
-                <div className="flex justify-between text-slate-500">
+                <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                   <span>Tax ({taxRate}%):</span>
-                  <span className="font-mono font-semibold">{formatCurrency(taxAmount)}</span>
+                  <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(taxAmount)}</span>
                 </div>
               )}
 
               {shippingFee > 0 && (
-                <div className="flex justify-between text-slate-500">
+                <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                   <span>Shipping:</span>
-                  <span className="font-mono font-semibold">{formatCurrency(shippingFee)}</span>
+                  <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(shippingFee)}</span>
                 </div>
               )}
 
@@ -565,7 +653,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
               >
                 <span className={theme.templateId === 'dark' ? 'text-white' : 'text-slate-800'}>Total Due:</span>
-                <span className="font-mono text-base" style={{ color: theme.primaryColor }}>
+                <span className="font-mono text-base" style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}>
                   {formatCurrency(total)}
                 </span>
               </div>
@@ -586,7 +674,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
               </h5>
               
               {sender.bankName && (
-                <div className="grid grid-cols-3 gap-4 mb-2 text-slate-500">
+                <div className={`grid grid-cols-3 gap-4 mb-2 ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                   <div>
                     <span className="text-[9px] text-slate-400 block">Bank Name</span>
                     <strong className={`text-xs ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankName}</strong>

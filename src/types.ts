@@ -33,7 +33,7 @@ export interface ReceiverDetails {
 }
 
 export type InvoiceStatus = 'paid' | 'pending' | 'overdue';
-export type InvoiceTemplateId = 'teal' | 'classic' | 'modern' | 'simple' | 'dark';
+export type InvoiceTemplateId = 'teal' | 'classic' | 'modern' | 'simple' | 'dark' | 'indigo' | 'emerald';
 
 export interface InvoiceTheme {
   primaryColor: string; // Hex code
