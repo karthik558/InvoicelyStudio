@@ -598,7 +598,7 @@ export default function App() {
                 <span className="font-light text-slate-300 ml-1.5">Studio</span>
               </div>
               <div className="h-4 w-px bg-white/20 mx-2 hidden lg:block"></div>
-              <span className="text-xs text-gray-400 font-medium truncate hidden lg:block max-w-[150px] xl:max-w-none">Workspace / Global Digital Agency</span>
+              <span className="text-xs text-gray-400 font-medium truncate hidden lg:block max-w-[150px] xl:max-w-none">Workspace / Invoice Dashboard</span>
             </div>
           </div>
         </div>
