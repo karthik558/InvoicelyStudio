@@ -142,6 +142,9 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
     taxRate: 0,
     discountRate: 0,
     shippingFee: 0,
+    gstRate: 18,
+    gstEnabled: false,
+    gstSplit: false,
     notes: defaultSender?.notes || 'Thank you for your business!',
     terms: defaultSender?.terms || 'Payment is due within 14 days of issue.',
     theme: {
@@ -150,6 +153,7 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
       fontFamily: 'Inter',
       templateId: 'teal'
     },
+    currency: 'USD',
     createdAt: Date.now(),
     updatedAt: Date.now()
   };
@@ -479,6 +483,9 @@ export default function App() {
       taxRate: 0,
       discountRate: 0,
       shippingFee: 0,
+      gstRate: 18,
+      gstEnabled: false,
+      gstSplit: false,
       notes,
       terms,
       theme: {
@@ -487,6 +494,7 @@ export default function App() {
         fontFamily: 'Inter',
         templateId: 'teal'
       },
+      currency: 'USD',
       createdAt: Date.now(),
       updatedAt: Date.now()
     };

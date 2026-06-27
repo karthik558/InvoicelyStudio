@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
-import { Invoice, InvoiceTheme } from '../types';
+import { Invoice, InvoiceTheme, getCurrencyFormatter } from '../types';
 
 // Register standard fonts
 try {
@@ -60,7 +60,11 @@ export const registerCustomFont = (name: string, dataUrl: string) => {
 
 // Formatter helper
 const formatCurrency = (val: number) => {
-  return `$${val.toFixed(2)}`;
+  try {
+    return getCurrencyFormatter('USD').format(val);
+  } catch (e) {
+    return `$${val.toFixed(2)}`;
+  }
 };
 
 const getStyles = (theme: InvoiceTheme) => {
@@ -443,12 +447,21 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
   const { theme, sender, receiver, items, invoiceNumber, issueDate, dueDate, status, taxRate, discountRate, shippingFee, notes, terms } = invoice;
   const styles = getStyles(theme);
   const isDark = theme.templateId === 'dark';
+
+  const formatCurrency = (val: number) => {
+    try {
+      return getCurrencyFormatter(invoice.currency).format(val);
+    } catch (e) {
+      return `$${val.toFixed(2)}`;
+    }
+  };
   
   // Calculate Totals
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
   const discountAmount = subtotal * (discountRate / 100);
   const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
-  const total = subtotal - discountAmount + taxAmount + shippingFee;
+  const gstAmount = invoice.gstEnabled ? (subtotal - discountAmount) * ((invoice.gstRate || 0) / 100) : 0;
+  const total = subtotal - discountAmount + taxAmount + gstAmount + shippingFee;
 
   // Status colors
   const statusColors = {
@@ -769,6 +782,26 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
                 <Text style={{ color: '#6b7280' }}>Tax ({taxRate}%):</Text>
                 <Text style={{ fontWeight: 'bold' }}>{formatCurrency(taxAmount)}</Text>
               </View>
+            )}
+
+            {invoice.gstEnabled && invoice.gstRate !== undefined && invoice.gstRate > 0 && (
+              invoice.gstSplit ? (
+                <>
+                  <View style={styles.totalRow}>
+                    <Text style={{ color: '#6b7280' }}>CGST ({(invoice.gstRate / 2)}%):</Text>
+                    <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount / 2)}</Text>
+                  </View>
+                  <View style={styles.totalRow}>
+                    <Text style={{ color: '#6b7280' }}>SGST ({(invoice.gstRate / 2)}%):</Text>
+                    <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount / 2)}</Text>
+                  </View>
+                </>
+              ) : (
+                <View style={styles.totalRow}>
+                  <Text style={{ color: '#6b7280' }}>GST ({invoice.gstRate}%):</Text>
+                  <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount)}</Text>
+                </View>
+              )
             )}
 
             {shippingFee > 0 && (

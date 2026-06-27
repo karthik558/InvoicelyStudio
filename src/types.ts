@@ -59,9 +59,13 @@ export interface Invoice {
   taxRate: number; // percentage, e.g. 10
   discountRate: number; // percentage, e.g. 5
   shippingFee: number; // raw value
+  gstRate?: number; // percentage for GST, e.g. 18
+  gstEnabled?: boolean; // whether GST is enabled
+  gstSplit?: boolean; // whether to split GST into CGST and SGST
   notes: string;
   terms: string;
   theme: InvoiceTheme;
+  currency?: string; // e.g. 'USD', 'EUR', 'GBP', 'INR', etc.
   createdAt: number;
   updatedAt: number;
 }
@@ -70,3 +74,46 @@ export interface AppSettings {
   savedInvoices: Invoice[];
   defaultSender?: SenderDetails;
 }
+
+export interface CurrencyOption {
+  code: string;
+  symbol: string;
+  name: string;
+  locale: string;
+}
+
+export const CURRENCIES: CurrencyOption[] = [
+  { code: 'USD', symbol: '$', name: 'US Dollar', locale: 'en-US' },
+  { code: 'EUR', symbol: '€', name: 'Euro', locale: 'de-DE' },
+  { code: 'GBP', symbol: '£', name: 'British Pound', locale: 'en-GB' },
+  { code: 'INR', symbol: '₹', name: 'Indian Rupee', locale: 'en-IN' },
+  { code: 'JPY', symbol: '¥', name: 'Japanese Yen', locale: 'ja-JP' },
+  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar', locale: 'en-CA' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', locale: 'en-AU' },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar', locale: 'en-SG' },
+  { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', locale: 'ar-AE' },
+  { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc', locale: 'de-CH' },
+  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan', locale: 'zh-CN' },
+  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real', locale: 'pt-BR' },
+  { code: 'MXN', symbol: 'MX$', name: 'Mexican Peso', locale: 'es-MX' },
+  { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar', locale: 'en-NZ' },
+  { code: 'ZAR', symbol: 'R', name: 'South African Rand', locale: 'en-ZA' },
+  { code: 'HKD', symbol: 'HK$', name: 'Hong Kong Dollar', locale: 'zh-HK' },
+  { code: 'SAR', symbol: 'SR', name: 'Saudi Riyal', locale: 'ar-SA' },
+];
+
+export const getCurrencyFormatter = (currencyCode?: string) => {
+  const code = currencyCode || 'USD';
+  const option = CURRENCIES.find(c => c.code.toUpperCase() === code.toUpperCase()) || CURRENCIES[0];
+  try {
+    return new Intl.NumberFormat(option.locale, {
+      style: 'currency',
+      currency: option.code,
+    });
+  } catch (e) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+  }
+};

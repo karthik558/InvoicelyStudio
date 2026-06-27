@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useMemo } from 'react';
-import { Invoice, InvoiceStatus } from '../types';
+import { Invoice, InvoiceStatus, getCurrencyFormatter } from '../types';
 import { 
   Search, 
   ArrowUpDown, 
@@ -61,7 +61,8 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
     const subtotal = inv.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const discount = subtotal * (inv.discountRate / 100);
     const tax = (subtotal - discount) * (inv.taxRate / 100);
-    return subtotal - discount + tax + inv.shippingFee;
+    const gst = inv.gstEnabled ? (subtotal - discount) * ((inv.gstRate || 0) / 100) : 0;
+    return subtotal - discount + tax + gst + inv.shippingFee;
   };
 
   // Filter & Sort Invoices with useMemo optimization
@@ -260,7 +261,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                     <span className={`text-xs font-bold font-mono ${
                       isSelected ? 'text-[#0D2C2C]' : 'text-gray-900'
                     }`}>
-                      ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {getCurrencyFormatter(inv.currency).format(total)}
                     </span>
                     <span className="text-[9px] text-gray-400 block mt-0.5">{inv.issueDate}</span>
                   </div>

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Invoice } from '../types';
+import { Invoice, getCurrencyFormatter } from '../types';
 
 const getAlphaColor = (hex: string, alpha: number): string => {
   if (!hex || typeof hex !== 'string') return `rgba(15, 118, 110, ${alpha})`;
@@ -75,17 +75,18 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   }, [invoice, items]);
 
   // Compute values with memoization
-  const { subtotal, discountAmount, taxAmount, total } = useMemo(() => {
+  const { subtotal, discountAmount, taxAmount, gstAmount, total } = useMemo(() => {
     const sub = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const disc = sub * (discountRate / 100);
     const tax = (sub - disc) * (taxRate / 100);
-    const tot = sub - disc + tax + shippingFee;
-    return { subtotal: sub, discountAmount: disc, taxAmount: tax, total: tot };
-  }, [items, discountRate, taxRate, shippingFee]);
+    const gst = invoice.gstEnabled ? (sub - disc) * ((invoice.gstRate || 0) / 100) : 0;
+    const tot = sub - disc + tax + gst + shippingFee;
+    return { subtotal: sub, discountAmount: disc, taxAmount: tax, gstAmount: gst, total: tot };
+  }, [items, discountRate, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate]);
 
   // Format currency
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+    return getCurrencyFormatter(invoice.currency).format(val);
   };
 
   const isCompact = theme.pdfLayout === 'compact';
@@ -680,6 +681,26 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                   <span>Tax ({taxRate}%):</span>
                   <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(taxAmount)}</span>
                 </div>
+              )}
+
+              {invoice.gstEnabled && invoice.gstRate !== undefined && invoice.gstRate > 0 && (
+                invoice.gstSplit ? (
+                  <>
+                    <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                      <span>CGST ({(invoice.gstRate / 2)}%):</span>
+                      <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount / 2)}</span>
+                    </div>
+                    <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                      <span>SGST ({(invoice.gstRate / 2)}%):</span>
+                      <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount / 2)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                    <span>GST ({invoice.gstRate}%):</span>
+                    <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount)}</span>
+                  </div>
+                )
               )}
 
               {shippingFee > 0 && (

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId } from '../types';
+import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId, CURRENCIES } from '../types';
 import { sampleInvoice } from '../data/sampleInvoice';
 
 const DatePicker = React.lazy(() => import('./DatePicker').then(m => ({ default: m.DatePicker })));
@@ -58,6 +58,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   onNew,
   onAlert,
 }) => {
+  const activeCurrency = invoice.currency || 'USD';
+  const currencySymbol = CURRENCIES.find(c => c.code === activeCurrency)?.symbol || '$';
+
   const [activeTab, setActiveTab] = useState<FormTab>('details');
   const [logoFileName, setLogoFileName] = useState<string>('');
   const [qrFileName, setQrFileName] = useState<string>('');
@@ -517,6 +520,27 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   />
                 </Suspense>
               </div>
+
+              {/* Global Currency Selection */}
+              <div className="border-t border-gray-100 pt-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Global Currency</label>
+                  <select
+                    value={invoice.currency || 'USD'}
+                    onChange={(e) => updateField(null, 'currency', e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] focus:bg-white rounded-lg px-3 py-2 text-xs text-gray-800 outline-none cursor-pointer transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                  >
+                    {CURRENCIES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} ({c.symbol}) — {c.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Select the billing currency for this invoice. The PDF document and preview layouts will automatically adapt formatting and localization rules.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Logo upload widget */}
@@ -802,7 +826,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       />
                     </div>
                     <div className="col-span-4 space-y-1.5">
-                      <label className="text-[9px] uppercase tracking-wider font-bold text-gray-500 block">Rate ($)</label>
+                      <label className="text-[9px] uppercase tracking-wider font-bold text-gray-500 block">Rate ({currencySymbol})</label>
                       <input
                         type="number"
                         min="0"
@@ -815,7 +839,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <div className="col-span-4 space-y-1.5 text-right">
                       <span className="text-[9px] uppercase tracking-wider font-bold text-gray-500 block">Total</span>
                       <div className="py-1 text-xs font-bold text-gray-900 font-mono pr-1">
-                        ${(item.quantity * item.rate).toFixed(2)}
+                        {currencySymbol}{(item.quantity * item.rate).toFixed(2)}
                       </div>
                     </div>
                   </div>
@@ -857,7 +881,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Shipping ($)</label>
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Shipping ({currencySymbol})</label>
                   <input
                     type="number"
                     min="0"
@@ -868,6 +892,60 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   />
                 </div>
               </div>
+            </div>
+
+            {/* GST ADDON SECTION */}
+            <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-3.5 mt-4">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-1.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] flex items-center space-x-2">
+                  <span>GST Addon</span>
+                </h4>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="gstEnabled"
+                    checked={invoice.gstEnabled || false}
+                    onChange={(e) => updateField(null, 'gstEnabled', e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#0D2C2C] focus:ring-[#0D2C2C] cursor-pointer"
+                  />
+                  <label htmlFor="gstEnabled" className="text-xs font-bold text-[#0D2C2C] cursor-pointer">
+                    Enable GST
+                  </label>
+                </div>
+              </div>
+
+              {invoice.gstEnabled && (
+                <div className="grid grid-cols-2 gap-4 text-xs animate-fadeIn">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">GST Rate (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      placeholder="e.g. 18"
+                      value={invoice.gstRate !== undefined ? invoice.gstRate : 18}
+                      onChange={(e) => updateField(null, 'gstRate', Number(e.target.value))}
+                      className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                    />
+                  </div>
+
+                  <div className="flex flex-col justify-end pb-1.5">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="gstSplit"
+                        checked={invoice.gstSplit || false}
+                        onChange={(e) => updateField(null, 'gstSplit', e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-[#0D2C2C] focus:ring-[#0D2C2C] cursor-pointer"
+                      />
+                      <label htmlFor="gstSplit" className="text-[10px] uppercase tracking-wider font-bold text-gray-500 cursor-pointer">
+                        Split CGST & SGST
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -55,6 +55,9 @@ export const sampleInvoice: Invoice = {
   taxRate: 8.25,
   discountRate: 10.00,
   shippingFee: 75.00,
+  gstRate: 18,
+  gstEnabled: false,
+  gstSplit: false,
   notes: 'Thank you for partnering with Aesthetic Design Agency Inc. We sincerely appreciate your business and look forward to collaborating again on future milestones.',
   terms: 'Please pay this invoice within 14 days of issue. Balance is overdue after July 10, 2026. A 1.5% late interest fee per month will be applied to all past-due balances.',
   theme: {
@@ -63,6 +66,7 @@ export const sampleInvoice: Invoice = {
     fontFamily: 'Inter',
     templateId: 'teal'
   },
+  currency: 'USD',
   createdAt: Date.now(),
   updatedAt: Date.now()
 };
