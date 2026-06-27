@@ -443,9 +443,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     onChange={(e) => updateField(null, 'status', e.target.value as InvoiceStatus)}
                     className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] focus:bg-white rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none cursor-pointer transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                   >
-                    <option value="pending">⏳ Pending</option>
-                    <option value="paid">✅ Paid</option>
-                    <option value="overdue">🚨 Overdue</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="overdue">Overdue</option>
                   </select>
                 </div>
               </div>
