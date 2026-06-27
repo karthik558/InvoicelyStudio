@@ -980,7 +980,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] group-hover:text-[#0D2C2C]/80 transition-colors">
                     GST & Tax Category Addon
                   </h4>
-                  <p className="text-[10px] text-gray-400">Enable specialized tax schemes (IGST, CGST, SGST, VAT)</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className={`text-[11px] font-semibold transition-colors ${invoice.gstEnabled ? 'text-[#0D2C2C]' : 'text-gray-400'}`}>
