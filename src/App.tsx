@@ -96,7 +96,8 @@ import {
   X,
   Save,
   Edit,
-  Eye
+  Eye,
+  Sliders
 } from 'lucide-react';
 
 const createStarterInvoice = (defaultSender?: any): Invoice => {
@@ -193,6 +194,22 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeMobileView, setActiveMobileView] = useState<'edit' | 'preview'>('edit');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // PDF Layout settings state & click outside listener
+  const [isLayoutSettingsOpen, setIsLayoutSettingsOpen] = useState(false);
+  const layoutSettingsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (layoutSettingsRef.current && !layoutSettingsRef.current.contains(event.target as Node)) {
+        setIsLayoutSettingsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Initial preloader states
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -612,6 +629,26 @@ export default function App() {
     }
   };
 
+  const handleToggleLayoutMode = (mode: 'compact' | 'standard') => {
+    if (!activeInvoice) return;
+    const updated = invoices.map(i => {
+      if (i.id === activeInvoice.id) {
+        return {
+          ...i,
+          theme: {
+            ...i.theme,
+            pdfLayout: mode
+          },
+          updatedAt: Date.now()
+        };
+      }
+      return i;
+    });
+    setInvoices(updated);
+    saveToLocalStorage(updated);
+    showToast(`PDF layout updated to ${mode === 'compact' ? 'Compact Mode' : 'Standard Padding'}`);
+  };
+
 
 
   return (
@@ -708,6 +745,81 @@ export default function App() {
             }>
               <PDFExporter activeInvoice={activeInvoice} />
             </Suspense>
+          )}
+
+          {/* PDF Layout Settings Panel */}
+          {activeInvoice && (
+            <div className="relative" ref={layoutSettingsRef}>
+              <button
+                id="pdf-layout-settings-btn"
+                onClick={() => setIsLayoutSettingsOpen(!isLayoutSettingsOpen)}
+                className={`flex items-center justify-center p-2 rounded-lg border transition-all cursor-pointer shrink-0 ${
+                  isLayoutSettingsOpen 
+                    ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
+                    : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+                title="PDF Layout Settings"
+              >
+                <Sliders className="w-4 h-4" />
+                <span className="hidden md:inline ml-1.5 text-xs font-semibold">PDF Layout</span>
+              </button>
+
+              {isLayoutSettingsOpen && (
+                <div 
+                  id="pdf-layout-settings-panel"
+                  className="absolute right-0 mt-2 w-72 bg-[#123636] border border-[#1D4A4A] text-white rounded-xl shadow-2xl p-4 z-50 animate-slideDown animate-in fade-in zoom-in-95 duration-150"
+                >
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">PDF Output Settings</h4>
+                    <span className="text-[10px] bg-[#C69A5D]/10 text-[#C69A5D] font-mono px-1.5 py-0.5 rounded font-semibold">A4 / Letter</span>
+                  </div>
+
+                  <p className="text-[11px] text-slate-300 leading-relaxed mb-4">
+                    Toggle spacing density for the exported PDF output to fit more items and prevent text overlapping.
+                  </p>
+
+                  <div className="space-y-2.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Density Preset</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        id="layout-standard-btn"
+                        type="button"
+                        onClick={() => handleToggleLayoutMode('standard')}
+                        className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all border cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                          (activeInvoice.theme.pdfLayout || 'standard') === 'standard'
+                            ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D] shadow-md shadow-[#C69A5D]/10'
+                            : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300'
+                        }`}
+                      >
+                        <span className="text-xs">Standard</span>
+                        <span className="text-[9px] font-normal opacity-85">Spacious Padding</span>
+                      </button>
+
+                      <button
+                        id="layout-compact-btn"
+                        type="button"
+                        onClick={() => handleToggleLayoutMode('compact')}
+                        className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all border cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                          activeInvoice.theme.pdfLayout === 'compact'
+                            ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D] shadow-md shadow-[#C69A5D]/10'
+                            : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300'
+                        }`}
+                      >
+                        <span className="text-xs">Compact</span>
+                        <span className="text-[9px] font-normal opacity-85">Prevent Overlaps</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400">
+                    <span>Active PDF preset:</span>
+                    <strong className="text-white uppercase font-mono font-bold">
+                      {activeInvoice.theme.pdfLayout === 'compact' ? 'Compact' : 'Standard'}
+                    </strong>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Golden Save Button (Icon-only) */}

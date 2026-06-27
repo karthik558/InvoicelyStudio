@@ -85,6 +85,17 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
   };
 
+  const isCompact = theme.pdfLayout === 'compact';
+  const cardPadding = isCompact ? 'p-6' : 'p-10';
+  const negMargin = isCompact ? '-mx-6 -mt-6' : '-mx-10 -mt-10';
+  const headerPadding = isCompact ? 'p-5' : 'p-8';
+  const headerPaddingSec = isCompact ? 'p-4' : 'p-6';
+  const sectionGap = isCompact ? 'mb-4' : 'mb-8';
+  const subSectionGap = isCompact ? 'mb-3' : 'mb-6';
+  const tableMargin = isCompact ? 'my-3' : 'my-6';
+  const pyTableRow = isCompact ? 'py-1.5' : 'py-2.5';
+  const logoSize = isCompact ? 'max-h-12 max-w-32' : 'max-h-16 max-w-40';
+
   // Get active font class or style
   const getFontFamilyStyle = () => {
     if (theme.fontFamily === 'custom') {
@@ -199,7 +210,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                   '--accent-color': theme.accentColor,
                 } as React.CSSProperties}
                 className={`
-                  print-card bg-white text-slate-800 shadow-2xl rounded-lg p-10 flex flex-col justify-between transition-shadow duration-300
+                  print-card bg-white text-slate-800 shadow-2xl rounded-lg ${cardPadding} flex flex-col justify-between transition-shadow duration-300
                   ${theme.templateId === 'dark' ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-800'}
                 `}
               >
@@ -208,7 +219,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
             <div className="w-full">
               {/* Teal Header Block */}
               <div 
-                className="flex items-center justify-between p-8 -mx-10 -mt-10 mb-8"
+                className={`flex items-center justify-between ${headerPadding} ${negMargin} ${sectionGap}`}
                 style={{ backgroundColor: theme.primaryColor }}
               >
                 <div className="text-left">
@@ -220,7 +231,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     <img
                       src={sender.logoUrl}
                       alt="Company Logo"
-                      className="max-h-16 max-w-40 object-contain bg-white/10 p-1.5 rounded"
+                      className={`${logoSize} object-contain bg-white/10 p-1.5 rounded`}
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -232,16 +243,16 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
               </div>
 
               {/* Top Meta Columns */}
-              <div className="flex justify-between items-start mb-8 text-sm">
+              <div className={`flex justify-between items-start ${sectionGap} text-sm`}>
                 <div>
-                  <h3 className="font-bold text-slate-500 uppercase text-[10px] tracking-wider mb-2">Invoice Data</h3>
+                  <h3 className={`font-bold text-slate-500 uppercase text-[10px] tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}>Invoice Data</h3>
                   <div className="space-y-1 text-xs">
                     <p><span className="text-slate-400 font-medium">Issue Date:</span> <strong className="font-semibold text-slate-700">{issueDate}</strong></p>
                     <p><span className="text-slate-400 font-medium">Due Date:</span> <strong className="font-semibold text-slate-700">{dueDate}</strong></p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <h3 className="font-bold text-slate-500 uppercase text-[10px] tracking-wider mb-2">Payment Status</h3>
+                  <h3 className={`font-bold text-slate-500 uppercase text-[10px] tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}>Payment Status</h3>
                   <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${getStatusClasses()}`}>
                     {status}
                   </span>
@@ -254,7 +265,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {theme.templateId === 'classic' && (
             <div className="w-full">
               <div 
-                className="flex justify-between items-start pb-6 mb-8 border-b-4"
+                className={`flex justify-between items-start ${isCompact ? 'pb-3' : 'pb-6'} ${sectionGap} border-b-4`}
                 style={{ borderBottomColor: theme.primaryColor }}
               >
                 <div>
@@ -262,7 +273,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     <img
                       src={sender.logoUrl}
                       alt="Company Logo"
-                      className="max-h-16 max-w-40 object-contain"
+                      className={`${logoSize} object-contain`}
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -279,7 +290,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between mb-8 text-sm">
+              <div className={`flex justify-between ${sectionGap} text-sm`}>
                 <div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                     <span className="text-slate-400 font-medium">Invoice Number:</span>
@@ -304,17 +315,17 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
             <div className="w-full relative">
               {/* Modern Left Border Bar */}
               <div 
-                className="absolute left-[-40px] top-[-40px] bottom-[-40px] w-2"
+                className={`absolute ${isCompact ? 'left-[-24px] top-[-24px] bottom-[-24px]' : 'left-[-40px] top-[-40px] bottom-[-40px]'} w-2`}
                 style={{ backgroundColor: theme.primaryColor }}
               />
               
-              <div className="flex justify-between items-start mb-10">
+              <div className={`flex justify-between items-start ${isCompact ? 'mb-5' : 'mb-10'}`}>
                 <div>
                   {sender.logoUrl && (
                     <img
                       src={sender.logoUrl}
                       alt="Company Logo"
-                      className="max-h-14 max-w-36 object-contain mb-3"
+                      className={`${logoSize} object-contain ${isCompact ? 'mb-1.5' : 'mb-3'}`}
                       referrerPolicy="no-referrer"
                     />
                   )}
@@ -334,7 +345,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mb-8 pb-6 border-b border-slate-100 text-xs">
+              <div className={`grid grid-cols-3 gap-4 ${sectionGap} ${isCompact ? 'pb-3' : 'pb-6'} border-b border-slate-100 text-xs`}>
                 <div>
                   <span className="text-slate-400 block mb-1">Invoice Number</span>
                   <strong className="text-slate-800 font-mono text-sm">{invoiceNumber}</strong>
@@ -354,7 +365,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {/* Template 4: Clean Simple */}
           {theme.templateId === 'simple' && (
             <div className="w-full">
-              <div className="flex justify-between items-center pb-4 mb-6 border-b border-slate-200">
+              <div className={`flex justify-between items-center ${isCompact ? 'pb-2' : 'pb-4'} ${isCompact ? 'mb-3' : 'mb-6'} border-b border-slate-200`}>
                 <div>
                   <h2 className="text-lg font-bold text-slate-800">{sender.name}</h2>
                   <p className="text-xs text-slate-500">Invoice No: {invoiceNumber}</p>
@@ -365,7 +376,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-100 text-xs">
+              <div className={`flex justify-between items-center ${isCompact ? 'mb-3' : 'mb-6'} ${isCompact ? 'pb-2' : 'pb-4'} border-b border-slate-100 text-xs`}>
                 <p><strong>Invoice Date:</strong> {issueDate}</p>
                 <p><strong>Due Date:</strong> {dueDate}</p>
                 <p className="uppercase font-extrabold tracking-wider" style={{ color: theme.primaryColor }}>
@@ -378,7 +389,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {/* Template 5: Premium Dark */}
           {theme.templateId === 'dark' && (
             <div className="w-full">
-              <div className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b border-slate-800 bg-slate-900">
+              <div className={`flex items-center justify-between ${headerPaddingSec} ${negMargin} ${sectionGap} border-b border-slate-800 bg-slate-900`}>
                 <div>
                   <h1 className="text-2xl font-black tracking-wider text-white uppercase">Invoice</h1>
                   <p className="text-xs mt-1" style={{ color: theme.primaryColor }}>#{invoiceNumber}</p>
@@ -388,7 +399,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     <img
                       src={sender.logoUrl}
                       alt="Company Logo"
-                      className="max-h-14 max-w-36 object-contain"
+                      className={`${logoSize} object-contain`}
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -399,7 +410,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between mb-8 text-xs bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+              <div className={`flex justify-between ${sectionGap} text-xs bg-slate-900/50 p-4 rounded-lg border border-slate-800`}>
                 <div className="space-y-1">
                   <p className="text-slate-400">Invoice Details:</p>
                   <p><span className="text-slate-500 font-medium">Invoice No:</span> <strong className="text-slate-200 font-mono">{invoiceNumber}</strong></p>
@@ -420,7 +431,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {theme.templateId === 'indigo' && (
             <div className="w-full">
               <div 
-                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 text-white"
+                className={`flex items-center justify-between ${headerPaddingSec} ${negMargin} ${sectionGap} border-b-4 text-white`}
                 style={{ backgroundColor: theme.primaryColor || '#312e81', borderBottomColor: theme.accentColor || '#fda4af' }}
               >
                 <div>
@@ -432,7 +443,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     <img
                       src={sender.logoUrl}
                       alt="Company Logo"
-                      className="max-h-14 max-w-36 object-contain bg-white/10 p-1 rounded"
+                      className={`${logoSize} object-contain bg-white/10 p-1 rounded`}
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -443,7 +454,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between mb-8 text-xs p-4 rounded-lg border"
+              <div className={`flex justify-between ${sectionGap} text-xs p-4 rounded-lg border`}
                 style={{ 
                   backgroundColor: getAlphaColor(theme.primaryColor || '#312e81', 0.06), 
                   borderColor: getAlphaColor(theme.primaryColor || '#312e81', 0.2) 
@@ -469,7 +480,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {theme.templateId === 'emerald' && (
             <div className="w-full">
               <div 
-                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 text-white"
+                className={`flex items-center justify-between ${headerPaddingSec} ${negMargin} ${sectionGap} border-b-4 text-white`}
                 style={{ backgroundColor: theme.primaryColor || '#064e3b', borderBottomColor: theme.accentColor || '#fef08a' }}
               >
                 <div>
@@ -481,7 +492,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     <img
                       src={sender.logoUrl}
                       alt="Company Logo"
-                      className="max-h-14 max-w-36 object-contain bg-white/10 p-1 rounded"
+                      className={`${logoSize} object-contain bg-white/10 p-1 rounded`}
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -492,7 +503,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between mb-8 text-xs p-4 rounded-lg border"
+              <div className={`flex justify-between ${sectionGap} text-xs p-4 rounded-lg border`}
                 style={{ 
                   backgroundColor: getAlphaColor(theme.primaryColor || '#064e3b', 0.06), 
                   borderColor: getAlphaColor(theme.primaryColor || '#064e3b', 0.2) 
@@ -515,11 +526,11 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           )}
 
           {/* Core Content Layout (Addresses) */}
-          <div className="grid grid-cols-2 gap-8 mb-8">
+          <div className={`grid grid-cols-2 ${isCompact ? 'gap-4 mb-4' : 'gap-8 mb-8'}`}>
             {/* Bill From */}
             <div className="flex flex-col">
               <h4 
-                className="text-xs font-bold uppercase tracking-wider pb-1 mb-3 border-b"
+                className={`text-xs font-bold uppercase tracking-wider pb-0.5 ${isCompact ? 'mb-1.5' : 'mb-3'} border-b`}
                 style={{ 
                   color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor,
                   borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0'
@@ -543,7 +554,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
             {/* Bill To */}
             <div className="flex flex-col">
               <h4 
-                className="text-xs font-bold uppercase tracking-wider pb-1 mb-3 border-b"
+                className={`text-xs font-bold uppercase tracking-wider pb-0.5 ${isCompact ? 'mb-1.5' : 'mb-3'} border-b`}
                 style={{ 
                   color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor,
                   borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0'
@@ -566,11 +577,11 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           </div>
 
           {/* Items Table */}
-          <div className="mb-8">
+          <div className={isCompact ? 'mb-4' : 'mb-8'}>
             <div className="w-full text-xs">
               {/* Header */}
               <div 
-                className="grid grid-cols-12 gap-2 py-2 px-3 border-b-2 font-bold uppercase tracking-wider"
+                className={`grid grid-cols-12 gap-2 ${isCompact ? 'py-1' : 'py-2'} px-3 border-b-2 font-bold uppercase tracking-wider`}
                 style={{ 
                   borderColor: theme.primaryColor,
                   backgroundColor: theme.templateId === 'teal' ? '#f0fdfa' : (theme.templateId === 'dark' ? '#1e293b' : '#f8fafc'),
@@ -588,7 +599,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 {items.map((item, idx) => (
                   <div 
                     key={item.id || idx} 
-                    className={`grid grid-cols-12 gap-2 py-3 px-3 items-center text-xs ${
+                    className={`grid grid-cols-12 gap-2 ${pyTableRow} px-3 items-center text-xs ${
                       theme.templateId === 'dark' ? 'border-slate-800 divide-slate-800' : ''
                     }`}
                   >
@@ -611,9 +622,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           </div>
 
           {/* Bottom Layout: Notes & Totals */}
-          <div className="grid grid-cols-12 gap-8 mb-8 items-start">
+          <div className={`grid grid-cols-12 ${isCompact ? 'gap-4 mb-4' : 'gap-8 mb-8'} items-start`}>
             {/* Notes Section */}
-            <div className="col-span-7 space-y-4">
+            <div className={`col-span-7 ${isCompact ? 'space-y-2' : 'space-y-4'}`}>
               {notes && (
                 <div>
                   <h5 
@@ -645,7 +656,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
             {/* Totals Section */}
             <div 
-              className={`col-span-5 p-4 rounded-lg text-xs space-y-2.5 ${
+              className={`col-span-5 ${isCompact ? 'p-3 space-y-1.5' : 'p-4 space-y-2.5'} rounded-lg text-xs ${
                 theme.templateId === 'dark' ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'
               }`}
             >
@@ -676,7 +687,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
               )}
 
               <div 
-                className="flex justify-between items-center pt-2.5 border-t font-bold text-sm"
+                className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}
                 style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
               >
                 <span className={theme.templateId === 'dark' ? 'text-white' : 'text-slate-800'}>Total Due:</span>
@@ -690,18 +701,18 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {/* Bank Wire & Signature Footer Section */}
           {(sender.bankName || sender.bankAccount || sender.paymentDetails) && (
             <div 
-              className="pt-4 border-t text-[10px]"
+              className={`pt-3 border-t text-[10px] ${isCompact ? 'space-y-1' : 'space-y-2'}`}
               style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
             >
               <h5 
-                className="text-[10px] font-bold uppercase tracking-wider mb-2"
+                className={`text-[10px] font-bold uppercase tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}
                 style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}
               >
                 Payment &amp; Bank Details
               </h5>
               
               {sender.bankName && (
-                <div className={`grid grid-cols-3 gap-4 mb-2 ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                <div className={`grid grid-cols-3 gap-4 ${isCompact ? 'mb-1' : 'mb-2'} ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                   <div>
                     <span className="text-[9px] text-slate-400 block">Bank Name</span>
                     <strong className={`text-xs ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankName}</strong>
@@ -732,7 +743,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
           {/* Low Opacity Platform Footer */}
           <div 
-            className="mt-8 pt-3 border-t border-dashed flex justify-between items-center text-[9px] font-medium tracking-wide"
+            className={`${isCompact ? 'mt-4 pt-1.5' : 'mt-8 pt-3'} border-t border-dashed flex justify-between items-center text-[9px] font-medium tracking-wide`}
             style={{ 
               borderColor: theme.templateId === 'dark' ? '#1e293b' : '#f1f5f9',
               color: theme.templateId === 'dark' ? 'rgba(148, 163, 184, 0.35)' : 'rgba(100, 116, 139, 0.45)'

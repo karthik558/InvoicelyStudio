@@ -68,6 +68,8 @@ const getStyles = (theme: InvoiceTheme) => {
   const accent = theme.accentColor || '#b45309';
   const templateId = theme.templateId || 'teal';
   const isDark = templateId === 'dark';
+  const isCompact = theme.pdfLayout === 'compact';
+  const pagePadding = isCompact ? 24 : 40;
   
   // Font fallback matching
   let selectedFont = 'Helvetica';
@@ -79,10 +81,10 @@ const getStyles = (theme: InvoiceTheme) => {
 
   return StyleSheet.create({
     page: {
-      padding: 40,
+      padding: pagePadding,
       fontFamily: selectedFont,
-      fontSize: 9,
-      lineHeight: 1.4,
+      fontSize: isCompact ? 8 : 9,
+      lineHeight: isCompact ? 1.3 : 1.4,
       backgroundColor: isDark ? '#111827' : '#ffffff',
       color: isDark ? '#f3f4f6' : '#1f2937',
     },
@@ -90,10 +92,10 @@ const getStyles = (theme: InvoiceTheme) => {
     // Header Structures based on Templates
     headerTeal: {
       backgroundColor: primary,
-      padding: 24,
-      marginHorizontal: -40,
-      marginTop: -40,
-      marginBottom: 20,
+      padding: isCompact ? 16 : 24,
+      marginHorizontal: -pagePadding,
+      marginTop: -pagePadding,
+      marginBottom: isCompact ? 12 : 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -105,31 +107,31 @@ const getStyles = (theme: InvoiceTheme) => {
       alignItems: 'flex-end',
     },
     headerTealTitle: {
-      fontSize: 24,
+      fontSize: isCompact ? 20 : 24,
       fontWeight: 'bold',
       color: '#ffffff',
       letterSpacing: 1,
       lineHeight: 1.25,
     },
     headerTealSubtitle: {
-      fontSize: 10,
+      fontSize: isCompact ? 9 : 10,
       color: '#e2e8f0',
-      marginTop: 6,
+      marginTop: isCompact ? 4 : 6,
       lineHeight: 1.2,
     },
 
     headerClassic: {
-      borderBottomWidth: 3,
+      borderBottomWidth: isCompact ? 2 : 3,
       borderBottomColor: primary,
-      paddingBottom: 15,
-      marginBottom: 20,
+      paddingBottom: isCompact ? 10 : 15,
+      marginBottom: isCompact ? 12 : 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
     },
 
     headerModern: {
-      marginBottom: 25,
+      marginBottom: isCompact ? 15 : 25,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
@@ -138,7 +140,7 @@ const getStyles = (theme: InvoiceTheme) => {
       width: 4,
       backgroundColor: primary,
       position: 'absolute',
-      left: -40,
+      left: -pagePadding,
       top: 0,
       bottom: 0,
     },
@@ -146,8 +148,8 @@ const getStyles = (theme: InvoiceTheme) => {
     headerSimple: {
       borderBottomWidth: 1,
       borderBottomColor: '#e5e7eb',
-      paddingBottom: 12,
-      marginBottom: 16,
+      paddingBottom: isCompact ? 8 : 12,
+      marginBottom: isCompact ? 10 : 16,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -155,10 +157,10 @@ const getStyles = (theme: InvoiceTheme) => {
 
     headerDark: {
       backgroundColor: '#1f2937',
-      padding: 24,
-      marginHorizontal: -40,
-      marginTop: -40,
-      marginBottom: 20,
+      padding: isCompact ? 16 : 24,
+      marginHorizontal: -pagePadding,
+      marginTop: -pagePadding,
+      marginBottom: isCompact ? 12 : 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -168,10 +170,10 @@ const getStyles = (theme: InvoiceTheme) => {
 
     headerIndigo: {
       backgroundColor: primary,
-      padding: 24,
-      marginHorizontal: -40,
-      marginTop: -40,
-      marginBottom: 20,
+      padding: isCompact ? 16 : 24,
+      marginHorizontal: -pagePadding,
+      marginTop: -pagePadding,
+      marginBottom: isCompact ? 12 : 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -181,10 +183,10 @@ const getStyles = (theme: InvoiceTheme) => {
 
     headerEmerald: {
       backgroundColor: primary,
-      padding: 24,
-      marginHorizontal: -40,
-      marginTop: -40,
-      marginBottom: 20,
+      padding: isCompact ? 16 : 24,
+      marginHorizontal: -pagePadding,
+      marginTop: -pagePadding,
+      marginBottom: isCompact ? 12 : 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -194,30 +196,30 @@ const getStyles = (theme: InvoiceTheme) => {
 
     // Standard elements
     logo: {
-      width: 60,
-      height: 60,
+      width: isCompact ? 45 : 60,
+      height: isCompact ? 45 : 60,
       objectFit: 'contain',
     },
     logoContainer: {
-      marginBottom: 10,
+      marginBottom: isCompact ? 6 : 10,
     },
     
     titleText: {
-       fontSize: 20,
+       fontSize: isCompact ? 16 : 20,
        fontWeight: 'bold',
        color: isDark ? '#ffffff' : primary,
        lineHeight: 1.25,
     },
     invoiceMetaContainer: {
-      marginTop: 5,
+      marginTop: isCompact ? 3 : 5,
     },
     metaRow: {
       flexDirection: 'row',
-      marginBottom: 3,
+      marginBottom: isCompact ? 2 : 3,
     },
     metaLabel: {
       fontWeight: 'bold',
-      width: 80,
+      width: isCompact ? 70 : 80,
       color: isDark ? '#9ca3af' : '#6b7280',
     },
     metaValue: {
@@ -239,39 +241,39 @@ const getStyles = (theme: InvoiceTheme) => {
     addressSection: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 20,
+      marginBottom: isCompact ? 12 : 20,
     },
     addressBlock: {
       width: '46%',
     },
     addressTitle: {
-      fontSize: 9,
+      fontSize: isCompact ? 8 : 9,
       fontWeight: 'bold',
       textTransform: 'uppercase',
       letterSpacing: 0.5,
       color: isDark ? accent : primary,
       borderBottomWidth: 1,
       borderBottomColor: isDark ? '#374151' : '#e5e7eb',
-      paddingBottom: 4,
-      marginBottom: 6,
+      paddingBottom: isCompact ? 2 : 4,
+      marginBottom: isCompact ? 4 : 6,
     },
     addressText: {
-      fontSize: 8,
+      fontSize: isCompact ? 7.5 : 8,
       color: isDark ? '#d1d5db' : '#4b5563',
-      lineHeight: 1.3,
+      lineHeight: isCompact ? 1.25 : 1.3,
     },
 
     // Table elements
     table: {
-      marginTop: 10,
-      marginBottom: 20,
+      marginTop: isCompact ? 5 : 10,
+      marginBottom: isCompact ? 10 : 20,
     },
     tableHeader: {
       flexDirection: 'row',
       backgroundColor: templateId === 'teal' ? '#f0fdfa' : (isDark ? '#1f2937' : '#f9fafb'),
       borderBottomWidth: 2,
       borderBottomColor: primary,
-      paddingVertical: 6,
+      paddingVertical: isCompact ? 4 : 6,
       paddingHorizontal: 8,
     },
     tableHeaderDark: {
@@ -279,14 +281,14 @@ const getStyles = (theme: InvoiceTheme) => {
       backgroundColor: '#1f2937',
       borderBottomWidth: 2,
       borderBottomColor: primary,
-      paddingVertical: 6,
+      paddingVertical: isCompact ? 4 : 6,
       paddingHorizontal: 8,
     },
     tableRow: {
       flexDirection: 'row',
       borderBottomWidth: 1,
       borderBottomColor: isDark ? '#374151' : '#f3f4f6',
-      paddingVertical: 8,
+      paddingVertical: isCompact ? 5 : 8,
       paddingHorizontal: 8,
       alignItems: 'center',
     },
@@ -310,15 +312,15 @@ const getStyles = (theme: InvoiceTheme) => {
     headerText: {
       fontWeight: 'bold',
       color: isDark ? '#ffffff' : primary,
-      fontSize: 8,
+      fontSize: isCompact ? 7.5 : 8,
       textTransform: 'uppercase',
     },
     itemDescText: {
-      fontSize: 8.5,
+      fontSize: isCompact ? 8 : 8.5,
       color: isDark ? '#ffffff' : '#1f2937',
     },
     itemNumText: {
-      fontSize: 8.5,
+      fontSize: isCompact ? 8 : 8.5,
       color: isDark ? '#d1d5db' : '#4b5563',
     },
 
@@ -326,8 +328,8 @@ const getStyles = (theme: InvoiceTheme) => {
     summarySection: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginTop: 10,
-      marginBottom: 20,
+      marginTop: isCompact ? 5 : 10,
+      marginBottom: isCompact ? 10 : 20,
     },
     notesBlock: {
       width: '52%',
@@ -335,23 +337,23 @@ const getStyles = (theme: InvoiceTheme) => {
     totalsBlock: {
       width: '40%',
       backgroundColor: isDark ? '#1f2937' : '#f9fafb',
-      padding: 10,
+      padding: isCompact ? 6 : 10,
       borderRadius: 4,
     },
     totalRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 4,
-      fontSize: 8.5,
+      marginBottom: isCompact ? 2 : 4,
+      fontSize: isCompact ? 8 : 8.5,
     },
     grandTotalRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       borderTopWidth: 1,
       borderTopColor: isDark ? '#374151' : '#e5e7eb',
-      paddingTop: 6,
-      marginTop: 6,
-      fontSize: 10,
+      paddingTop: isCompact ? 4 : 6,
+      marginTop: isCompact ? 4 : 6,
+      fontSize: isCompact ? 9 : 10,
       fontWeight: 'bold',
     },
     grandTotalText: {
@@ -360,22 +362,22 @@ const getStyles = (theme: InvoiceTheme) => {
 
     // Bank and terms section
     footerSection: {
-      marginTop: 15,
+      marginTop: isCompact ? 10 : 15,
       borderTopWidth: 1,
       borderTopColor: isDark ? '#374151' : '#e5e7eb',
-      paddingTop: 10,
+      paddingTop: isCompact ? 6 : 10,
     },
     sectionTitle: {
-      fontSize: 8,
+      fontSize: isCompact ? 7.5 : 8,
       fontWeight: 'bold',
       textTransform: 'uppercase',
       color: isDark ? accent : primary,
       marginBottom: 4,
     },
     footerText: {
-      fontSize: 7.5,
+      fontSize: isCompact ? 7 : 7.5,
       color: isDark ? '#9ca3af' : '#6b7280',
-      lineHeight: 1.3,
+      lineHeight: isCompact ? 1.2 : 1.3,
     },
     bankGrid: {
       flexDirection: 'row',
@@ -384,19 +386,19 @@ const getStyles = (theme: InvoiceTheme) => {
     },
     bankCol: {
       width: '33%',
-      fontSize: 7.5,
+      fontSize: isCompact ? 7 : 7.5,
     },
     bankLabel: {
       color: '#6b7280',
-      fontSize: 7,
+      fontSize: isCompact ? 6.5 : 7,
     },
     bankVal: {
       fontWeight: 'bold',
       color: isDark ? '#ffffff' : '#1f2937',
     },
     platformWatermark: {
-      marginTop: 20,
-      paddingTop: 8,
+      marginTop: isCompact ? 12 : 20,
+      paddingTop: isCompact ? 6 : 8,
       borderTopWidth: 1,
       borderTopColor: isDark ? '#1e293b' : '#f1f5f9',
       borderTopStyle: 'dashed',

@@ -42,6 +42,7 @@ export interface InvoiceTheme {
   customFontName?: string;
   customFontUrl?: string; // base64 DataURL of custom uploaded font
   templateId: InvoiceTemplateId;
+  pdfLayout?: 'compact' | 'standard';
 }
 
 export interface Invoice {
