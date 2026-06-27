@@ -363,8 +363,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Editor Main Tabs */}
-      <div className="hidden lg:flex bg-gray-50/20 border-b border-gray-200 px-3 overflow-x-auto no-scrollbar justify-between items-center">
-        <div className="flex">
+      <div className="hidden lg:flex bg-gray-50/40 border-b border-gray-200/80 px-4 py-2.5 overflow-x-auto no-scrollbar justify-between items-center shrink-0">
+        <div className="flex bg-gray-200/40 p-1 rounded-xl border border-gray-200/50 gap-0.5 shadow-inner">
           {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
             const isActive = activeTab === tab;
             const label = tab.charAt(0).toUpperCase() + tab.slice(1);
@@ -382,14 +382,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`
-                  flex items-center space-x-2 py-3 px-3.5 text-xs font-semibold tracking-wide border-b-2 transition-all cursor-pointer whitespace-nowrap rounded-none outline-none focus:outline-none focus:ring-0 select-none
+                  flex items-center space-x-2 py-1.5 px-3.5 text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer whitespace-nowrap rounded-lg outline-none focus:outline-none select-none
                   ${isActive 
-                    ? 'border-[#0D2C2C] text-[#0D2C2C] bg-[#F0F7F7]/50' 
-                    : 'border-transparent text-gray-400 hover:text-[#0D2C2C] hover:bg-gray-50/40'
+                    ? 'bg-white text-[#0D2C2C] shadow-sm font-bold scale-[1.02]' 
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-white/40'
                   }
                 `}
               >
-                {icons[tab]}
+                <span className={`transition-colors duration-200 ${isActive ? 'text-[#C69A5D]' : 'text-gray-400'}`}>
+                  {icons[tab]}
+                </span>
                 <span>{label}</span>
               </button>
             );
@@ -397,9 +399,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
 
         {/* Live Auto-save status to fill blank space elegantly */}
-        <div className="flex items-center space-x-2 pr-3 shrink-0 select-none">
+        <div className="flex items-center space-x-1.5 pr-1 shrink-0 select-none bg-emerald-50/80 py-1 px-2.5 border border-emerald-100/80 rounded-full">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider font-mono">
+          <span className="text-[9px] text-emerald-800 font-bold uppercase tracking-wider font-mono">
             Auto-saved
           </span>
         </div>
