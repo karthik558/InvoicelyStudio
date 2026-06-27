@@ -24,7 +24,8 @@ import {
   Settings,
   Copy,
   QrCode,
-  ChevronDown
+  ChevronDown,
+  PenTool
 } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -66,6 +67,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const [activeTab, setActiveTab] = useState<FormTab>('details');
   const [logoFileName, setLogoFileName] = useState<string>('');
   const [qrFileName, setQrFileName] = useState<string>('');
+  const [sigFileName, setSigFileName] = useState<string>('');
   const [fontFileName, setFontFileName] = useState<string>('');
   const [previousClients, setPreviousClients] = useState<Invoice['receiver'][]>([]);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');
@@ -346,6 +348,26 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const clearQr = () => {
     setQrFileName('');
     updateField('sender', 'paymentQrImage', undefined);
+  };
+
+  const handleSigUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSigFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateField(null, {
+          signatureImage: reader.result as string,
+          signatureType: 'image'
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearSigImage = () => {
+    setSigFileName('');
+    updateField(null, 'signatureImage', undefined);
   };
 
   // Base64 Font parser (.ttf / .otf file)
@@ -1194,6 +1216,95 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="e.g. Please pay within 14 days. Late fees apply..."
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* AUTHORIZED SIGNATURE */}
+            <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] flex items-center space-x-2 border-b border-gray-100 pb-2.5">
+                <PenTool className="w-4 h-4 text-[#C69A5D]" />
+                <span>Authorized Signature</span>
+              </h3>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Signature Type</label>
+                    <CustomSelect
+                      value={invoice.signatureType || 'none'}
+                      onChange={(val) => updateField(null, 'signatureType', val)}
+                      options={[
+                        { value: 'none', label: 'No Signature' },
+                        { value: 'text', label: 'Digital Text Signature' },
+                        { value: 'image', label: 'Image Upload' }
+                      ]}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Designation / Title</label>
+                    <input
+                      type="text"
+                      value={invoice.signatureDesignation || ''}
+                      onChange={(e) => updateField(null, 'signatureDesignation', e.target.value)}
+                      placeholder="e.g. Authorized Signatory, Director"
+                      className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    />
+                  </div>
+                </div>
+
+                {invoice.signatureType === 'text' && (
+                  <div className="space-y-1 animate-fadeIn">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Signature Text / Name</label>
+                    <input
+                      type="text"
+                      value={invoice.signatureText || ''}
+                      onChange={(e) => updateField(null, 'signatureText', e.target.value)}
+                      placeholder="e.g. John Doe"
+                      className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none transition-colors font-serif italic text-base focus:ring-1 focus:ring-[#0D2C2C]"
+                    />
+                  </div>
+                )}
+
+                {invoice.signatureType === 'image' && (
+                  <div className="space-y-3 animate-fadeIn">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Signature Image</label>
+                    {invoice.signatureImage ? (
+                      <div className="flex items-center space-x-3 p-2 border border-gray-200 rounded-lg bg-white/50">
+                        <img 
+                          src={invoice.signatureImage} 
+                          alt="Signature Preview" 
+                          className="h-10 w-auto object-contain max-w-[120px] bg-white border border-gray-100 rounded p-1"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-semibold text-gray-800 truncate">{sigFileName || 'signature_image.png'}</p>
+                          <p className="text-[9px] text-gray-400">Custom signature loaded</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={clearSigImage}
+                          className="px-2.5 py-1 text-[10px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg cursor-pointer transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-3">
+                        <label className="flex items-center justify-center space-x-2 bg-white hover:bg-gray-50 border border-gray-200 hover:border-[#0D2C2C] text-gray-600 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
+                          <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                          <span>Upload Signature Image</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSigUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <span className="text-[10px] text-gray-400">Supports transparent PNG, JPG</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

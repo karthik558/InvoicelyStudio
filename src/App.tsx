@@ -387,8 +387,9 @@ export default function App() {
 
   const handleInvoiceChange = (updated: Invoice) => {
     const updatedInvoices = invoices.map((inv) => (inv.id === updated.id ? updated : inv));
-    setInvoices(updatedInvoices);
-    saveToLocalStorage(updatedInvoices);
+    const sorted = [...updatedInvoices].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    setInvoices(sorted);
+    saveToLocalStorage(sorted);
   };
 
   const getNextInvoiceNumber = (list: Invoice[]) => {
@@ -616,8 +617,9 @@ export default function App() {
   const handleSave = () => {
     // Explicit manual save trigger
     const updated = invoices.map(i => i.id === selectedId ? { ...i, updatedAt: Date.now() } : i);
-    setInvoices(updated);
-    saveToLocalStorage(updated);
+    const sorted = [...updated].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    setInvoices(sorted);
+    saveToLocalStorage(sorted);
     showToast(`Saved invoice details: ${activeInvoice.invoiceNumber}`);
   };
 
@@ -654,8 +656,9 @@ export default function App() {
       }
       return i;
     });
-    setInvoices(updated);
-    saveToLocalStorage(updated);
+    const sorted = [...updated].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    setInvoices(sorted);
+    saveToLocalStorage(sorted);
     showToast(`PDF layout updated to ${mode === 'compact' ? 'Compact Mode' : 'Standard Padding'}`);
   };
 

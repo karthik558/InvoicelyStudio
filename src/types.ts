@@ -67,6 +67,10 @@ export interface Invoice {
   terms: string;
   theme: InvoiceTheme;
   currency?: string; // e.g. 'USD', 'EUR', 'GBP', 'INR', etc.
+  signatureType?: 'text' | 'image' | 'none';
+  signatureText?: string;
+  signatureImage?: string; // base64 DataURL
+  signatureDesignation?: string;
   createdAt: number;
   updatedAt: number;
 }

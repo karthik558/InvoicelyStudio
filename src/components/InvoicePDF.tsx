@@ -421,6 +421,38 @@ const getStyles = (theme: InvoiceTheme) => {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    signatureBlock: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      minWidth: isCompact ? 100 : 120,
+      marginLeft: 10,
+      alignSelf: 'flex-end',
+    },
+    signatureText: {
+      fontFamily: 'Playfair Display',
+      fontSize: isCompact ? 11 : 13,
+      color: isDark ? '#ffffff' : '#1f2937',
+      paddingBottom: 2,
+    },
+    signatureImage: {
+      height: isCompact ? 28 : 36,
+      maxWidth: 120,
+      objectFit: 'contain',
+    },
+    signatureLine: {
+      width: '100%',
+      height: 1,
+      backgroundColor: isDark ? '#374151' : '#e5e7eb',
+      marginTop: 2,
+      marginBottom: 3,
+    },
+    signatureDesignation: {
+      fontSize: isCompact ? 6.5 : 7,
+      color: '#6b7280',
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+    },
     platformWatermark: {
       marginTop: isCompact ? 12 : 20,
       paddingTop: isCompact ? 6 : 8,
@@ -875,10 +907,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
           </View>
         </View>
 
-        {/* Payment / Bank Details if enabled */}
-        {(sender.bankName || sender.bankAccount || sender.paymentDetails || sender.paymentQrLink || sender.paymentQrImage) && (
+        {/* Payment / Bank Details & Signature if enabled */}
+        {(sender.bankName || sender.bankAccount || sender.paymentDetails || sender.paymentQrLink || sender.paymentQrImage || (invoice.signatureType && invoice.signatureType !== 'none')) && (
           <View style={styles.footerSection} wrap={false}>
-            <Text style={styles.sectionTitle}>Payment Information</Text>
+            <Text style={styles.sectionTitle}>
+              {(sender.bankName || sender.bankAccount || sender.paymentDetails) ? 'Payment Information' : 'Authorized Signature'}
+            </Text>
             
             <View style={styles.paymentContainer}>
               <View style={styles.paymentLeft}>
@@ -918,6 +952,26 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
                     src={sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(sender.paymentQrLink || '')}`} 
                     style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                   />
+                </View>
+              )}
+
+              {/* Signature section in PDF */}
+              {invoice.signatureType && invoice.signatureType !== 'none' && (
+                <View style={styles.signatureBlock}>
+                  {invoice.signatureType === 'text' && invoice.signatureText ? (
+                    <Text style={styles.signatureText}>{invoice.signatureText}</Text>
+                  ) : (
+                    invoice.signatureType === 'image' && invoice.signatureImage && (
+                      <Image 
+                        src={invoice.signatureImage} 
+                        style={styles.signatureImage}
+                      />
+                    )
+                  )}
+                  <View style={styles.signatureLine} />
+                  <Text style={styles.signatureDesignation}>
+                    {invoice.signatureDesignation || 'Authorized Signatory'}
+                  </Text>
                 </View>
               )}
             </View>

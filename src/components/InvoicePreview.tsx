@@ -762,51 +762,55 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           </div>
 
           {/* Bank Wire & Signature Footer Section */}
-          {(sender.bankName || sender.bankAccount || sender.paymentDetails || sender.paymentQrLink || sender.paymentQrImage) && (
+          {(sender.bankName || sender.bankAccount || sender.paymentDetails || sender.paymentQrLink || sender.paymentQrImage || (invoice.signatureType && invoice.signatureType !== 'none')) && (
             <div 
               className={`pt-3 border-t text-[10px] ${isCompact ? 'space-y-1' : 'space-y-2'}`}
               style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
             >
-              <div className="flex justify-between items-start gap-4">
+              <div className="flex justify-between items-end gap-4">
                 {/* Left bank/wire details */}
-                <div className="flex-1 min-w-0">
-                  <h5 
-                    className={`text-[10px] font-bold uppercase tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}
-                    style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}
-                  >
-                    Payment &amp; Bank Details
-                  </h5>
-                  
-                  {sender.bankName && (
-                    <div className={`grid grid-cols-3 gap-4 ${isCompact ? 'mb-1' : 'mb-2'} ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                      <div>
-                        <span className="text-[9px] text-slate-400 block">Bank Name</span>
-                        <strong className={`text-xs ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankName}</strong>
+                {(sender.bankName || sender.bankAccount || sender.paymentDetails) ? (
+                  <div className="flex-1 min-w-0">
+                    <h5 
+                      className={`text-[10px] font-bold uppercase tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}
+                      style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}
+                    >
+                      Payment &amp; Bank Details
+                    </h5>
+                    
+                    {sender.bankName && (
+                      <div className={`grid grid-cols-3 gap-4 ${isCompact ? 'mb-1' : 'mb-2'} ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                        <div>
+                          <span className="text-[9px] text-slate-400 block">Bank Name</span>
+                          <strong className={`text-xs ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankName}</strong>
+                        </div>
+                        {sender.bankAccount && (
+                          <div>
+                            <span className="text-[9px] text-slate-400 block">Account Number</span>
+                            <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankAccount}</strong>
+                          </div>
+                        )}
+                        {sender.bankRouting && (
+                          <div>
+                            <span className="text-[9px] text-slate-400 block">Routing Number</span>
+                            <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankRouting}</strong>
+                          </div>
+                        )}
                       </div>
-                      {sender.bankAccount && (
-                        <div>
-                          <span className="text-[9px] text-slate-400 block">Account Number</span>
-                          <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankAccount}</strong>
-                        </div>
-                      )}
-                      {sender.bankRouting && (
-                        <div>
-                          <span className="text-[9px] text-slate-400 block">Routing Number</span>
-                          <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankRouting}</strong>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    )}
 
-                  {sender.paymentDetails && (
-                    <p className={`leading-relaxed text-[10px] ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                      <strong className={theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}>Instructions: </strong>
-                      {sender.paymentDetails}
-                    </p>
-                  )}
-                </div>
+                    {sender.paymentDetails && (
+                      <p className={`leading-relaxed text-[10px] ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                        <strong className={theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}>Instructions: </strong>
+                        {sender.paymentDetails}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex-1" />
+                )}
 
-                {/* Right QR Code scanner */}
+                {/* Middle/Right QR Code scanner */}
                 {(sender.paymentQrLink || sender.paymentQrImage) && (
                   <div className="flex flex-col items-center shrink-0 bg-white p-1.5 rounded-lg border border-slate-100 shadow-2xs">
                     <img
@@ -816,6 +820,29 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                       referrerPolicy="no-referrer"
                     />
                     <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider mt-1 block text-center">Scan to Pay</span>
+                  </div>
+                )}
+
+                {/* Right Signature Block */}
+                {invoice.signatureType && invoice.signatureType !== 'none' && (
+                  <div className="flex flex-col items-center justify-end shrink-0 text-center space-y-1 self-end min-w-[130px] pb-1">
+                    {invoice.signatureType === 'text' && invoice.signatureText ? (
+                      <span className={`font-serif italic text-sm border-b pb-1 px-3 ${theme.templateId === 'dark' ? 'text-slate-100 border-slate-700' : 'text-slate-800 border-slate-300'}`}>
+                        {invoice.signatureText}
+                      </span>
+                    ) : (
+                      invoice.signatureType === 'image' && invoice.signatureImage && (
+                        <img
+                          src={invoice.signatureImage}
+                          alt="Signature"
+                          className={`${isCompact ? 'h-8' : 'h-11'} w-auto object-contain max-w-[140px]`}
+                        />
+                      )
+                    )}
+                    <div className="h-[1px] w-full" style={{ backgroundColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }} />
+                    <span className={`text-[8px] uppercase tracking-wider font-bold ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                      {invoice.signatureDesignation || 'Authorized Signatory'}
+                    </span>
                   </div>
                 )}
               </div>

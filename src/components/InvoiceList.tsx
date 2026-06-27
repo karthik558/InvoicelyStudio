@@ -90,7 +90,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
           return getInvoiceTotal(b) - getInvoiceTotal(a);
         case 'date-desc':
         default:
-          return new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime();
+          return (b.updatedAt || 0) - (a.updatedAt || 0);
       }
     });
   }, [invoices, search, sortBy, filterStatus]);
@@ -188,7 +188,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
               onChange={(val) => setSortBy(val as SortOption)}
               className="flex-1 min-w-0"
               options={[
-                { value: 'date-desc', label: 'Newest First' },
+                { value: 'date-desc', label: 'Recently Updated' },
                 { value: 'date-asc', label: 'Oldest First' },
                 { value: 'num-asc', label: 'Number A-Z' },
                 { value: 'total-desc', label: 'Highest Total' }
