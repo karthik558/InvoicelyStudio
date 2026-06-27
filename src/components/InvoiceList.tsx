@@ -293,7 +293,6 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
             <span className="flex items-center gap-1.5">
               <Database className="w-3 h-3 text-[#C69A5D]" /> Storage Engine
             </span>
-            <span className="font-mono text-gray-300">v1.0</span>
           </div>
           
           <div className="grid grid-cols-2 gap-2">
@@ -332,19 +331,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
             <span>Wipe Database & Reset</span>
           </button>
 
-          {/* Developer Credits Info */}
-          <div className="pt-3 border-t border-gray-200/80 mt-3 flex flex-col items-center justify-center text-center">
-            <span className="text-[10px] text-gray-400 font-medium">Designed & Developed by</span>
-            <a 
-              href="https://karthiklal.in" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#0D2C2C] hover:text-[#C69A5D] transition-colors group mt-0.5"
-            >
-              <span className="border-b border-[#0D2C2C] group-hover:border-[#C69A5D]">Karthik Lal</span>
-              <span className="text-[#C69A5D] font-mono group-hover:translate-x-0.5 transition-transform">→</span>
-            </a>
-          </div>
+
         </div>
       </div>
 

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Invoice, AppSettings } from './types';
 import { sampleInvoicesList } from './data/sampleInvoice';
 import { InvoiceForm } from './components/InvoiceForm';
@@ -257,12 +257,34 @@ export default function App() {
   }, [invoices, selectedId]);
 
   // --- TOAST UTILITY ---
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const showToast = (msg: string) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
     setToastMessage(msg);
-    setTimeout(() => {
+    toastTimerRef.current = setTimeout(() => {
       setToastMessage(null);
-    }, 4000);
+      toastTimerRef.current = null;
+    }, 2500); // Snappy duration: stays for 2.5s
   };
+
+  const dismissToast = () => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+    setToastMessage(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
 
   // --- INVOICE ACTIONS ---
 
@@ -537,9 +559,19 @@ export default function App() {
 
       {/* Dynamic Toast Notice */}
       {toastMessage && (
-        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[#0D2C2C] border border-[#1A3F3F] px-5 py-3 rounded-lg shadow-xl shadow-slate-950/20 z-50 flex items-center space-x-3 text-sm font-semibold text-white tracking-wide animate-slideUp">
-          <CheckCircle className="w-5 h-5 text-[#C69A5D]" />
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[#0D2C2C] border border-[#1A3F3F] pl-4 pr-3 py-2.5 rounded-xl shadow-xl shadow-slate-950/25 z-50 flex items-center space-x-2.5 text-xs font-semibold text-white tracking-wide animate-slideUp select-none min-w-[200px] justify-between border-white/5">
+          <div className="flex items-center space-x-2.5">
+            <CheckCircle className="w-4 h-4 text-[#C69A5D] shrink-0" />
+            <span className="max-w-[220px] sm:max-w-xs truncate">{toastMessage}</span>
+          </div>
+          <button 
+            type="button"
+            onClick={dismissToast}
+            className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0 ml-1.5 focus:outline-none"
+            title="Dismiss"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -704,14 +736,15 @@ export default function App() {
       {/* Sleek footer */}
       <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 gap-4">
         <div className="flex items-center gap-4">
+          <span className="text-[10px] text-gray-500 font-medium">Copyright © 2026 Invoice Studio</span>
+        </div>
+        
+        <div className="flex gap-4 items-center">
           <span className="text-[10px] text-gray-500 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
             All changes saved locally
           </span>
-        </div>
-        
-        <div className="flex gap-4">
-          <span className="text-[10px] text-gray-500 font-medium">v2.4.2-stable</span>
+          <span className="text-gray-600/40">•</span>
           <span className="text-[10px] text-gray-500 font-medium">Shortcuts: ⌘S Save</span>
         </div>
       </footer>

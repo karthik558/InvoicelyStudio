@@ -19,7 +19,8 @@ import {
   Layers,
   Type,
   RefreshCw,
-  Settings
+  Settings,
+  Copy
 } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -325,39 +326,42 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     <div className="flex flex-col h-full bg-white lg:border-r border-gray-200">
       
       {/* Action Toolbar Header */}
-      <div className="px-5 py-3.5 bg-gray-50/50 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex space-x-2">
+      <div className="px-4 sm:px-5 py-3 bg-gray-50/50 border-b border-gray-200 flex flex-wrap gap-2.5 items-center justify-between">
+        <div className="flex flex-wrap gap-2">
           <button 
             onClick={onNew} 
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0D2C2C] hover:bg-[#164E4E] text-white font-medium text-xs rounded-lg transition-all duration-150 shadow-md shadow-[#0D2C2C]/15 cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0D2C2C] hover:bg-[#164E4E] text-white font-medium text-xs rounded-lg transition-all duration-150 shadow-md shadow-[#0D2C2C]/15 cursor-pointer shrink-0"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Create New</span>
+            <span className="hidden xs:inline">Create New</span>
+            <span className="inline xs:hidden">New</span>
           </button>
           
           <button 
             onClick={onLoadDemo} 
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-700 font-medium text-xs rounded-lg border border-gray-200 transition-colors cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 font-medium text-xs rounded-lg border border-gray-200 transition-colors cursor-pointer shrink-0"
           >
             <RefreshCw className="w-3.5 h-3.5 text-[#C69A5D]" />
-            <span>Load Demo</span>
+            <span className="hidden xs:inline font-semibold">Load Demo</span>
+            <span className="inline xs:hidden font-semibold">Demo</span>
           </button>
         </div>
 
-        <div className="flex space-x-1.5">
+        <div className="flex gap-2 items-center">
           <button 
             onClick={onDuplicate}
-            className="px-3 py-1.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 text-xs rounded-lg border border-transparent hover:border-gray-200/50 transition-all font-semibold cursor-pointer"
+            className="flex items-center space-x-1 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 text-xs rounded-lg border border-gray-200 transition-all font-semibold cursor-pointer shrink-0"
             title="Duplicate Invoice"
           >
-            Duplicate
+            <Copy className="w-3.5 h-3.5 text-gray-400" />
+            <span>Duplicate</span>
           </button>
           <button 
             onClick={onDelete}
-            className="px-3 py-1.5 hover:bg-red-50 text-gray-500 hover:text-rose-600 text-xs rounded-lg border border-transparent hover:border-red-100 transition-all font-semibold cursor-pointer"
+            className="p-1.5 hover:bg-red-50 text-gray-400 hover:text-rose-600 rounded-lg border border-transparent hover:border-red-100 transition-all cursor-pointer shrink-0"
             title="Delete Invoice"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -398,10 +402,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           })}
         </div>
 
-        {/* Live Auto-save status to fill blank space elegantly */}
-        <div className="flex items-center space-x-1.5 pr-1 shrink-0 select-none bg-emerald-50/80 py-1 px-2.5 border border-emerald-100/80 rounded-full">
+        {/* Live Auto-save status with proper styles and padding */}
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50/90 border border-emerald-100/80 rounded-xl shrink-0 select-none shadow-xs ml-4">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[9px] text-emerald-800 font-bold uppercase tracking-wider font-mono">
+          <span className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider font-mono">
             Auto-saved
           </span>
         </div>
@@ -1278,7 +1282,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Save Button Bar */}
-      <div className="px-5 py-3.5 bg-gray-50/50 border-t border-gray-200 flex items-center justify-between">
+      <div className="hidden lg:flex px-5 py-3.5 bg-gray-50/50 border-t border-gray-200 items-center justify-between">
         <span className="text-[10px] text-gray-400 font-mono">
           Last updated {new Date(invoice.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </span>
