@@ -22,6 +22,8 @@ export interface SenderDetails {
   bankAccount?: string;
   bankRouting?: string;
   paymentDetails?: string; // Freeform payment instructions
+  paymentQrLink?: string; // UPI, Stripe, PayPal link or payment details text for generating QR code
+  paymentQrImage?: string; // base64 DataURL of custom uploaded QR Code
 }
 
 export interface ReceiverDetails {

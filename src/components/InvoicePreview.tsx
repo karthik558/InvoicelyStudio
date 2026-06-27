@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Invoice } from '../types';
 
 const getAlphaColor = (hex: string, alpha: number): string => {
@@ -74,11 +74,14 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     return () => observer.disconnect();
   }, [invoice, items]);
 
-  // Compute values
-  const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const discountAmount = subtotal * (discountRate / 100);
-  const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
-  const total = subtotal - discountAmount + taxAmount + shippingFee;
+  // Compute values with memoization
+  const { subtotal, discountAmount, taxAmount, total } = useMemo(() => {
+    const sub = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
+    const disc = sub * (discountRate / 100);
+    const tax = (sub - disc) * (taxRate / 100);
+    const tot = sub - disc + tax + shippingFee;
+    return { subtotal: sub, discountAmount: disc, taxAmount: tax, total: tot };
+  }, [items, discountRate, taxRate, shippingFee]);
 
   // Format currency
   const formatCurrency = (val: number) => {
@@ -699,45 +702,63 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           </div>
 
           {/* Bank Wire & Signature Footer Section */}
-          {(sender.bankName || sender.bankAccount || sender.paymentDetails) && (
+          {(sender.bankName || sender.bankAccount || sender.paymentDetails || sender.paymentQrLink || sender.paymentQrImage) && (
             <div 
               className={`pt-3 border-t text-[10px] ${isCompact ? 'space-y-1' : 'space-y-2'}`}
               style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
             >
-              <h5 
-                className={`text-[10px] font-bold uppercase tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}
-                style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}
-              >
-                Payment &amp; Bank Details
-              </h5>
-              
-              {sender.bankName && (
-                <div className={`grid grid-cols-3 gap-4 ${isCompact ? 'mb-1' : 'mb-2'} ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  <div>
-                    <span className="text-[9px] text-slate-400 block">Bank Name</span>
-                    <strong className={`text-xs ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankName}</strong>
-                  </div>
-                  {sender.bankAccount && (
-                    <div>
-                      <span className="text-[9px] text-slate-400 block">Account Number</span>
-                      <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankAccount}</strong>
+              <div className="flex justify-between items-start gap-4">
+                {/* Left bank/wire details */}
+                <div className="flex-1 min-w-0">
+                  <h5 
+                    className={`text-[10px] font-bold uppercase tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}
+                    style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}
+                  >
+                    Payment &amp; Bank Details
+                  </h5>
+                  
+                  {sender.bankName && (
+                    <div className={`grid grid-cols-3 gap-4 ${isCompact ? 'mb-1' : 'mb-2'} ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                      <div>
+                        <span className="text-[9px] text-slate-400 block">Bank Name</span>
+                        <strong className={`text-xs ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankName}</strong>
+                      </div>
+                      {sender.bankAccount && (
+                        <div>
+                          <span className="text-[9px] text-slate-400 block">Account Number</span>
+                          <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankAccount}</strong>
+                        </div>
+                      )}
+                      {sender.bankRouting && (
+                        <div>
+                          <span className="text-[9px] text-slate-400 block">Routing Number</span>
+                          <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankRouting}</strong>
+                        </div>
+                      )}
                     </div>
                   )}
-                  {sender.bankRouting && (
-                    <div>
-                      <span className="text-[9px] text-slate-400 block">Routing Number</span>
-                      <strong className={`text-xs font-mono ${theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{sender.bankRouting}</strong>
-                    </div>
+
+                  {sender.paymentDetails && (
+                    <p className={`leading-relaxed text-[10px] ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                      <strong className={theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}>Instructions: </strong>
+                      {sender.paymentDetails}
+                    </p>
                   )}
                 </div>
-              )}
 
-              {sender.paymentDetails && (
-                <p className={`leading-relaxed text-[10px] ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  <strong className={theme.templateId === 'dark' ? 'text-slate-200' : 'text-slate-700'}>Instructions: </strong>
-                  {sender.paymentDetails}
-                </p>
-              )}
+                {/* Right QR Code scanner */}
+                {(sender.paymentQrLink || sender.paymentQrImage) && (
+                  <div className="flex flex-col items-center shrink-0 bg-white p-1.5 rounded-lg border border-slate-100 shadow-2xs">
+                    <img
+                      src={sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(sender.paymentQrLink || '')}`}
+                      alt="Payment QR Code"
+                      className={`${isCompact ? 'w-14 h-14' : 'w-20 h-20'} object-contain`}
+                      referrerPolicy="no-referrer"
+                    />
+                    <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider mt-1 block text-center">Scan to Pay</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

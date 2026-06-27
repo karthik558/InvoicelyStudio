@@ -21,7 +21,8 @@ import {
   Type,
   RefreshCw,
   Settings,
-  Copy
+  Copy,
+  QrCode
 } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -59,8 +60,28 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<FormTab>('details');
   const [logoFileName, setLogoFileName] = useState<string>('');
+  const [qrFileName, setQrFileName] = useState<string>('');
   const [fontFileName, setFontFileName] = useState<string>('');
   const [previousClients, setPreviousClients] = useState<Invoice['receiver'][]>([]);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');
+  const [lastSavedTime, setLastSavedTime] = useState<string>('');
+
+  // Set initial lastSavedTime
+  useEffect(() => {
+    const d = new Date();
+    setLastSavedTime(d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  }, []);
+
+  // Monitor invoice prop changes for interactive auto-save indicators
+  useEffect(() => {
+    setSaveStatus('saving');
+    const timer = setTimeout(() => {
+      setSaveStatus('saved');
+      const d = new Date();
+      setLastSavedTime(d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [invoice]);
 
   useEffect(() => {
     const savedInvoices = localStorage.getItem('invoice_studio_data_v1');
@@ -264,6 +285,24 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     updateField('sender', 'logoUrl', undefined);
   };
 
+  // Base64 QR code parser
+  const handleQrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setQrFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateField('sender', 'paymentQrImage', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearQr = () => {
+    setQrFileName('');
+    updateField('sender', 'paymentQrImage', undefined);
+  };
+
   // Base64 Font parser (.ttf / .otf file)
   const handleFontUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -404,12 +443,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
 
         {/* Live Auto-save status with proper styles and padding */}
-        <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50/90 border border-emerald-100/80 rounded-xl shrink-0 select-none shadow-xs ml-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider font-mono">
-            Auto-saved
-          </span>
-        </div>
+        {saveStatus === 'saving' ? (
+          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50/90 border border-amber-100/80 rounded-xl shrink-0 select-none shadow-xs ml-4 transition-all duration-300">
+            <RefreshCw className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+            <span className="text-[10px] text-amber-800 font-bold uppercase tracking-wider font-mono">
+              Saving...
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50/90 border border-emerald-100/80 rounded-xl shrink-0 select-none shadow-xs ml-4 transition-all duration-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <span className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider font-mono">
+              Saved {lastSavedTime && `at ${lastSavedTime}`}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Editor Fields Area (Scrollable) */}
@@ -879,6 +927,85 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="e.g. Please send wire and email transfer receipt within 5 business days..."
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* PAYMENT QR CODE CONFIGURATION */}
+            <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] flex items-center space-x-2 border-b border-gray-100 pb-2.5">
+                <QrCode className="w-4 h-4 text-[#C69A5D]" />
+                <span>Payment QR Code Option</span>
+              </h3>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">QR Code Link / UPI String</label>
+                  <input
+                    type="text"
+                    value={invoice.sender.paymentQrLink || ''}
+                    onChange={(e) => updateField('sender', 'paymentQrLink', e.target.value)}
+                    className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    placeholder="e.g. upi://pay?pa=billing@company&pn=Acme or paypal.me/acme/150 or Stripe link"
+                  />
+                  <p className="text-[10px] text-gray-400">
+                    Provide a standard payment link, email, or UPI string to automatically render a scan-to-pay QR code on the invoice layout.
+                  </p>
+                </div>
+
+                <div className="border-t border-gray-100 pt-3">
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block mb-2">Or Upload Custom QR Code Image</label>
+                  
+                  {invoice.sender.paymentQrImage ? (
+                    <div className="flex items-center space-x-3 bg-white p-3 border border-gray-200 rounded-xl">
+                      <img 
+                        src={invoice.sender.paymentQrImage} 
+                        alt="Custom QR Code" 
+                        className="w-16 h-16 object-contain rounded border"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold text-gray-800 truncate">{qrFileName || 'custom_qr_code.png'}</p>
+                        <p className="text-[9px] text-gray-400">Custom QR image successfully loaded</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={clearQr}
+                        className="px-2.5 py-1 text-[10px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg cursor-pointer transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-3">
+                      <label className="flex items-center justify-center space-x-2 bg-white hover:bg-gray-50 border border-gray-200 hover:border-[#0D2C2C] text-gray-600 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
+                        <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                        <span>Upload QR Code Image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleQrUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <span className="text-[10px] text-gray-400">Supports PNG, JPG, or SVG</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Real-time QR Code Preview within the editor */}
+                {(invoice.sender.paymentQrLink || invoice.sender.paymentQrImage) && (
+                  <div className="flex flex-col items-center justify-center p-4 bg-white/60 rounded-xl border border-dashed border-gray-200 mt-2">
+                    <span className="text-[9px] uppercase tracking-wider font-bold text-[#0D2C2C] mb-2">Scan Preview</span>
+                    <img
+                      src={invoice.sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(invoice.sender.paymentQrLink || '')}`}
+                      alt="Invoice Payment QR"
+                      className="w-24 h-24 border p-1 bg-white rounded shadow-xs"
+                      referrerPolicy="no-referrer"
+                    />
+                    <span className="text-[9px] text-gray-400 mt-1.5 font-mono text-center max-w-xs truncate">
+                      {invoice.sender.paymentQrImage ? 'Using Uploaded QR Code' : `Generating: ${invoice.sender.paymentQrLink}`}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

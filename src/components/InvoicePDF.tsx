@@ -396,6 +396,27 @@ const getStyles = (theme: InvoiceTheme) => {
       fontWeight: 'bold',
       color: isDark ? '#ffffff' : '#1f2937',
     },
+    paymentContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+    paymentLeft: {
+      flex: 1,
+      marginRight: 10,
+    },
+    paymentQr: {
+      width: isCompact ? 50 : 65,
+      height: isCompact ? 50 : 65,
+      borderWidth: 1,
+      borderColor: isDark ? '#374151' : '#e5e7eb',
+      borderRadius: 4,
+      padding: 2,
+      backgroundColor: '#ffffff',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     platformWatermark: {
       marginTop: isCompact ? 12 : 20,
       paddingTop: isCompact ? 6 : 8,
@@ -767,37 +788,51 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
         </View>
 
         {/* Payment / Bank Details if enabled */}
-        {(sender.bankName || sender.bankAccount || sender.paymentDetails) && (
+        {(sender.bankName || sender.bankAccount || sender.paymentDetails || sender.paymentQrLink || sender.paymentQrImage) && (
           <View style={styles.footerSection} wrap={false}>
             <Text style={styles.sectionTitle}>Payment Information</Text>
             
-            {sender.bankName && (
-              <View style={styles.bankGrid}>
-                <View style={styles.bankCol}>
-                  <Text style={styles.bankLabel}>Bank Name</Text>
-                  <Text style={styles.bankVal}>{sender.bankName}</Text>
-                </View>
-                {sender.bankAccount && (
-                  <View style={styles.bankCol}>
-                    <Text style={styles.bankLabel}>Account Number</Text>
-                    <Text style={styles.bankVal}>{sender.bankAccount}</Text>
+            <View style={styles.paymentContainer}>
+              <View style={styles.paymentLeft}>
+                {sender.bankName && (
+                  <View style={styles.bankGrid}>
+                    <View style={styles.bankCol}>
+                      <Text style={styles.bankLabel}>Bank Name</Text>
+                      <Text style={styles.bankVal}>{sender.bankName}</Text>
+                    </View>
+                    {sender.bankAccount && (
+                      <View style={styles.bankCol}>
+                        <Text style={styles.bankLabel}>Account Number</Text>
+                        <Text style={styles.bankVal}>{sender.bankAccount}</Text>
+                      </View>
+                    )}
+                    {sender.bankRouting && (
+                      <View style={styles.bankCol}>
+                        <Text style={styles.bankLabel}>Routing Number</Text>
+                        <Text style={styles.bankVal}>{sender.bankRouting}</Text>
+                      </View>
+                    )}
                   </View>
                 )}
-                {sender.bankRouting && (
-                  <View style={styles.bankCol}>
-                    <Text style={styles.bankLabel}>Routing Number</Text>
-                    <Text style={styles.bankVal}>{sender.bankRouting}</Text>
-                  </View>
+
+                {sender.paymentDetails && (
+                  <Text style={[styles.footerText, { marginTop: 4 }]}>
+                    <Text style={{ fontWeight: 'bold', color: isDark ? '#ffffff' : '#374151' }}>Payment Instructions: </Text>
+                    {sender.paymentDetails}
+                  </Text>
                 )}
               </View>
-            )}
 
-            {sender.paymentDetails && (
-              <Text style={[styles.footerText, { marginTop: 4 }]}>
-                <Text style={{ fontWeight: 'bold', color: isDark ? '#ffffff' : '#374151' }}>Payment Instructions: </Text>
-                {sender.paymentDetails}
-              </Text>
-            )}
+              {/* QR Code section in PDF */}
+              {(sender.paymentQrLink || sender.paymentQrImage) && (
+                <View style={styles.paymentQr}>
+                  <Image 
+                    src={sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(sender.paymentQrLink || '')}`} 
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                </View>
+              )}
+            </View>
           </View>
         )}
 

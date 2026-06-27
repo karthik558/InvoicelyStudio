@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { Invoice, InvoiceStatus } from '../types';
 import { 
   Search, 
@@ -64,31 +64,33 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
     return subtotal - discount + tax + inv.shippingFee;
   };
 
-  // Filter & Sort Invoices
-  const filteredInvoices = invoices.filter((inv) => {
-    const matchesSearch = 
-      inv.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
-      inv.receiver.name.toLowerCase().includes(search.toLowerCase()) ||
-      inv.sender.name.toLowerCase().includes(search.toLowerCase());
-    
-    const matchesStatus = filterStatus === 'all' || inv.status === filterStatus;
+  // Filter & Sort Invoices with useMemo optimization
+  const sortedInvoices = useMemo(() => {
+    const filtered = invoices.filter((inv) => {
+      const matchesSearch = 
+        inv.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
+        inv.receiver.name.toLowerCase().includes(search.toLowerCase()) ||
+        inv.sender.name.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesStatus = filterStatus === 'all' || inv.status === filterStatus;
 
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    });
 
-  const sortedInvoices = [...filteredInvoices].sort((a, b) => {
-    switch (sortBy) {
-      case 'date-asc':
-        return new Date(a.issueDate).getTime() - new Date(b.issueDate).getTime();
-      case 'num-asc':
-        return a.invoiceNumber.localeCompare(b.invoiceNumber);
-      case 'total-desc':
-        return getInvoiceTotal(b) - getInvoiceTotal(a);
-      case 'date-desc':
-      default:
-        return new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime();
-    }
-  });
+    return [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'date-asc':
+          return new Date(a.issueDate).getTime() - new Date(b.issueDate).getTime();
+        case 'num-asc':
+          return a.invoiceNumber.localeCompare(b.invoiceNumber);
+        case 'total-desc':
+          return getInvoiceTotal(b) - getInvoiceTotal(a);
+        case 'date-desc':
+        default:
+          return new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime();
+      }
+    });
+  }, [invoices, search, sortBy, filterStatus]);
 
   // Export Backups
   const exportAllInvoices = () => {
