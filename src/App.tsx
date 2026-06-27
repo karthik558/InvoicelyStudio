@@ -3,14 +3,89 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Invoice, AppSettings } from './types';
 import { sampleInvoicesList } from './data/sampleInvoice';
-import { InvoiceForm } from './components/InvoiceForm';
-import { InvoicePreview } from './components/InvoicePreview';
-import { InvoiceList } from './components/InvoiceList';
-import { InvoicePDFDocument } from './components/InvoicePDF';
-import { PDFDownloadLink } from '@react-pdf/renderer';
+
+// Lazy load components for enhanced performance & instant startup
+const InvoiceForm = React.lazy(() => import('./components/InvoiceForm').then(m => ({ default: m.InvoiceForm })));
+const InvoicePreview = React.lazy(() => import('./components/InvoicePreview').then(m => ({ default: m.InvoicePreview })));
+const InvoiceList = React.lazy(() => import('./components/InvoiceList').then(m => ({ default: m.InvoiceList })));
+const PDFExporter = React.lazy(() => import('./components/PDFExporter').then(m => ({ default: m.PDFExporter })));
+
+// Beautiful, responsive skeletal loading designs
+const InvoiceListSkeleton = () => (
+  <div className="flex flex-col h-full bg-[#0E2C2C] text-white p-5 space-y-4 animate-pulse">
+    <div className="h-5 bg-white/10 rounded-lg w-1/3" />
+    <div className="h-10 bg-white/5 rounded-xl w-full border border-white/5" />
+    <div className="space-y-3 pt-3 flex-1 overflow-hidden">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+          <div className="flex justify-between">
+            <div className="h-4 bg-white/10 rounded w-1/3" />
+            <div className="h-3 bg-white/10 rounded w-1/5" />
+          </div>
+          <div className="h-3 bg-white/5 rounded w-1/2" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const InvoiceFormSkeleton = () => (
+  <div className="flex flex-col h-full bg-white p-6 space-y-6 animate-pulse overflow-hidden">
+    <div className="flex justify-between items-center pb-4 border-b border-gray-100 shrink-0">
+      <div className="h-6 bg-slate-200 rounded-lg w-1/4" />
+      <div className="flex space-x-2">
+        <div className="h-8 bg-slate-100 rounded-lg w-20" />
+        <div className="h-8 bg-slate-100 rounded-lg w-20" />
+      </div>
+    </div>
+    <div className="flex-1 space-y-5 overflow-hidden">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <div className="h-3 bg-slate-200/80 rounded w-1/4" />
+          <div className="h-10 bg-slate-100/70 rounded-xl w-full" />
+        </div>
+        <div className="space-y-2">
+          <div className="h-3 bg-slate-200/80 rounded w-1/4" />
+          <div className="h-10 bg-slate-100/70 rounded-xl w-full" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="h-3 bg-slate-200/80 rounded w-1/6" />
+        <div className="h-24 bg-slate-50 rounded-xl w-full" />
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 bg-slate-200/80 rounded w-1/5" />
+        <div className="h-32 bg-slate-50 border border-slate-100/50 rounded-xl w-full" />
+      </div>
+    </div>
+  </div>
+);
+
+const InvoicePreviewSkeleton = () => (
+  <div className="flex flex-col h-full bg-[#E8EBEB] p-6 items-center justify-center animate-pulse overflow-hidden">
+    <div className="bg-white w-full max-w-[480px] sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
+      <div className="flex justify-between shrink-0">
+        <div className="space-y-2 w-1/3">
+          <div className="h-6 bg-slate-200 rounded-lg w-full" />
+          <div className="h-3 bg-slate-100 rounded-lg w-2/3" />
+        </div>
+        <div className="h-12 bg-slate-100 rounded-xl w-16" />
+      </div>
+      <div className="space-y-4 py-8 flex-1">
+        <div className="h-4 bg-slate-200/80 rounded w-full" />
+        <div className="h-4 bg-slate-200/80 rounded w-full" />
+        <div className="h-4 bg-slate-100 rounded w-3/4" />
+      </div>
+      <div className="flex justify-between border-t border-slate-100 pt-6 shrink-0">
+        <div className="h-4 bg-slate-100 rounded w-1/4" />
+        <div className="h-6 bg-slate-200 rounded w-1/3" />
+      </div>
+    </div>
+  </div>
+);
 import { 
   Download, 
   FileText, 
@@ -623,21 +698,17 @@ export default function App() {
             </button>
           </div>
 
-          {/* Dynamic react-pdf Download Link Trigger */}
-          <PDFDownloadLink
-            key={`${activeInvoice?.id}-${activeInvoice?.updatedAt}`}
-            document={<InvoicePDFDocument invoice={activeInvoice} />}
-            fileName={`Invoice_${activeInvoice?.invoiceNumber || 'draft'}.pdf`}
-            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm border border-white/10 transition-colors text-white cursor-pointer shrink-0"
-            title="Export PDF"
-          >
-            {({ loading }) => (
-              <div className="flex items-center">
-                <Download className="w-4 h-4 text-[#C69A5D]" />
-                <span className="hidden sm:inline ml-1.5 text-xs font-semibold">{loading ? 'Compiling...' : 'Export PDF'}</span>
+          {/* Dynamic react-pdf Download Link Trigger (Lazy Loaded) */}
+          {activeInvoice && (
+            <Suspense fallback={
+              <div className="flex items-center justify-center p-2 bg-white/5 rounded-lg text-sm border border-white/10 text-gray-400 shrink-0 select-none animate-pulse">
+                <Download className="w-4 h-4 text-[#C69A5D]/60" />
+                <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Compiling...</span>
               </div>
-            )}
-          </PDFDownloadLink>
+            }>
+              <PDFExporter activeInvoice={activeInvoice} />
+            </Suspense>
+          )}
 
           {/* Golden Save Button (Icon-only) */}
           <button
@@ -660,19 +731,21 @@ export default function App() {
             ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
           `}
         >
-          <InvoiceList
-            invoices={invoices}
-            selectedInvoiceId={selectedId}
-            onSelectInvoice={(id) => {
-              setSelectedId(id);
-              setIsSidebarOpen(false);
-            }}
-            onNewInvoice={handleNewInvoice}
-            onDeleteInvoice={handleDeleteInvoice}
-            onImportBackup={handleImportBackup}
-            onClearAll={handleClearAll}
-            onAlert={triggerAlert}
-          />
+          <Suspense fallback={<InvoiceListSkeleton />}>
+            <InvoiceList
+              invoices={invoices}
+              selectedInvoiceId={selectedId}
+              onSelectInvoice={(id) => {
+                setSelectedId(id);
+                setIsSidebarOpen(false);
+              }}
+              onNewInvoice={handleNewInvoice}
+              onDeleteInvoice={handleDeleteInvoice}
+              onImportBackup={handleImportBackup}
+              onClearAll={handleClearAll}
+              onAlert={triggerAlert}
+            />
+          </Suspense>
         </div>
 
         {/* Mobile Sidebar overlay backdrop */}
@@ -691,16 +764,18 @@ export default function App() {
           `}
         >
           {activeInvoice ? (
-            <InvoiceForm
-              invoice={activeInvoice}
-              onChange={handleInvoiceChange}
-              onLoadDemo={handleLoadDemo}
-              onSave={handleSave}
-              onDuplicate={handleDuplicateInvoice}
-              onDelete={() => handleDeleteInvoice()}
-              onNew={handleNewInvoice}
-              onAlert={triggerAlert}
-            />
+            <Suspense fallback={<InvoiceFormSkeleton />}>
+              <InvoiceForm
+                invoice={activeInvoice}
+                onChange={handleInvoiceChange}
+                onLoadDemo={handleLoadDemo}
+                onSave={handleSave}
+                onDuplicate={handleDuplicateInvoice}
+                onDelete={() => handleDeleteInvoice()}
+                onNew={handleNewInvoice}
+                onAlert={triggerAlert}
+              />
+            </Suspense>
           ) : (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-4 bg-white">
               <AlertCircle className="w-12 h-12 text-[#0D2C2C]" />
@@ -723,7 +798,9 @@ export default function App() {
           `}
         >
           {activeInvoice ? (
-            <InvoicePreview invoice={activeInvoice} />
+            <Suspense fallback={<InvoicePreviewSkeleton />}>
+              <InvoicePreview invoice={activeInvoice} />
+            </Suspense>
           ) : (
             <div className="flex items-center justify-center h-full bg-[#E8EBEB] text-gray-500 text-xs">
               Preview is empty

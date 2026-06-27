@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId } from '../types';
 import { sampleInvoice } from '../data/sampleInvoice';
-import { DatePicker } from './DatePicker';
+
+const DatePicker = React.lazy(() => import('./DatePicker').then(m => ({ default: m.DatePicker })));
 import { 
   FileText, 
   Users, 
@@ -450,19 +451,23 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <DatePicker
-                  label="Issue Date"
-                  value={invoice.issueDate}
-                  onChange={(val) => updateField(null, 'issueDate', val)}
-                  align="left"
-                />
+                <Suspense fallback={<div className="h-14 bg-slate-50 border border-slate-200/50 rounded-lg animate-pulse" />}>
+                  <DatePicker
+                    label="Issue Date"
+                    value={invoice.issueDate}
+                    onChange={(val) => updateField(null, 'issueDate', val)}
+                    align="left"
+                  />
+                </Suspense>
 
-                <DatePicker
-                  label="Due Date"
-                  value={invoice.dueDate}
-                  onChange={(val) => updateField(null, 'dueDate', val)}
-                  align="right"
-                />
+                <Suspense fallback={<div className="h-14 bg-slate-50 border border-slate-200/50 rounded-lg animate-pulse" />}>
+                  <DatePicker
+                    label="Due Date"
+                    value={invoice.dueDate}
+                    onChange={(val) => updateField(null, 'dueDate', val)}
+                    align="right"
+                  />
+                </Suspense>
               </div>
             </div>
 
