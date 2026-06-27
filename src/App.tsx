@@ -676,7 +676,7 @@ export default function App() {
               ı
               <span className="absolute top-[8px] sm:top-[10px] left-[3.5px] sm:left-[4px] w-[5.5px] sm:w-[7px] h-[5.5px] sm:h-[7px] bg-[#C69A5D] rounded-[0.8px] sm:rounded-[1px] animate-dotBounce"></span>
             </span>
-            <span>ce</span>
+            <span>cely</span>
             <span className="font-light text-slate-300 ml-2">Studio</span>
           </div>
         </div>
@@ -719,7 +719,7 @@ export default function App() {
                   ı
                   <span className="absolute top-[4px] left-[2px] w-[3.5px] h-[3.5px] bg-[#C69A5D] rounded-[0.5px]"></span>
                 </span>
-                <span>ce</span>
+                <span>cely</span>
                 <span className="font-light text-slate-300 ml-1.5">Studio</span>
               </div>
               <div className="h-4 w-px bg-white/20 mx-2 hidden lg:block"></div>
@@ -938,7 +938,7 @@ export default function App() {
       {/* Sleek footer */}
       <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 gap-4">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-gray-500 font-medium">Copyright © 2026 Invoice Studio</span>
+          <span className="text-[10px] text-gray-500 font-medium">Copyright © 2026 Invoicely Studio</span>
         </div>
         
         <div className="flex gap-4 items-center">

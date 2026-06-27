@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://invoicely.samsproject.in/sitemap.xml

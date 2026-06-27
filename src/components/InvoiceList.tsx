@@ -102,7 +102,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `InvoiceStudio_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `InvoicelyStudio_Backup_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
