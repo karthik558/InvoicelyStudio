@@ -195,7 +195,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                   position: 'absolute',
                   top: 0,
                   left: 0,
-                }}
+                  '--primary-color': theme.primaryColor,
+                  '--accent-color': theme.accentColor,
+                } as React.CSSProperties}
                 className={`
                   print-card bg-white text-slate-800 shadow-2xl rounded-lg p-10 flex flex-col justify-between transition-shadow duration-300
                   ${theme.templateId === 'dark' ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-800'}
