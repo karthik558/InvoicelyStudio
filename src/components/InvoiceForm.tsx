@@ -938,10 +938,31 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   { id: 'emerald', label: 'Emerald Luxe', desc: 'Executive rich forest green theme' }
                 ].map((item) => {
                   const isSelected = invoice.theme.templateId === item.id;
+                  const TEMPLATE_DEFAULTS: Record<string, { primary: string; accent: string }> = {
+                    teal: { primary: '#0f766e', accent: '#b45309' },
+                    classic: { primary: '#1e3a8a', accent: '#3b82f6' },
+                    modern: { primary: '#1f2937', accent: '#f59e0b' },
+                    simple: { primary: '#0f172a', accent: '#10b981' },
+                    dark: { primary: '#0f172a', accent: '#38bdf8' },
+                    indigo: { primary: '#312e81', accent: '#f43f5e' },
+                    emerald: { primary: '#064e3b', accent: '#fbbf24' }
+                  };
                   return (
                     <button
                       key={item.id}
-                      onClick={() => updateField('theme', 'templateId', item.id as InvoiceTemplateId)}
+                      onClick={() => {
+                        const defaults = TEMPLATE_DEFAULTS[item.id] || { primary: '#0f766e', accent: '#b45309' };
+                        onChange({
+                          ...invoice,
+                          theme: {
+                            ...invoice.theme,
+                            templateId: item.id as InvoiceTemplateId,
+                            primaryColor: defaults.primary,
+                            accentColor: defaults.accent
+                          },
+                          updatedAt: Date.now()
+                        });
+                      }}
                       className={`
                         p-2.5 rounded-lg text-left border cursor-pointer transition-all duration-150
                         ${isSelected 

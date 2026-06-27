@@ -6,6 +6,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Invoice } from '../types';
 
+const getAlphaColor = (hex: string, alpha: number): string => {
+  if (!hex || typeof hex !== 'string') return `rgba(15, 118, 110, ${alpha})`;
+  let cleanHex = hex.trim().replace('#', '');
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(char => char + char).join('');
+  }
+  if (cleanHex.length !== 6) {
+    return `rgba(15, 118, 110, ${alpha})`;
+  }
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 interface InvoicePreviewProps {
   invoice: Invoice;
 }
@@ -208,7 +223,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     />
                   ) : (
                     <div className="text-white text-2xl font-black bg-white/10 w-14 h-14 rounded flex items-center justify-center tracking-wider">
-                      {sender.name.substring(0, 3).toUpperCase()}
+                      {(sender.name || 'INV').substring(0, 3).toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -376,7 +391,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                     />
                   ) : (
                     <div className="text-slate-100 text-xl font-bold bg-slate-800 px-3 py-1.5 rounded font-mono border border-slate-700">
-                      {sender.name.substring(0, 3).toUpperCase()}
+                      {(sender.name || 'INV').substring(0, 3).toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -403,12 +418,12 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {theme.templateId === 'indigo' && (
             <div className="w-full">
               <div 
-                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 bg-indigo-950 text-white"
-                style={{ borderBottomColor: '#fda4af' }}
+                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 text-white"
+                style={{ backgroundColor: theme.primaryColor || '#312e81', borderBottomColor: theme.accentColor || '#fda4af' }}
               >
                 <div>
                   <h1 className="text-2xl font-black tracking-wider uppercase">Invoice</h1>
-                  <p className="text-xs mt-1 text-rose-200">No: {invoiceNumber}</p>
+                  <p className="text-xs mt-1" style={{ color: theme.accentColor || '#fda4af' }}>No: {invoiceNumber}</p>
                 </div>
                 <div>
                   {sender.logoUrl ? (
@@ -419,16 +434,21 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="text-indigo-950 text-lg font-bold bg-white px-3 py-1.5 rounded font-mono">
-                      {sender.name.substring(0, 3).toUpperCase()}
+                    <div className="text-lg font-bold bg-white px-3 py-1.5 rounded font-mono" style={{ color: theme.primaryColor || '#312e81' }}>
+                      {(sender.name || 'INV').substring(0, 3).toUpperCase()}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex justify-between mb-8 text-xs bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
+              <div className="flex justify-between mb-8 text-xs p-4 rounded-lg border"
+                style={{ 
+                  backgroundColor: getAlphaColor(theme.primaryColor || '#312e81', 0.06), 
+                  borderColor: getAlphaColor(theme.primaryColor || '#312e81', 0.2) 
+                }}
+              >
                 <div className="space-y-1 text-slate-700">
-                  <p className="text-indigo-900 font-bold uppercase tracking-wider text-[9px]">Invoice Details</p>
+                  <p className="font-bold uppercase tracking-wider text-[9px]" style={{ color: theme.primaryColor || '#312e81' }}>Invoice Details</p>
                   <p><span className="text-slate-400 font-medium">Invoice No:</span> <strong className="text-slate-800 font-mono">{invoiceNumber}</strong></p>
                   <p><span className="text-slate-400 font-medium">Issue Date:</span> <strong className="text-slate-800">{issueDate}</strong></p>
                   <p><span className="text-slate-400 font-medium">Due Date:</span> <strong className="text-slate-800" style={{ color: theme.primaryColor }}>{dueDate}</strong></p>
@@ -447,12 +467,12 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
           {theme.templateId === 'emerald' && (
             <div className="w-full">
               <div 
-                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 bg-emerald-950 text-white"
-                style={{ borderBottomColor: '#fef08a' }}
+                className="flex items-center justify-between p-6 -mx-10 -mt-10 mb-8 border-b-4 text-white"
+                style={{ backgroundColor: theme.primaryColor || '#064e3b', borderBottomColor: theme.accentColor || '#fef08a' }}
               >
                 <div>
                   <h1 className="text-2xl font-black tracking-wider uppercase">Invoice</h1>
-                  <p className="text-xs mt-1 text-yellow-200">No: {invoiceNumber}</p>
+                  <p className="text-xs mt-1" style={{ color: theme.accentColor || '#fef08a' }}>No: {invoiceNumber}</p>
                 </div>
                 <div>
                   {sender.logoUrl ? (
@@ -463,16 +483,21 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="text-emerald-950 text-lg font-bold bg-white px-3 py-1.5 rounded font-mono">
-                      {sender.name.substring(0, 3).toUpperCase()}
+                    <div className="text-lg font-bold bg-white px-3 py-1.5 rounded font-mono" style={{ color: theme.primaryColor || '#064e3b' }}>
+                      {(sender.name || 'INV').substring(0, 3).toUpperCase()}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex justify-between mb-8 text-xs bg-emerald-50/50 p-4 rounded-lg border border-emerald-100">
+              <div className="flex justify-between mb-8 text-xs p-4 rounded-lg border"
+                style={{ 
+                  backgroundColor: getAlphaColor(theme.primaryColor || '#064e3b', 0.06), 
+                  borderColor: getAlphaColor(theme.primaryColor || '#064e3b', 0.2) 
+                }}
+              >
                 <div className="space-y-1 text-slate-700">
-                  <p className="text-emerald-900 font-bold uppercase tracking-wider text-[9px]">Invoice Details</p>
+                  <p className="font-bold uppercase tracking-wider text-[9px]" style={{ color: theme.primaryColor || '#064e3b' }}>Invoice Details</p>
                   <p><span className="text-slate-400 font-medium">Invoice No:</span> <strong className="text-slate-800 font-mono">{invoiceNumber}</strong></p>
                   <p><span className="text-slate-400 font-medium">Issue Date:</span> <strong className="text-slate-800">{issueDate}</strong></p>
                   <p><span className="text-slate-400 font-medium">Due Date:</span> <strong className="text-slate-800" style={{ color: theme.primaryColor }}>{dueDate}</strong></p>
