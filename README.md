@@ -1,8 +1,6 @@
 <div align="center">
   <img src="assets/logo.png" alt="Invoicely Studio Logo" width="200" />
-
-  # Invoicely Studio
-
+  
   A premium, client-side invoice generator designed for freelancers, creators, and small businesses. Create, manage, and export professional invoices instantly and securely.
 </div>
 
