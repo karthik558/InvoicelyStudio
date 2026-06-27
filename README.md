@@ -1,60 +1,61 @@
-# 🧾 Invoicely Studio
+<div align="center">
+  <img src="assets/logo.png" alt="Invoicely Studio Logo" width="200" />
 
-Invoicely Studio is a premium, beautifully crafted web application designed for freelancers, creators, and small businesses to generate and manage professional invoices with absolute simplicity.
+  # Invoicely Studio
 
-Built with a focus on speed, aesthetics, and privacy, Invoicely Studio allows you to create high-fidelity invoices entirely in your browser without requiring any account sign-up.
-
----
-
-## ✨ Features
-
-- **🎨 Dynamic Theme Customization:** Tailor your invoices with curated templates (including Indigo and Emerald) and dynamic theme colors to match your brand identity.
-- **🖋️ Digital Signatures:** Securely add professional digital signatures to your invoices before sharing.
-- **📲 QR Code Payments:** Enable quick payments by dynamically generating payment QR codes on your invoices.
-- **🌍 Multi-Currency & GST Support:** Configure currency symbols and GST/tax parameters with ease.
-- **📁 Local Persistence & Backups:** Rest easy knowing your client and invoice templates are auto-saved locally. Easily export/import JSON backups of your data.
-- **⚡ Performance-First UI:** Supercharged with lazy loading, skeleton screens, and custom interactive date pickers for a fluid, lag-free user experience.
-- **📄 High-Fidelity PDF Export:** Generate compact, print-ready, and beautifully laid out PDFs matching exactly what you see on screen.
+  A premium, client-side invoice generator designed for freelancers, creators, and small businesses. Create, manage, and export professional invoices instantly and securely.
+</div>
 
 ---
 
-## 🚀 Getting Started
+## Overview
+
+Invoicely Studio provides a modern, intuitive workspace to craft beautifully styled invoices without the need for user accounts, subscriptions, or server-side data storage. With a focus on speed, elegant aesthetics, and absolute data privacy, it is the perfect tool for independent professionals who want to streamline their billing workflow.
+
+## Key Features
+
+* **Dynamic Theme Customization:** Tailor your invoices using premium templates (such as Indigo and Emerald) and custom color palettes to align with your brand identity.
+* **Digital Signatures:** Easily apply secure, professional digital signatures directly to your document.
+* **Integrated Payment QR Codes:** Prompt quicker payments by adding dynamically generated payment QR codes directly onto your invoices.
+* **Taxation & Multi-Currency Support:** Easily configure currency symbols and localized tax models (including detailed GST configurations).
+* **Local Persistence & JSON Backups:** All client, invoice, and template settings auto-save to your browser's local storage. Export or import full JSON backups whenever you need them.
+* **Performance-First Design:** Implements lazy loading, skeleton screens, and a custom date-picker interface for a fluid and responsive editing workflow.
+* **High-Fidelity PDF Export:** Generate print-ready, pixel-perfect PDFs featuring optimized layouts (with compact formatting options).
+
+## Getting Started
 
 ### Prerequisites
 
-You only need **Node.js** installed on your system to run the application locally.
+* Node.js (v16.x or higher recommended)
+* npm or yarn
 
-### Local Installation
+### Local Setup
 
-1. **Clone the repository:**
+1. Clone the repository:
    ```bash
    git clone https://github.com/karthik558/InvoicelyStudio.git
    cd InvoicelyStudio
    ```
 
-2. **Install dependencies:**
+2. Install the project dependencies:
    ```bash
    npm install
    ```
 
-3. **Run the local development server:**
+3. Start the local development server:
    ```bash
    npm run dev
    ```
 
 4. Open your browser and navigate to `http://localhost:5173`.
 
----
+## Architecture & Technology Stack
 
-## 🛠️ Technology Stack
+* **Frontend Framework:** React with TypeScript
+* **Development Environment:** Vite
+* **Styling:** Tailwind CSS & Vanilla CSS
+* **PDF Engine:** `@react-pdf/renderer`
 
-- **Framework:** React + TypeScript
-- **Bundler:** Vite
-- **Styling:** Tailwind CSS & Vanilla CSS
-- **PDF Generation:** `@react-pdf/renderer`
+## Privacy & Security
 
----
-
-## 🔒 Privacy First
-
-Invoicely Studio runs entirely on the client side. Your invoice data, client lists, and pricing settings are stored locally in your browser's storage and never transmitted to any external server.
+Invoicely Studio operates entirely in the browser. No invoice details, client listings, financial structures, or signatures are sent to external servers. Your data stays completely under your control within your local browser storage.
