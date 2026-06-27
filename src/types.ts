@@ -62,6 +62,7 @@ export interface Invoice {
   gstRate?: number; // percentage for GST, e.g. 18
   gstEnabled?: boolean; // whether GST is enabled
   gstSplit?: boolean; // whether to split GST into CGST and SGST
+  gstType?: 'igst' | 'cgst_sgst' | 'cgst_utgst' | 'vat' | 'cess'; // type of GST / Tax scheme
   notes: string;
   terms: string;
   theme: InvoiceTheme;

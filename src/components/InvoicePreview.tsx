@@ -78,8 +78,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   const { subtotal, discountAmount, taxAmount, gstAmount, total } = useMemo(() => {
     const sub = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const disc = sub * (discountRate / 100);
-    const tax = (sub - disc) * (taxRate / 100);
-    const gst = invoice.gstEnabled ? (sub - disc) * ((invoice.gstRate || 0) / 100) : 0;
+    const gstEnabled = !!invoice.gstEnabled;
+    const tax = gstEnabled ? 0 : (sub - disc) * (taxRate / 100);
+    const gst = gstEnabled ? (sub - disc) * ((invoice.gstRate || 0) / 100) : 0;
     const tot = sub - disc + tax + gst + shippingFee;
     return { subtotal: sub, discountAmount: disc, taxAmount: tax, gstAmount: gst, total: tot };
   }, [items, discountRate, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate]);
@@ -676,31 +677,69 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               )}
 
-              {taxRate > 0 && (
+              {!invoice.gstEnabled && taxRate > 0 && (
                 <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                   <span>Tax ({taxRate}%):</span>
                   <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(taxAmount)}</span>
                 </div>
               )}
 
-              {invoice.gstEnabled && invoice.gstRate !== undefined && invoice.gstRate > 0 && (
-                invoice.gstSplit ? (
-                  <>
-                    <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
-                      <span>CGST ({(invoice.gstRate / 2)}%):</span>
-                      <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount / 2)}</span>
-                    </div>
-                    <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
-                      <span>SGST ({(invoice.gstRate / 2)}%):</span>
-                      <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount / 2)}</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
-                    <span>GST ({invoice.gstRate}%):</span>
-                    <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount)}</span>
-                  </div>
-                )
+               {invoice.gstEnabled && invoice.gstRate !== undefined && invoice.gstRate > 0 && (
+                (() => {
+                  const type = invoice.gstType || 'igst';
+                  const rate = invoice.gstRate;
+                  const halfRate = rate / 2;
+                  const halfAmount = gstAmount / 2;
+
+                  if (type === 'cgst_sgst') {
+                    return (
+                      <>
+                        <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                          <span>CGST ({halfRate}%):</span>
+                          <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(halfAmount)}</span>
+                        </div>
+                        <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                          <span>SGST ({halfRate}%):</span>
+                          <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(halfAmount)}</span>
+                        </div>
+                      </>
+                    );
+                  } else if (type === 'cgst_utgst') {
+                    return (
+                      <>
+                        <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                          <span>CGST ({halfRate}%):</span>
+                          <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(halfAmount)}</span>
+                        </div>
+                        <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                          <span>UTGST ({halfRate}%):</span>
+                          <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(halfAmount)}</span>
+                        </div>
+                      </>
+                    );
+                  } else if (type === 'vat') {
+                    return (
+                      <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                        <span>VAT ({rate}%):</span>
+                        <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount)}</span>
+                      </div>
+                    );
+                  } else if (type === 'cess') {
+                    return (
+                      <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                        <span>CESS ({rate}%):</span>
+                        <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount)}</span>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
+                        <span>IGST ({rate}%):</span>
+                        <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(gstAmount)}</span>
+                      </div>
+                    );
+                  }
+                })()
               )}
 
               {shippingFee > 0 && (

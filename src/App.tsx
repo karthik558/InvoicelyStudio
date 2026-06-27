@@ -145,6 +145,7 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
     gstRate: 18,
     gstEnabled: false,
     gstSplit: false,
+    gstType: 'igst',
     notes: defaultSender?.notes || 'Thank you for your business!',
     terms: defaultSender?.terms || 'Payment is due within 14 days of issue.',
     theme: {
@@ -486,6 +487,7 @@ export default function App() {
       gstRate: 18,
       gstEnabled: false,
       gstSplit: false,
+      gstType: 'igst',
       notes,
       terms,
       theme: {

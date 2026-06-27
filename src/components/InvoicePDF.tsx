@@ -459,8 +459,9 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
   // Calculate Totals
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
   const discountAmount = subtotal * (discountRate / 100);
-  const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
-  const gstAmount = invoice.gstEnabled ? (subtotal - discountAmount) * ((invoice.gstRate || 0) / 100) : 0;
+  const gstEnabled = !!invoice.gstEnabled;
+  const taxAmount = gstEnabled ? 0 : (subtotal - discountAmount) * (taxRate / 100);
+  const gstAmount = gstEnabled ? (subtotal - discountAmount) * ((invoice.gstRate || 0) / 100) : 0;
   const total = subtotal - discountAmount + taxAmount + gstAmount + shippingFee;
 
   // Status colors
@@ -777,7 +778,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
               </View>
             )}
 
-            {taxRate > 0 && (
+             {!gstEnabled && taxRate > 0 && (
               <View style={styles.totalRow}>
                 <Text style={{ color: '#6b7280' }}>Tax ({taxRate}%):</Text>
                 <Text style={{ fontWeight: 'bold' }}>{formatCurrency(taxAmount)}</Text>
@@ -785,23 +786,61 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
             )}
 
             {invoice.gstEnabled && invoice.gstRate !== undefined && invoice.gstRate > 0 && (
-              invoice.gstSplit ? (
-                <>
-                  <View style={styles.totalRow}>
-                    <Text style={{ color: '#6b7280' }}>CGST ({(invoice.gstRate / 2)}%):</Text>
-                    <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount / 2)}</Text>
-                  </View>
-                  <View style={styles.totalRow}>
-                    <Text style={{ color: '#6b7280' }}>SGST ({(invoice.gstRate / 2)}%):</Text>
-                    <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount / 2)}</Text>
-                  </View>
-                </>
-              ) : (
-                <View style={styles.totalRow}>
-                  <Text style={{ color: '#6b7280' }}>GST ({invoice.gstRate}%):</Text>
-                  <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount)}</Text>
-                </View>
-              )
+              (() => {
+                const type = invoice.gstType || 'igst';
+                const rate = invoice.gstRate;
+                const halfRate = rate / 2;
+                const halfAmount = gstAmount / 2;
+
+                if (type === 'cgst_sgst') {
+                  return (
+                    <>
+                      <View style={styles.totalRow}>
+                        <Text style={{ color: '#6b7280' }}>CGST ({halfRate}%):</Text>
+                        <Text style={{ fontWeight: 'bold' }}>{formatCurrency(halfAmount)}</Text>
+                      </View>
+                      <View style={styles.totalRow}>
+                        <Text style={{ color: '#6b7280' }}>SGST ({halfRate}%):</Text>
+                        <Text style={{ fontWeight: 'bold' }}>{formatCurrency(halfAmount)}</Text>
+                      </View>
+                    </>
+                  );
+                } else if (type === 'cgst_utgst') {
+                  return (
+                    <>
+                      <View style={styles.totalRow}>
+                        <Text style={{ color: '#6b7280' }}>CGST ({halfRate}%):</Text>
+                        <Text style={{ fontWeight: 'bold' }}>{formatCurrency(halfAmount)}</Text>
+                      </View>
+                      <View style={styles.totalRow}>
+                        <Text style={{ color: '#6b7280' }}>UTGST ({halfRate}%):</Text>
+                        <Text style={{ fontWeight: 'bold' }}>{formatCurrency(halfAmount)}</Text>
+                      </View>
+                    </>
+                  );
+                } else if (type === 'vat') {
+                  return (
+                    <View style={styles.totalRow}>
+                      <Text style={{ color: '#6b7280' }}>VAT ({rate}%):</Text>
+                      <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount)}</Text>
+                    </View>
+                  );
+                } else if (type === 'cess') {
+                  return (
+                    <View style={styles.totalRow}>
+                      <Text style={{ color: '#6b7280' }}>CESS ({rate}%):</Text>
+                      <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount)}</Text>
+                    </View>
+                  );
+                } else {
+                  return (
+                    <View style={styles.totalRow}>
+                      <Text style={{ color: '#6b7280' }}>IGST ({rate}%):</Text>
+                      <Text style={{ fontWeight: 'bold' }}>{formatCurrency(gstAmount)}</Text>
+                    </View>
+                  );
+                }
+              })()
             )}
 
             {shippingFee > 0 && (

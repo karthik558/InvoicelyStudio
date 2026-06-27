@@ -5,6 +5,7 @@
 
 import React, { useState, useRef, useMemo } from 'react';
 import { Invoice, InvoiceStatus, getCurrencyFormatter } from '../types';
+import { CustomSelect } from './CustomSelect';
 import { 
   Search, 
   ArrowUpDown, 
@@ -60,8 +61,9 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
   const getInvoiceTotal = (inv: Invoice) => {
     const subtotal = inv.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const discount = subtotal * (inv.discountRate / 100);
-    const tax = (subtotal - discount) * (inv.taxRate / 100);
-    const gst = inv.gstEnabled ? (subtotal - discount) * ((inv.gstRate || 0) / 100) : 0;
+    const gstEnabled = !!inv.gstEnabled;
+    const tax = gstEnabled ? 0 : (subtotal - discount) * (inv.taxRate / 100);
+    const gst = gstEnabled ? (subtotal - discount) * ((inv.gstRate || 0) / 100) : 0;
     return subtotal - discount + tax + gst + inv.shippingFee;
   };
 
@@ -179,32 +181,34 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-[10px]">
-          <div className="flex items-center space-x-1.5">
-            <ArrowUpDown className="w-3 h-3 text-gray-400" />
-            <select
+          <div className="flex items-center space-x-1.5 w-full">
+            <ArrowUpDown className="w-3 h-3 text-gray-400 shrink-0" />
+            <CustomSelect
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="bg-gray-50 border border-gray-200 text-gray-600 rounded px-2 py-1 outline-none cursor-pointer flex-1"
-            >
-              <option value="date-desc">Newest First</option>
-              <option value="date-asc">Oldest First</option>
-              <option value="num-asc">Number A-Z</option>
-              <option value="total-desc">Highest Total</option>
-            </select>
+              onChange={(val) => setSortBy(val as SortOption)}
+              className="flex-1 min-w-0"
+              options={[
+                { value: 'date-desc', label: 'Newest First' },
+                { value: 'date-asc', label: 'Oldest First' },
+                { value: 'num-asc', label: 'Number A-Z' },
+                { value: 'total-desc', label: 'Highest Total' }
+              ]}
+            />
           </div>
 
-          <div className="flex items-center space-x-1.5">
-            <Clock className="w-3 h-3 text-gray-400" />
-            <select
+          <div className="flex items-center space-x-1.5 w-full">
+            <Clock className="w-3 h-3 text-gray-400 shrink-0" />
+            <CustomSelect
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as StatusFilter)}
-              className="bg-gray-50 border border-gray-200 text-gray-600 rounded px-2 py-1 outline-none cursor-pointer flex-1"
-            >
-              <option value="all">All Statuses</option>
-              <option value="paid">Paid Only</option>
-              <option value="pending">Pending</option>
-              <option value="overdue">Overdue</option>
-            </select>
+              onChange={(val) => setFilterStatus(val as StatusFilter)}
+              className="flex-1 min-w-0"
+              options={[
+                { value: 'all', label: 'All Statuses' },
+                { value: 'paid', label: 'Paid Only' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'overdue', label: 'Overdue' }
+              ]}
+            />
           </div>
         </div>
       </div>

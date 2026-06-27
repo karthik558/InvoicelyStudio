@@ -6,6 +6,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId, CURRENCIES } from '../types';
 import { sampleInvoice } from '../data/sampleInvoice';
+import { CustomSelect } from './CustomSelect';
 
 const DatePicker = React.lazy(() => import('./DatePicker').then(m => ({ default: m.DatePicker })));
 import { 
@@ -22,7 +23,8 @@ import {
   RefreshCw,
   Settings,
   Copy,
-  QrCode
+  QrCode,
+  ChevronDown
 } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -207,16 +209,56 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     }
   };
 
-  const updateField = (section: 'sender' | 'receiver' | 'theme' | null, field: string, value: any) => {
+  const updateField = (section: 'sender' | 'receiver' | 'theme' | null, field: string | Record<string, any>, value?: any) => {
     const updated = { ...invoice, updatedAt: Date.now() };
     if (section === 'sender') {
-      updated.sender = { ...updated.sender, [field]: value };
+      if (typeof field === 'string') {
+        updated.sender = { ...updated.sender, [field]: value };
+      } else {
+        updated.sender = { ...updated.sender, ...field };
+      }
     } else if (section === 'receiver') {
-      updated.receiver = { ...updated.receiver, [field]: value };
+      if (typeof field === 'string') {
+        updated.receiver = { ...updated.receiver, [field]: value };
+      } else {
+        updated.receiver = { ...updated.receiver, ...field };
+      }
     } else if (section === 'theme') {
-      updated.theme = { ...updated.theme, [field]: value };
+      if (typeof field === 'string') {
+        updated.theme = { ...updated.theme, [field]: value };
+      } else {
+        updated.theme = { ...updated.theme, ...field };
+      }
     } else {
-      (updated as any)[field] = value;
+      if (typeof field === 'string') {
+        (updated as any)[field] = value;
+        if (field === 'gstEnabled' && value === true) {
+          updated.taxRate = 0;
+          if (!updated.gstRate) {
+            updated.gstRate = 18;
+          }
+          if (!updated.gstType) {
+            updated.gstType = 'igst';
+          }
+        } else if (field === 'taxRate' && Number(value) > 0) {
+          updated.gstEnabled = false;
+        }
+      } else {
+        Object.entries(field).forEach(([k, v]) => {
+          (updated as any)[k] = v;
+          if (k === 'gstEnabled' && v === true) {
+            updated.taxRate = 0;
+            if (!updated.gstRate) {
+              updated.gstRate = 18;
+            }
+            if (!updated.gstType) {
+              updated.gstType = 'igst';
+            }
+          } else if (k === 'taxRate' && Number(v) > 0) {
+            updated.gstEnabled = false;
+          }
+        });
+      }
     }
     onChange(updated);
   };
@@ -488,16 +530,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Status</label>
-                  <select
+                  <CustomSelect
+                    label="Status"
                     value={invoice.status}
-                    onChange={(e) => updateField(null, 'status', e.target.value as InvoiceStatus)}
-                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] focus:bg-white rounded-lg px-3 py-1.5 text-xs text-gray-800 outline-none cursor-pointer transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
-                    <option value="overdue">Overdue</option>
-                  </select>
+                    onChange={(val) => updateField(null, 'status', val as InvoiceStatus)}
+                    options={[
+                      { value: 'pending', label: 'Pending', subLabel: 'Awaiting payment from client' },
+                      { value: 'paid', label: 'Paid', subLabel: 'Invoice settled successfully' },
+                      { value: 'overdue', label: 'Overdue', subLabel: 'Payment has passed due date' }
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -524,18 +566,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               {/* Global Currency Selection */}
               <div className="border-t border-gray-100 pt-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Global Currency</label>
-                  <select
+                  <CustomSelect
+                    label="Global Currency"
                     value={invoice.currency || 'USD'}
-                    onChange={(e) => updateField(null, 'currency', e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] focus:bg-white rounded-lg px-3 py-2 text-xs text-gray-800 outline-none cursor-pointer transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
-                  >
-                    {CURRENCIES.map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.code} ({c.symbol}) — {c.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => updateField(null, 'currency', val)}
+                    options={CURRENCIES.map((c) => ({
+                      value: c.code,
+                      label: `${c.code} (${c.symbol})`,
+                      subLabel: c.name
+                    }))}
+                  />
                   <p className="text-[10px] text-gray-400 mt-1">
                     Select the billing currency for this invoice. The PDF document and preview layouts will automatically adapt formatting and localization rules.
                   </p>
@@ -677,12 +717,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <span>Bill To (Client / Receiver Details)</span>
               </h3>
 
-              {previousClients.length > 0 && (
+               {previousClients.length > 0 && (
                 <div className="mb-4 bg-white p-3 rounded-lg border border-gray-100 space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Select Stored Client</label>
-                  <select
-                    onChange={(e) => {
-                      const selectedClientName = e.target.value;
+                  <CustomSelect
+                    label="Select Stored Client"
+                    value=""
+                    onChange={(selectedClientName) => {
                       const found = previousClients.find(c => c.name === selectedClientName);
                       if (found) {
                         const updated = {
@@ -694,16 +734,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         triggerLocalAlert('Client Loaded', `Loaded billing details for ${found.name}!`);
                       }
                     }}
-                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none transition-colors"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>-- Choose a previously billed client --</option>
-                    {previousClients.map((client) => (
-                      <option key={client.name} value={client.name}>
-                        {client.name} ({client.email || 'No email'})
-                      </option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: '-- Choose a previously billed client --' },
+                      ...previousClients.map((client) => ({
+                        value: client.name,
+                        label: client.name,
+                        subLabel: client.email || 'No email'
+                      }))
+                    ]}
+                  />
                 </div>
               )}
 
@@ -820,7 +859,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         type="number"
                         min="1"
                         step="any"
-                        value={item.quantity}
+                        value={item.quantity || ''}
+                        onFocus={(e) => e.target.select()}
                         onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
                         className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2 py-1 text-xs text-gray-800 outline-none transition-colors font-mono"
                       />
@@ -831,7 +871,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         type="number"
                         min="0"
                         step="any"
-                        value={item.rate}
+                        value={item.rate || ''}
+                        onFocus={(e) => e.target.select()}
                         onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
                         className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2 py-1 text-xs text-gray-800 outline-none transition-colors font-mono"
                       />
@@ -849,21 +890,32 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
             {/* FINANCIAL OVERRIDES */}
             <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-3.5 mt-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] border-b border-gray-100 pb-1.5">
-                Financial Additions / Reductions
-              </h4>
+              <div className="flex items-center justify-between border-b border-gray-100 pb-1.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C]">
+                  Financial Additions / Reductions
+                </h4>
+              </div>
 
               <div className="grid grid-cols-3 gap-3 text-xs">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Tax Rate (%)</label>
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">
+                    Tax Rate (%)
+                  </label>
                   <input
                     type="number"
                     min="0"
                     max="100"
                     step="0.01"
-                    value={invoice.taxRate}
+                    disabled={!!invoice.gstEnabled}
+                    value={invoice.gstEnabled ? 0 : (invoice.taxRate || '')}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'taxRate', Number(e.target.value))}
-                    className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                    className={`w-full border rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C] transition-colors ${
+                      invoice.gstEnabled 
+                        ? 'bg-gray-100/80 border-gray-100 text-gray-400 cursor-not-allowed select-none' 
+                        : 'bg-white border-gray-200 focus:border-[#0D2C2C]'
+                    }`}
+                    title={invoice.gstEnabled ? "Disable GST Addon first to use standard Tax Rate" : ""}
                   />
                 </div>
 
@@ -874,7 +926,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     min="0"
                     max="100"
                     step="0.01"
-                    value={invoice.discountRate}
+                    value={invoice.discountRate || ''}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'discountRate', Number(e.target.value))}
                     className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
                   />
@@ -886,7 +939,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="number"
                     min="0"
                     step="0.01"
-                    value={invoice.shippingFee}
+                    value={invoice.shippingFee || ''}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'shippingFee', Number(e.target.value))}
                     className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
                   />
@@ -895,54 +949,78 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* GST ADDON SECTION */}
-            <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-3.5 mt-4">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-1.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] flex items-center space-x-2">
-                  <span>GST Addon</span>
-                </h4>
+            <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-3.5 mt-4 select-none">
+              <div 
+                onClick={() => updateField(null, 'gstEnabled', !invoice.gstEnabled)}
+                className="flex items-center justify-between border-b border-gray-100 pb-2 cursor-pointer group select-none"
+              >
+                <div className="space-y-0.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] group-hover:text-[#0D2C2C]/80 transition-colors">
+                    GST & Tax Category Addon
+                  </h4>
+                  <p className="text-[10px] text-gray-400">Enable specialized tax schemes (IGST, CGST, SGST, VAT)</p>
+                </div>
                 <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="gstEnabled"
-                    checked={invoice.gstEnabled || false}
-                    onChange={(e) => updateField(null, 'gstEnabled', e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-[#0D2C2C] focus:ring-[#0D2C2C] cursor-pointer"
-                  />
-                  <label htmlFor="gstEnabled" className="text-xs font-bold text-[#0D2C2C] cursor-pointer">
-                    Enable GST
-                  </label>
+                  <span className={`text-[11px] font-semibold transition-colors ${invoice.gstEnabled ? 'text-[#0D2C2C]' : 'text-gray-400'}`}>
+                    {invoice.gstEnabled ? 'Enabled' : 'Disabled'}
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={invoice.gstEnabled}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateField(null, 'gstEnabled', !invoice.gstEnabled);
+                    }}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-[#0D2C2C]/50 ${
+                      invoice.gstEnabled ? 'bg-[#0D2C2C]' : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                        invoice.gstEnabled ? 'translate-x-4' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
                 </div>
               </div>
 
               {invoice.gstEnabled && (
                 <div className="grid grid-cols-2 gap-4 text-xs animate-fadeIn">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">GST Rate (%)</label>
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">GST / Tax Rate (%)</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       step="0.1"
                       placeholder="e.g. 18"
-                      value={invoice.gstRate !== undefined ? invoice.gstRate : 18}
+                      value={invoice.gstRate !== undefined ? (invoice.gstRate || '') : 18}
+                      onFocus={(e) => e.target.select()}
                       onChange={(e) => updateField(null, 'gstRate', Number(e.target.value))}
                       className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
                     />
                   </div>
 
-                  <div className="flex flex-col justify-end pb-1.5">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="gstSplit"
-                        checked={invoice.gstSplit || false}
-                        onChange={(e) => updateField(null, 'gstSplit', e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-[#0D2C2C] focus:ring-[#0D2C2C] cursor-pointer"
-                      />
-                      <label htmlFor="gstSplit" className="text-[10px] uppercase tracking-wider font-bold text-gray-500 cursor-pointer">
-                        Split CGST & SGST
-                      </label>
-                    </div>
+                  <div className="space-y-1">
+                    <CustomSelect
+                      label="Tax Scheme / Split-up"
+                      value={invoice.gstType || 'igst'}
+                      openDirection="top"
+                      onChange={(val) => {
+                        updateField(null, {
+                          gstType: val,
+                          gstSplit: val === 'cgst_sgst' || val === 'cgst_utgst'
+                        });
+                      }}
+                      options={[
+                        { value: 'igst', label: 'IGST (Integrated GST)', subLabel: 'Billed for interstate transactions' },
+                        { value: 'cgst_sgst', label: 'CGST + SGST (Central & State GST)', subLabel: 'Billed for intrastate transactions' },
+                        { value: 'cgst_utgst', label: 'CGST + UTGST (Central & UT GST)', subLabel: 'Billed for Union Territories' },
+                        { value: 'vat', label: 'VAT (Value Added Tax)', subLabel: 'Standard Value Added Tax' },
+                        { value: 'cess', label: 'CESS (Cess Tax Additional)', subLabel: 'Additional tax/levy' }
+                      ]}
+                    />
                   </div>
                 </div>
               )}
