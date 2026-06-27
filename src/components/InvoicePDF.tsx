@@ -450,7 +450,23 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   const formatCurrency = (val: number) => {
     try {
-      return getCurrencyFormatter(invoice.currency).format(val);
+      const currency = invoice.currency || 'USD';
+      let formatted = getCurrencyFormatter(currency).format(val);
+
+      // Handle currency symbol fallback for fonts inside react-pdf (which only support Latin characters)
+      if (currency === 'INR') {
+        formatted = formatted.replace('₹', 'Rs. ');
+      } else if (currency === 'AED') {
+        formatted = formatted.replace('د.إ', 'AED ');
+      } else if (currency === 'CNY' || currency === 'JPY') {
+        formatted = formatted.replace('¥', '¥ ');
+      } else if (currency === 'EUR') {
+        formatted = formatted.replace('€', '€ ');
+      } else if (currency === 'GBP') {
+        formatted = formatted.replace('£', '£ ');
+      }
+      
+      return formatted.replace(/\s+/g, ' ').trim();
     } catch (e) {
       return `$${val.toFixed(2)}`;
     }
