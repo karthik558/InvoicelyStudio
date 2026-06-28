@@ -141,6 +141,7 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
     ],
     taxRate: 0,
     discountRate: 0,
+    discountType: 'percentage',
     shippingFee: 0,
     gstRate: 18,
     gstEnabled: false,

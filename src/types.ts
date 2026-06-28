@@ -57,7 +57,8 @@ export interface Invoice {
   receiver: ReceiverDetails;
   items: LineItem[];
   taxRate: number; // percentage, e.g. 10
-  discountRate: number; // percentage, e.g. 5
+  discountRate: number; // percentage or flat rate
+  discountType?: 'percentage' | 'flat';
   shippingFee: number; // raw value
   gstRate?: number; // percentage for GST, e.g. 18
   gstEnabled?: boolean; // whether GST is enabled

@@ -476,7 +476,7 @@ interface InvoicePDFDocumentProps {
 }
 
 export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice }) => {
-  const { theme, sender, receiver, items, invoiceNumber, issueDate, dueDate, status, taxRate, discountRate, shippingFee, notes, terms } = invoice;
+  const { theme, sender, receiver, items, invoiceNumber, issueDate, dueDate, status, taxRate, discountRate, discountType, shippingFee, notes, terms } = invoice;
   const styles = getStyles(theme);
   const isDark = theme.templateId === 'dark';
 
@@ -506,7 +506,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
   
   // Calculate Totals
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const discountAmount = subtotal * (discountRate / 100);
+  const discountAmount = discountType === 'flat' ? discountRate : subtotal * (discountRate / 100);
   const gstEnabled = !!invoice.gstEnabled;
   const taxAmount = gstEnabled ? 0 : (subtotal - discountAmount) * (taxRate / 100);
   const gstAmount = gstEnabled ? (subtotal - discountAmount) * ((invoice.gstRate || 0) / 100) : 0;
@@ -774,7 +774,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
           {/* Table Rows */}
           {items.map((item, index) => (
-            <View key={item.id || index} style={styles.tableRow}>
+            <View key={item.id || index} style={styles.tableRow} wrap={false}>
               <View style={styles.colDesc}>
                 <Text style={styles.itemDescText}>{item.description}</Text>
               </View>
@@ -821,7 +821,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
             
             {discountRate > 0 && (
               <View style={styles.totalRow}>
-                <Text style={{ color: '#6b7280' }}>Discount ({discountRate}%):</Text>
+                <Text style={{ color: '#6b7280' }}>Discount {discountType === 'flat' ? '' : `(${discountRate}%)`}:</Text>
                 <Text style={{ color: '#b91c1c', fontWeight: 'bold' }}>-{formatCurrency(discountAmount)}</Text>
               </View>
             )}

@@ -942,11 +942,39 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Discount (%)</label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">
+                      Discount {invoice.discountType === 'flat' ? `(${currencySymbol})` : '(%)'}
+                    </label>
+                    <div className="flex bg-gray-100 rounded-md p-0.5 border border-gray-200/50">
+                      <button
+                        type="button"
+                        onClick={() => updateField(null, 'discountType', 'percentage')}
+                        className={`px-1.5 py-0.5 text-[9px] rounded font-semibold transition-colors ${
+                          invoice.discountType !== 'flat'
+                            ? 'bg-white text-gray-800 shadow-xs'
+                            : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        %
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateField(null, 'discountType', 'flat')}
+                        className={`px-1.5 py-0.5 text-[9px] rounded font-semibold transition-colors ${
+                          invoice.discountType === 'flat'
+                            ? 'bg-white text-gray-800 shadow-xs'
+                            : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        Val
+                      </button>
+                    </div>
+                  </div>
                   <input
                     type="number"
                     min="0"
-                    max="100"
+                    max={invoice.discountType === 'flat' ? undefined : 100}
                     step="0.01"
                     value={invoice.discountRate || ''}
                     onFocus={(e) => e.target.select()}

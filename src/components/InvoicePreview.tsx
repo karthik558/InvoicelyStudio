@@ -36,6 +36,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     items,
     taxRate,
     discountRate,
+    discountType,
     shippingFee,
     notes,
     terms,
@@ -77,13 +78,13 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   // Compute values with memoization
   const { subtotal, discountAmount, taxAmount, gstAmount, total } = useMemo(() => {
     const sub = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-    const disc = sub * (discountRate / 100);
+    const disc = discountType === 'flat' ? discountRate : sub * (discountRate / 100);
     const gstEnabled = !!invoice.gstEnabled;
     const tax = gstEnabled ? 0 : (sub - disc) * (taxRate / 100);
     const gst = gstEnabled ? (sub - disc) * ((invoice.gstRate || 0) / 100) : 0;
     const tot = sub - disc + tax + gst + shippingFee;
     return { subtotal: sub, discountAmount: disc, taxAmount: tax, gstAmount: gst, total: tot };
-  }, [items, discountRate, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate]);
+  }, [items, discountRate, discountType, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate]);
 
   // Format currency
   const formatCurrency = (val: number) => {
@@ -672,7 +673,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
               {discountRate > 0 && (
                 <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-rose-400 font-medium' : 'text-rose-600 font-semibold'}`}>
-                  <span>Discount ({discountRate}%):</span>
+                  <span>Discount {discountType === 'flat' ? '' : `(${discountRate}%)`}:</span>
                   <span className="font-mono">-{formatCurrency(discountAmount)}</span>
                 </div>
               )}

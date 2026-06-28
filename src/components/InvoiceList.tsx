@@ -60,7 +60,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
   // Calculate invoice totals
   const getInvoiceTotal = (inv: Invoice) => {
     const subtotal = inv.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-    const discount = subtotal * (inv.discountRate / 100);
+    const discount = inv.discountType === 'flat' ? inv.discountRate : subtotal * (inv.discountRate / 100);
     const gstEnabled = !!inv.gstEnabled;
     const tax = gstEnabled ? 0 : (subtotal - discount) * (inv.taxRate / 100);
     const gst = gstEnabled ? (subtotal - discount) * ((inv.gstRate || 0) / 100) : 0;
