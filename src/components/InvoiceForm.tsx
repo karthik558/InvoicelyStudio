@@ -452,18 +452,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     <div className="flex flex-col h-full bg-white lg:border-r border-gray-200">
       
       {/* Action Toolbar Header */}
-      <div className="px-4 sm:px-5 py-3 bg-gray-50/50 border-b border-gray-200 flex flex-wrap gap-2.5 items-center justify-between">
-        <div className="flex flex-wrap gap-2">
-          <button 
-            onClick={onNew} 
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0D2C2C] hover:bg-[#164E4E] text-white font-medium text-xs rounded-lg transition-all duration-150 shadow-md shadow-[#0D2C2C]/15 cursor-pointer shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">Create New</span>
-            <span className="inline xs:hidden">New</span>
-          </button>
-        </div>
-
+      <div className="px-4 sm:px-5 py-3 bg-gray-50/50 border-b border-gray-200 flex flex-wrap gap-2.5 items-center justify-end">
         <div className="flex gap-2 items-center">
           <button 
             onClick={onDuplicate}
@@ -1781,18 +1770,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         )}
       </div>
 
-      {/* Save Button Bar */}
-      <div className="hidden lg:flex px-5 py-3.5 bg-gray-50/50 border-t border-gray-200 items-center justify-between">
-        <span className="text-[10px] text-gray-400 font-mono">
-          Last updated {new Date(invoice.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-        </span>
-        <button
-          onClick={onSave}
-          className="flex items-center space-x-1 px-4 py-1.5 bg-[#0D2C2C] hover:bg-[#164E4E] text-white font-semibold text-xs rounded-lg transition-all cursor-pointer shadow-md shadow-[#0D2C2C]/10"
-        >
-          <span>Save Changes</span>
-        </button>
-      </div>
+
 
       {/* Mobile Navigation Bar UI Sector */}
       <div className="lg:hidden bg-[#0A2323] border-t border-white/10 py-2.5 px-3 flex items-center justify-between z-20 shrink-0 no-print w-full">
