@@ -135,7 +135,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       case 'overdue':
         return 'bg-rose-100 text-rose-800 border-rose-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-100 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-[#1A3F3F]';
     }
   };
 
@@ -152,7 +152,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   ) : null;
 
   return (
-    <div ref={outerRef} className="flex flex-col h-full bg-[#FAFAFA] border-l border-gray-200 text-gray-800 select-none w-full">
+    <div ref={outerRef} className="flex flex-col h-full bg-[#FAFAFA] border-l border-gray-200 dark:border-[#1A3F3F] text-gray-800 dark:text-gray-200 select-none w-full">
       {/* Zoom and Preview Head Controls */}
       <div className="flex items-center justify-between px-4 py-3 bg-[#0D2C2C] text-white no-print shadow-sm">
         <div className="flex items-center space-x-2">
@@ -183,7 +183,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       {/* Sheet Container */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-auto p-4 sm:p-6 bg-[#F5F5F5] w-full"
+        className="flex-1 overflow-auto p-4 sm:p-6 bg-[#F5F5F5] dark:bg-slate-950 w-full"
       >
         {customFontStyles}
 
@@ -265,7 +265,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 <div className="text-right">
                   <h3 className={`font-bold text-slate-500 uppercase text-[10px] tracking-wider ${isCompact ? 'mb-1' : 'mb-2'}`}>Payment Status</h3>
                   <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${getStatusClasses()}`}>
-                    {status}
+                    {status.replace('_', ' ')}
                   </span>
                 </div>
               </div>
@@ -314,7 +314,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
                 <div className="text-right">
                   <span className={`inline-block px-3 py-1 rounded text-xs font-bold border uppercase tracking-wider ${getStatusClasses()}`}>
-                    {status}
+                    {status.replace('_', ' ')}
                   </span>
                 </div>
               </div>
@@ -350,7 +350,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                   <p className="text-slate-800 font-mono text-sm mt-2 font-bold">#{invoiceNumber}</p>
                   <div className="mt-3">
                     <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${getStatusClasses()}`}>
-                      {status}
+                      {status.replace('_', ' ')}
                     </span>
                   </div>
                 </div>
@@ -391,7 +391,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 <p><strong>Invoice Date:</strong> {issueDate}</p>
                 <p><strong>Due Date:</strong> {dueDate}</p>
                 <p className="uppercase font-extrabold tracking-wider" style={{ color: theme.primaryColor }}>
-                  Status: {status}
+                  Status: {status.replace('_', ' ')}
                 </p>
               </div>
             </div>
@@ -431,7 +431,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 <div className="text-right">
                   <span className="text-slate-400 block mb-1">Status</span>
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusClasses()}`}>
-                    {status}
+                    {status.replace('_', ' ')}
                   </span>
                 </div>
               </div>
@@ -480,7 +480,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 <div className="text-right">
                   <span className="text-slate-400 block mb-1">Status</span>
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusClasses()}`}>
-                    {status}
+                    {status.replace('_', ' ')}
                   </span>
                 </div>
               </div>
@@ -529,7 +529,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 <div className="text-right">
                   <span className="text-slate-400 block mb-1">Status</span>
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusClasses()}`}>
-                    {status}
+                    {status.replace('_', ' ')}
                   </span>
                 </div>
               </div>

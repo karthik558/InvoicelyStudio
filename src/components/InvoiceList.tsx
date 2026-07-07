@@ -138,6 +138,8 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
     switch (status) {
       case 'paid':
         return 'bg-green-100 text-green-800 border-green-200/60';
+      case 'advance_paid':
+        return 'bg-blue-100 text-blue-800 border-blue-200/60';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200/60';
       case 'overdue':
@@ -146,16 +148,16 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200 text-slate-700 select-none">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0B1B1B] border-r border-gray-200 dark:border-[#1A3F3F] text-slate-700 select-none">
       
       {/* Title Header with Counter */}
-      <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/50">
+      <div className="px-5 py-4 border-b border-gray-200 dark:border-[#1A3F3F] flex items-center justify-between bg-gray-50/50 dark:bg-[#0A2323]/80">
         <div>
-          <h2 className="text-sm font-black uppercase tracking-widest text-[#0D2C2C] flex items-center space-x-2">
+          <h2 className="text-sm font-black uppercase tracking-widest text-[#0D2C2C] dark:text-white flex items-center space-x-2">
             <FileText className="w-4 h-4 text-[#C69A5D]" />
             <span>Invoice Registry</span>
           </h2>
-          <p className="text-[10px] text-gray-500 font-medium mt-0.5">{invoices.length} total saved invoices</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">{invoices.length} total saved invoices</p>
         </div>
         
         <button
@@ -168,21 +170,21 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
       </div>
 
       {/* Search & Sort Panel */}
-      <div className="p-4 space-y-3 border-b border-gray-200/80 bg-white">
+      <div className="p-4 space-y-3 border-b border-gray-200/80 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B]">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+          <Search className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D2C2C]/50 rounded-lg pl-9 pr-3 py-1.5 text-xs text-gray-700 placeholder-gray-400 outline-none transition-all focus:bg-white focus:ring-1 focus:ring-[#0D2C2C]"
+            className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C]/50 rounded-lg pl-9 pr-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 placeholder-gray-400 outline-none transition-all focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] focus:ring-1 focus:ring-[#0D2C2C]"
             placeholder="Search invoices, clients..."
           />
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-[10px]">
           <div className="flex items-center space-x-1.5 w-full">
-            <ArrowUpDown className="w-3 h-3 text-gray-400 shrink-0" />
+            <ArrowUpDown className="w-3 h-3 text-gray-400 dark:text-gray-500 shrink-0" />
             <CustomSelect
               value={sortBy}
               onChange={(val) => setSortBy(val as SortOption)}
@@ -197,7 +199,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
           </div>
 
           <div className="flex items-center space-x-1.5 w-full">
-            <Clock className="w-3 h-3 text-gray-400 shrink-0" />
+            <Clock className="w-3 h-3 text-gray-400 dark:text-gray-500 shrink-0" />
             <CustomSelect
               value={filterStatus}
               onChange={(val) => setFilterStatus(val as StatusFilter)}
@@ -206,6 +208,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                 { value: 'all', label: 'All Statuses' },
                 { value: 'paid', label: 'Paid Only' },
                 { value: 'pending', label: 'Pending' },
+                { value: 'advance_paid', label: 'Advance Paid' },
                 { value: 'overdue', label: 'Overdue' }
               ]}
             />
@@ -214,10 +217,10 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
       </div>
 
       {/* Invoice Cards Scroll List */}
-      <div className="flex-1 overflow-y-auto p-3.5 space-y-2.5 no-scrollbar bg-gray-50/20">
+      <div className="flex-1 overflow-y-auto p-3.5 space-y-2.5 no-scrollbar bg-gray-50/20 dark:bg-transparent">
         {sortedInvoices.length === 0 ? (
           <div className="py-10 text-center">
-            <p className="text-xs text-gray-400 font-medium">No matching invoices</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">No matching invoices</p>
             <button 
               onClick={() => { setSearch(''); setFilterStatus('all'); }} 
               className="text-[10px] text-[#C69A5D] hover:underline mt-1.5"
@@ -237,8 +240,8 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                 className={`
                   p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-200 relative group select-none
                   ${isSelected
-                    ? 'bg-gradient-to-r from-emerald-50/20 to-[#F0F7F7] border-[#0D2C2C] shadow-md shadow-[#0D2C2C]/5 translate-x-[2px]'
-                    : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    ? 'bg-gradient-to-r from-emerald-50/20 to-[#F0F7F7] dark:from-[#1A3F3F] dark:to-[#0A2323] border-[#0D2C2C] dark:border-[#C69A5D] shadow-md shadow-[#0D2C2C]/5 translate-x-[2px]'
+                    : 'bg-white dark:bg-[#0B1B1B] border-gray-200 dark:border-[#1A3F3F] hover:border-gray-300 dark:hover:border-[#C69A5D] dark:hover:bg-[#1A3F3F] hover:shadow-sm'
                   }
                 `}
               >
@@ -250,12 +253,12 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                 <div className="flex justify-between items-start pl-1.5">
                   <div className="min-w-0 flex-1 pr-2">
                     <h4 className={`text-xs font-bold font-mono transition-colors truncate ${
-                      isSelected ? 'text-[#0D2C2C]' : 'text-gray-800 group-hover:text-[#0D2C2C]'
+                      isSelected ? 'text-[#0D2C2C] dark:text-[#C69A5D]' : 'text-gray-800 dark:text-gray-200 group-hover:text-[#0D2C2C] dark:group-hover:text-white'
                     }`}>
                       {inv.invoiceNumber}
                     </h4>
                     <p className={`text-[11px] truncate mt-0.5 font-semibold ${
-                      isSelected ? 'text-gray-600' : 'text-gray-500'
+                      isSelected ? 'text-gray-600 dark:text-gray-400' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {inv.receiver.name || 'Draft Client'}
                     </p>
@@ -263,25 +266,25 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                   
                   <div className="text-right shrink-0">
                     <span className={`text-xs font-bold font-mono ${
-                      isSelected ? 'text-[#0D2C2C]' : 'text-gray-900'
+                      isSelected ? 'text-[#0D2C2C] dark:text-[#C69A5D]' : 'text-gray-900 dark:text-gray-200 group-hover:text-[#0D2C2C] dark:group-hover:text-white'
                     }`}>
                       {getCurrencyFormatter(inv.currency).format(total)}
                     </span>
-                    <span className="text-[9px] text-gray-400 block mt-0.5">{inv.issueDate}</span>
+                    <span className="text-[9px] text-gray-400 dark:text-gray-500 block mt-0.5">{inv.issueDate}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100 pl-1.5">
+                <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100 dark:border-[#1A3F3F] pl-1.5">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${getBadgeStyle(inv.status)}`}>
                     <span className={`w-1 h-1 rounded-full mr-1.5 ${
-                      inv.status === 'paid' ? 'bg-green-500' : inv.status === 'pending' ? 'bg-amber-500' : 'bg-rose-500'
+                      inv.status === 'paid' ? 'bg-green-500' : inv.status === 'advance_paid' ? 'bg-blue-500' : inv.status === 'pending' ? 'bg-amber-500' : 'bg-rose-500'
                     }`} />
-                    {inv.status}
+                    {inv.status.replace('_', ' ')}
                   </span>
                   
                   <button
                     onClick={(e) => onDeleteInvoice(inv.id, e)}
-                    className="p-1 text-gray-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-rose-50 cursor-pointer shrink-0"
+                    className="p-1 text-gray-400 dark:text-gray-500 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-rose-50 cursor-pointer shrink-0"
                     title="Delete permanently"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -294,9 +297,9 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
       </div>
 
       {/* Backup Utility Buttons (Bottom rail) */}
-      <div className="p-4 border-t border-gray-200/80 bg-gradient-to-b from-white to-gray-50 text-xs">
-        <div className="bg-gray-100/50 border border-gray-200/60 rounded-xl p-3.5 space-y-3">
-          <div className="flex items-center justify-between text-[9px] font-bold text-gray-400 uppercase tracking-wider px-0.5">
+      <div className="p-4 border-t border-gray-200/80 dark:border-[#1A3F3F] bg-gradient-to-b from-white to-gray-50 dark:from-[#0B1B1B] dark:to-[#0A2323] text-xs">
+        <div className="bg-gray-100/50 dark:bg-[#1A3F3F]/30 border border-gray-200/60 dark:border-[#1A3F3F] rounded-xl p-3.5 space-y-3">
+          <div className="flex items-center justify-between text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-0.5">
             <span className="flex items-center gap-1.5">
               <Database className="w-3 h-3 text-[#C69A5D]" /> Storage Engine
             </span>
@@ -305,7 +308,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={exportAllInvoices}
-              className="flex items-center justify-center space-x-1 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
+              className="flex items-center justify-center space-x-1 py-1.5 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] text-gray-600 dark:text-gray-400 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
               title="Download full backup file"
             >
               <Download className="w-3 h-3 text-[#C69A5D]" />
@@ -314,10 +317,10 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
             
             <button
               onClick={handleImportClick}
-              className="flex items-center justify-center space-x-1 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
+              className="flex items-center justify-center space-x-1 py-1.5 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] text-gray-600 dark:text-gray-400 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
               title="Restore from JSON backup file"
             >
-              <Upload className="w-3 h-3 text-[#0D2C2C]" />
+              <Upload className="w-3 h-3 text-[#0D2C2C] dark:text-gray-300" />
               <span>Import</span>
             </button>
           </div>

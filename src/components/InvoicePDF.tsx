@@ -510,7 +510,8 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
   const gstEnabled = !!invoice.gstEnabled;
   const taxAmount = gstEnabled ? 0 : (subtotal - discountAmount) * (taxRate / 100);
   const gstAmount = gstEnabled ? (subtotal - discountAmount) * ((invoice.gstRate || 0) / 100) : 0;
-  const total = subtotal - discountAmount + taxAmount + gstAmount + shippingFee;
+  const advanceAmount = invoice.advanceAmount || 0;
+  const total = subtotal - discountAmount + taxAmount + gstAmount + shippingFee - advanceAmount;
 
   // Status colors
   const statusColors = {
@@ -634,7 +635,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
         <Text style={[styles.titleText, { letterSpacing: 2 }]}>INVOICE</Text>
         <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 4 }}>#{invoiceNumber}</Text>
         <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, color: currentStatusStyle.text, marginTop: 4 }]}>
-          <Text>{status}</Text>
+          <Text>{status.replace('_', ' ')}</Text>
         </View>
       </View>
     </View>
@@ -710,7 +711,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
                 Status
               </Text>
               <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, color: currentStatusStyle.text }]}>
-                <Text>{status}</Text>
+                <Text>{status.replace('_', ' ')}</Text>
               </View>
             </View>
           </View>
@@ -722,7 +723,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
             <Text style={{ fontSize: 8 }}><Text style={{ fontWeight: 'bold' }}>Invoice Date:</Text> {issueDate}</Text>
             <Text style={{ fontSize: 8 }}><Text style={{ fontWeight: 'bold' }}>Due Date:</Text> {dueDate}</Text>
             <Text style={{ fontSize: 8, textTransform: 'uppercase', fontWeight: 'bold', color: currentStatusStyle.text }}>
-              {status}
+              {status.replace('_', ' ')}
             </Text>
           </View>
         )}
@@ -898,12 +899,31 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
               </View>
             )}
 
-            <View style={styles.grandTotalRow}>
-              <Text style={{ fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }}>Total Due:</Text>
-              <Text style={[styles.grandTotalText, { color: theme.primaryColor }]}>
-                {formatCurrency(total)}
-              </Text>
-            </View>
+            {(advanceAmount > 0) ? (
+              <>
+                <View style={styles.totalRow}>
+                  <Text style={{ color: '#6b7280', fontWeight: 'bold' }}>Total Amount:</Text>
+                  <Text style={{ fontWeight: 'bold' }}>{formatCurrency(subtotal - discountAmount + taxAmount + gstAmount + shippingFee)}</Text>
+                </View>
+                <View style={styles.totalRow}>
+                  <Text style={{ color: '#059669', fontWeight: 'bold' }}>Advance Paid:</Text>
+                  <Text style={{ color: '#059669', fontWeight: 'bold' }}>-{formatCurrency(advanceAmount)}</Text>
+                </View>
+                <View style={styles.grandTotalRow}>
+                  <Text style={{ fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }}>Balance Due:</Text>
+                  <Text style={[styles.grandTotalText, { color: theme.primaryColor }]}>
+                    {formatCurrency(total)}
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <View style={styles.grandTotalRow}>
+                <Text style={{ fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }}>Total Due:</Text>
+                <Text style={[styles.grandTotalText, { color: theme.primaryColor }]}>
+                  {formatCurrency(total)}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 

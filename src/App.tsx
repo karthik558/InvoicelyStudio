@@ -33,8 +33,8 @@ const InvoiceListSkeleton = () => (
 );
 
 const InvoiceFormSkeleton = () => (
-  <div className="flex flex-col h-full bg-white p-6 space-y-6 animate-pulse overflow-hidden">
-    <div className="flex justify-between items-center pb-4 border-b border-gray-100 shrink-0">
+  <div className="flex flex-col h-full bg-white dark:bg-[#0B1B1B] p-6 space-y-6 animate-pulse overflow-hidden">
+    <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-[#1A3F3F] shrink-0">
       <div className="h-6 bg-slate-200 rounded-lg w-1/4" />
       <div className="flex space-x-2">
         <div className="h-8 bg-slate-100 rounded-lg w-20" />
@@ -66,7 +66,7 @@ const InvoiceFormSkeleton = () => (
 
 const InvoicePreviewSkeleton = () => (
   <div className="flex flex-col h-full bg-[#E8EBEB] p-6 items-center justify-center animate-pulse overflow-hidden">
-    <div className="bg-white w-full max-w-[480px] sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
+    <div className="bg-white dark:bg-[#0B1B1B] w-full max-w-[480px] sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
       <div className="flex justify-between shrink-0">
         <div className="space-y-2 w-1/3">
           <div className="h-6 bg-slate-200 rounded-lg w-full" />
@@ -87,6 +87,8 @@ const InvoicePreviewSkeleton = () => (
   </div>
 );
 import { 
+  Moon,
+  Sun,
   Download, 
   FileText, 
   AlertCircle,
@@ -201,6 +203,18 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeMobileView, setActiveMobileView] = useState<'edit' | 'preview'>('edit');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // App Theme state
+  const [appTheme, setAppTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('invoicely_theme') as 'light' | 'dark') || 'light');
+
+  useEffect(() => {
+    if (appTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('invoicely_theme', appTheme);
+  }, [appTheme]);
 
   // PDF Layout settings state & click outside listener
   const [isLayoutSettingsOpen, setIsLayoutSettingsOpen] = useState(false);
@@ -697,7 +711,7 @@ export default function App() {
           <button 
             type="button"
             onClick={dismissToast}
-            className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0 ml-1.5 focus:outline-none"
+            className="p-1 rounded-lg hover:bg-white/10 text-gray-400 dark:text-gray-500 hover:text-white transition-colors cursor-pointer shrink-0 ml-1.5 focus:outline-none"
             title="Dismiss"
           >
             <X className="w-3.5 h-3.5" />
@@ -728,13 +742,22 @@ export default function App() {
                 <span className="font-light text-slate-300 ml-1.5">Studio</span>
               </div>
               <div className="h-4 w-px bg-white/20 mx-2 hidden lg:block"></div>
-              <span className="text-xs text-gray-400 font-medium truncate hidden lg:block max-w-[150px] xl:max-w-none">Workspace / Invoice Dashboard</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium truncate hidden lg:block max-w-[150px] xl:max-w-none">Workspace / Invoice Dashboard</span>
             </div>
           </div>
         </div>
 
         {/* Global actions: Switcher & Operations */}
         <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
+          {/* Theme Toggle */}
+          <button
+            onClick={() => setAppTheme(prev => prev === 'light' ? 'dark' : 'light')}
+            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg border border-white/10 transition-all cursor-pointer shrink-0"
+            title="Toggle Theme"
+          >
+            {appTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-300" />}
+          </button>
+
           {/* Mobile View Tabs (Form vs Preview) */}
           <div className="flex lg:hidden bg-slate-950/80 p-1 rounded-lg border border-white/5 shrink-0">
             <button
@@ -756,7 +779,7 @@ export default function App() {
           {/* Dynamic react-pdf Download Link Trigger (Lazy Loaded) */}
           {activeInvoice && (
             <Suspense fallback={
-              <div className="flex items-center justify-center p-2 bg-white/5 rounded-lg text-sm border border-white/10 text-gray-400 shrink-0 select-none animate-pulse">
+              <div className="flex items-center justify-center p-2 bg-white/5 rounded-lg text-sm border border-white/10 text-gray-400 dark:text-gray-500 shrink-0 select-none animate-pulse">
                 <Download className="w-4 h-4 text-[#C69A5D]/60" />
                 <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Compiling...</span>
               </div>
@@ -857,7 +880,7 @@ export default function App() {
         {/* SIDEBAR: Registry Invoices List (Collapsible on mobile) */}
         <div 
           className={`
-            absolute inset-y-0 left-0 w-80 bg-white z-30 transform transition-transform duration-200 lg:relative lg:translate-x-0 no-print
+            absolute inset-y-0 left-0 w-80 bg-white dark:bg-[#0B1B1B] z-30 transform transition-transform duration-200 lg:relative lg:translate-x-0 no-print
             ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
           `}
         >
@@ -889,7 +912,7 @@ export default function App() {
         {/* MIDDLE COLUMN: Form Editor (Visible on laptop, or active edit mobile tab) */}
         <div 
           className={`
-            flex-1 h-full overflow-hidden no-print bg-white
+            flex-1 h-full overflow-hidden no-print bg-white dark:bg-[#0B1B1B]
             ${activeMobileView === 'edit' ? 'block' : 'hidden lg:block'}
           `}
         >
@@ -907,11 +930,11 @@ export default function App() {
               />
             </Suspense>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-4 bg-white">
+            <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-4 bg-white dark:bg-[#0B1B1B]">
               <AlertCircle className="w-12 h-12 text-[#0D2C2C]" />
               <div>
-                <h3 className="text-sm font-bold text-gray-800">No Invoice Selected</h3>
-                <p className="text-xs text-gray-500 mt-1">Select an existing invoice from the registry or create a new one.</p>
+                <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">No Invoice Selected</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Select an existing invoice from the registry or create a new one.</p>
               </div>
               <button onClick={handleNewInvoice} className="px-4 py-1.5 bg-[#0D2C2C] text-white rounded text-xs font-semibold">
                 Create First Invoice
@@ -923,7 +946,7 @@ export default function App() {
         {/* RIGHT COLUMN: HTML Live Preview (Visible on laptop, or active preview mobile tab) */}
         <div 
           className={`
-            flex-1 xl:flex-none xl:w-[540px] 2xl:w-[620px] h-full overflow-hidden border-l border-gray-200 bg-[#E8EBEB]
+            flex-1 xl:flex-none xl:w-[540px] 2xl:w-[620px] h-full overflow-hidden border-l border-gray-200 dark:border-[#1A3F3F] bg-[#E8EBEB]
             ${activeMobileView === 'preview' ? 'block' : 'hidden lg:block'}
           `}
         >
@@ -932,7 +955,7 @@ export default function App() {
               <InvoicePreview invoice={activeInvoice} />
             </Suspense>
           ) : (
-            <div className="flex items-center justify-center h-full bg-[#E8EBEB] text-gray-500 text-xs">
+            <div className="flex items-center justify-center h-full bg-[#E8EBEB] text-gray-500 dark:text-gray-400 text-xs">
               Preview is empty
             </div>
           )}
@@ -941,34 +964,34 @@ export default function App() {
       </main>
 
       {/* Sleek footer */}
-      <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 gap-4">
+      <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 dark:text-gray-500 gap-4">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-gray-500 font-medium">Copyright © 2026 Invoicely Studio</span>
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Copyright © 2026 Invoicely Studio</span>
         </div>
         
         <div className="flex gap-4 items-center">
-          <span className="text-[10px] text-gray-500 flex items-center gap-1.5">
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
             All changes saved locally
           </span>
           <span className="text-gray-600/40">•</span>
-          <span className="text-[10px] text-gray-500 font-medium">Shortcuts: ⌘S Save</span>
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Shortcuts: ⌘S Save</span>
         </div>
       </footer>
 
       {/* Custom Confirmation Modal */}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn no-print">
-          <div className="bg-white rounded-2xl border border-gray-100 max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
+          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-100 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
             <h3 className="text-sm font-bold text-[#0D2C2C] flex items-center gap-2">
               <AlertCircle className={`w-4 h-4 ${confirmModal.isDestructive ? 'text-rose-600' : 'text-[#C69A5D]'}`} />
               <span>{confirmModal.title}</span>
             </h3>
-            <p className="text-xs text-gray-600 mt-2.5 leading-relaxed">{confirmModal.message}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2.5 leading-relaxed">{confirmModal.message}</p>
             <div className="flex items-center justify-end space-x-2 mt-5">
               <button
                 onClick={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
-                className="px-3 py-1.5 border border-gray-200 hover:bg-gray-50 text-gray-500 hover:text-gray-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                className="px-3 py-1.5 border border-gray-200 dark:border-[#1A3F3F] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
               >
                 {confirmModal.cancelText || 'Cancel'}
               </button>
@@ -990,12 +1013,12 @@ export default function App() {
       {/* Custom Alert Modal */}
       {alertModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn no-print">
-          <div className="bg-white rounded-2xl border border-gray-100 max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
+          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-100 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
             <h3 className="text-sm font-bold text-[#0D2C2C] flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-[#C69A5D]" />
               <span>{alertModal.title}</span>
             </h3>
-            <p className="text-xs text-gray-600 mt-2.5 leading-relaxed">{alertModal.message}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2.5 leading-relaxed">{alertModal.message}</p>
             <div className="flex items-center justify-end mt-5">
               <button
                 onClick={() => setAlertModal((prev) => ({ ...prev, isOpen: false }))}
