@@ -120,7 +120,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     bankRouting: '',
     paymentDetails: '',
     notes: 'Thank you for your business!',
-    terms: 'Payment is due within 14 days of issue.'
+    terms: 'Payment is due within 14 days of issue.',
+    logoUrl: ''
   });
 
   // Load from local storage on component mount
@@ -140,7 +141,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           bankRouting: parsed.bankRouting || '',
           paymentDetails: parsed.paymentDetails || '',
           notes: parsed.notes || 'Thank you for your business!',
-          terms: parsed.terms || 'Payment is due within 14 days of issue.'
+          terms: parsed.terms || 'Payment is due within 14 days of issue.',
+          logoUrl: parsed.logoUrl || ''
         });
       } catch (e) {}
     }
@@ -163,7 +165,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       bankRouting: invoice.sender.bankRouting || '',
       paymentDetails: invoice.sender.paymentDetails || '',
       notes: invoice.notes || 'Thank you for your business!',
-      terms: invoice.terms || 'Payment is due within 14 days of issue.'
+      terms: invoice.terms || 'Payment is due within 14 days of issue.',
+      logoUrl: invoice.sender.logoUrl || ''
     };
     setGlobalSender(fromCurrent);
     localStorage.setItem('invoicely_global_sender', JSON.stringify(fromCurrent));
@@ -198,7 +201,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           bankName: parsed.bankName || '',
           bankAccount: parsed.bankAccount || '',
           bankRouting: parsed.bankRouting || '',
-          paymentDetails: parsed.paymentDetails || ''
+          paymentDetails: parsed.paymentDetails || '',
+          logoUrl: parsed.logoUrl || ''
         },
         notes: parsed.notes || invoice.notes,
         terms: parsed.terms || invoice.terms,
@@ -312,6 +316,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       items: invoice.items.filter((item) => item.id !== itemId),
       updatedAt: Date.now()
     });
+  };
+
+  const handleGlobalLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setGlobalSender({ ...globalSender, logoUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearGlobalLogo = () => {
+    setGlobalSender({ ...globalSender, logoUrl: '' });
   };
 
   // Base64 Logo parser
@@ -443,15 +462,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             <span className="hidden xs:inline">Create New</span>
             <span className="inline xs:hidden">New</span>
           </button>
-          
-          <button 
-            onClick={onLoadDemo} 
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 font-medium text-xs rounded-lg border border-gray-200 transition-colors cursor-pointer shrink-0"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-[#C69A5D]" />
-            <span className="hidden xs:inline font-semibold">Load Demo</span>
-            <span className="inline xs:hidden font-semibold">Demo</span>
-          </button>
         </div>
 
         <div className="flex gap-2 items-center">
@@ -509,22 +519,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           })}
         </div>
 
-        {/* Live Auto-save status with proper styles and padding */}
-        {saveStatus === 'saving' ? (
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50/90 border border-amber-100/80 rounded-xl shrink-0 select-none shadow-xs ml-4 transition-all duration-300">
-            <RefreshCw className="w-3.5 h-3.5 text-amber-600 animate-spin" />
-            <span className="text-[10px] text-amber-800 font-bold uppercase tracking-wider font-mono">
-              Saving...
-            </span>
-          </div>
-        ) : (
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50/90 border border-emerald-100/80 rounded-xl shrink-0 select-none shadow-xs ml-4 transition-all duration-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-            <span className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider font-mono">
-              Saved {lastSavedTime && `at ${lastSavedTime}`}
-            </span>
-          </div>
-        )}
+
       </div>
 
       {/* Editor Fields Area (Scrollable) */}
@@ -558,6 +553,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     onChange={(val) => updateField(null, 'status', val as InvoiceStatus)}
                     options={[
                       { value: 'pending', label: 'Pending', subLabel: 'Awaiting payment from client' },
+                      { value: 'advance_paid', label: 'Advance Paid', subLabel: 'Client has paid an advance amount' },
                       { value: 'paid', label: 'Paid', subLabel: 'Invoice settled successfully' },
                       { value: 'overdue', label: 'Overdue', subLabel: 'Payment has passed due date' }
                     ]}
@@ -918,7 +914,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </h4>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">
                     Tax Rate (%)
@@ -992,6 +988,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.shippingFee || ''}
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'shippingFee', Number(e.target.value))}
+                    className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 block">Advance ({currencySymbol})</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={invoice.advanceAmount || ''}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => updateField(null, 'advanceAmount', Number(e.target.value))}
                     className="w-full bg-white border border-gray-200 focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
                   />
                 </div>
@@ -1556,6 +1565,50 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <p className="text-gray-600 leading-relaxed text-[11px]">
                 Save your primary company information here. Whenever you click <strong>Create New</strong>, these default details will auto-populate as your sender parameters automatically.
               </p>
+            </div>
+
+            <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-3">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] flex items-center space-x-2 pb-1.5 border-b border-gray-100 w-full mb-2">
+                  <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                  <span>Default Company Logo</span>
+                </h3>
+                {globalSender.logoUrl && (
+                  <button 
+                    onClick={clearGlobalLogo} 
+                    className="text-[10px] text-rose-600 hover:text-rose-500 transition-colors font-medium cursor-pointer shrink-0"
+                  >
+                    Remove Logo
+                  </button>
+                )}
+              </div>
+
+              {globalSender.logoUrl ? (
+                <div className="flex items-center space-x-4 bg-white p-3 rounded-lg border border-gray-200">
+                  <img 
+                    src={globalSender.logoUrl} 
+                    alt="Uploaded default logo" 
+                    className="w-16 h-16 object-contain bg-gray-50 rounded p-1 border border-gray-100"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="text-xs">
+                    <p className="text-gray-700 font-medium truncate max-w-[200px]">Default Brand Logo</p>
+                    <p className="text-gray-400 text-[10px] mt-0.5">Stored globally</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="border border-dashed border-gray-300 hover:border-[#0D2C2C] rounded-lg p-5 flex flex-col items-center justify-center text-center transition-all bg-white group relative overflow-hidden">
+                  <FileUp className="w-7 h-7 text-gray-400 group-hover:text-[#C69A5D] mb-2 transition-colors" />
+                  <p className="text-xs text-gray-600 font-semibold">Click or Drag to Upload Default Logo</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Supports PNG, JPG, SVG</p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleGlobalLogoUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="bg-gray-50/50 p-5 rounded-xl border border-gray-200/80 space-y-4">

@@ -113,7 +113,8 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
     bankName: '',
     bankAccount: '',
     bankRouting: '',
-    paymentDetails: ''
+    paymentDetails: '',
+    logoUrl: ''
   };
 
   return {
@@ -423,7 +424,8 @@ export default function App() {
       bankName: '',
       bankAccount: '',
       bankRouting: '',
-      paymentDetails: ''
+      paymentDetails: '',
+      logoUrl: ''
     };
     let notes = 'Thank you for your business!';
     let terms = 'Payment is due within 14 days of issue.';
@@ -440,7 +442,8 @@ export default function App() {
           bankName: parsed.bankName || '',
           bankAccount: parsed.bankAccount || '',
           bankRouting: parsed.bankRouting || '',
-          paymentDetails: parsed.paymentDetails || ''
+          paymentDetails: parsed.paymentDetails || '',
+          logoUrl: parsed.logoUrl || ''
         };
         if (parsed.notes) notes = parsed.notes;
         if (parsed.terms) terms = parsed.terms;
@@ -456,7 +459,8 @@ export default function App() {
         bankName: '',
         bankAccount: '',
         bankRouting: '',
-        paymentDetails: ''
+        paymentDetails: '',
+        logoUrl: ''
       };
     }
 

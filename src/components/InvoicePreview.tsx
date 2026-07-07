@@ -38,6 +38,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     discountRate,
     discountType,
     shippingFee,
+    advanceAmount,
     notes,
     terms,
     theme,
@@ -76,15 +77,17 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   }, [invoice, items]);
 
   // Compute values with memoization
-  const { subtotal, discountAmount, taxAmount, gstAmount, total } = useMemo(() => {
+  const { subtotal, discountAmount, taxAmount, gstAmount, total, balanceDue } = useMemo(() => {
     const sub = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const disc = discountType === 'flat' ? discountRate : sub * (discountRate / 100);
     const gstEnabled = !!invoice.gstEnabled;
     const tax = gstEnabled ? 0 : (sub - disc) * (taxRate / 100);
     const gst = gstEnabled ? (sub - disc) * ((invoice.gstRate || 0) / 100) : 0;
     const tot = sub - disc + tax + gst + shippingFee;
-    return { subtotal: sub, discountAmount: disc, taxAmount: tax, gstAmount: gst, total: tot };
-  }, [items, discountRate, discountType, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate]);
+    const advance = advanceAmount || 0;
+    const balance = tot - advance;
+    return { subtotal: sub, discountAmount: disc, taxAmount: tax, gstAmount: gst, total: tot, balanceDue: balance };
+  }, [items, discountRate, discountType, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate, advanceAmount]);
 
   // Format currency
   const formatCurrency = (val: number) => {
@@ -125,6 +128,8 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     switch (status) {
       case 'paid':
         return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'advance_paid':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'pending':
         return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'overdue':
@@ -750,15 +755,42 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 </div>
               )}
 
-              <div 
-                className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}
-                style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
-              >
-                <span className={theme.templateId === 'dark' ? 'text-white' : 'text-slate-800'}>Total Due:</span>
-                <span className="font-mono text-base" style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}>
-                  {formatCurrency(total)}
-                </span>
-              </div>
+              {(advanceAmount && advanceAmount > 0) ? (
+                <>
+                  <div 
+                    className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}
+                    style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
+                  >
+                    <span className={theme.templateId === 'dark' ? 'text-white' : 'text-slate-800'}>Invoice Total:</span>
+                    <span className="font-mono text-base" style={{ color: theme.templateId === 'dark' ? '#94a3b8' : '#475569' }}>
+                      {formatCurrency(total)}
+                    </span>
+                  </div>
+                  <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-emerald-400 font-medium' : 'text-emerald-600 font-semibold'}`}>
+                    <span>Advance Paid:</span>
+                    <span className="font-mono">-{formatCurrency(advanceAmount)}</span>
+                  </div>
+                  <div 
+                    className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}
+                    style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
+                  >
+                    <span className={theme.templateId === 'dark' ? 'text-white' : 'text-slate-800'}>Balance Due:</span>
+                    <span className="font-mono text-base" style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}>
+                      {formatCurrency(balanceDue)}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div 
+                  className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}
+                  style={{ borderColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }}
+                >
+                  <span className={theme.templateId === 'dark' ? 'text-white' : 'text-slate-800'}>Total Due:</span>
+                  <span className="font-mono text-base" style={{ color: theme.templateId === 'dark' ? theme.accentColor : theme.primaryColor }}>
+                    {formatCurrency(total)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

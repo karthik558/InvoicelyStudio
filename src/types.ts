@@ -34,7 +34,7 @@ export interface ReceiverDetails {
   taxId: string;
 }
 
-export type InvoiceStatus = 'paid' | 'pending' | 'overdue';
+export type InvoiceStatus = 'paid' | 'pending' | 'overdue' | 'advance_paid';
 export type InvoiceTemplateId = 'teal' | 'classic' | 'modern' | 'simple' | 'dark' | 'indigo' | 'emerald';
 
 export interface InvoiceTheme {
@@ -68,6 +68,7 @@ export interface Invoice {
   terms: string;
   theme: InvoiceTheme;
   currency?: string; // e.g. 'USD', 'EUR', 'GBP', 'INR', etc.
+  advanceAmount?: number;
   signatureType?: 'text' | 'image' | 'none';
   signatureText?: string;
   signatureImage?: string; // base64 DataURL
