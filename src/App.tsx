@@ -808,8 +808,6 @@ export default function App() {
                 <span>cely</span>
                 <span className="font-light text-slate-300 ml-1.5">Studio</span>
               </div>
-              <div className="h-4 w-px bg-white/20 mx-2 hidden lg:block"></div>
-              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium truncate hidden lg:block max-w-37.5 xl:max-w-none">Workspace / Invoice Dashboard</span>
             </div>
           </div>
         </div>

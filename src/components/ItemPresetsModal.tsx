@@ -68,7 +68,6 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
             <Layers className="w-5 h-5 text-[#C69A5D]" />
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white">Service Item Presets Catalog</h3>
-              <p className="text-[10px] text-gray-500 dark:text-slate-400">Click any preset to instantly append it to your active invoice</p>
             </div>
           </div>
           <button 

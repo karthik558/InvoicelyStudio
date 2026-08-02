@@ -633,7 +633,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   />
                   <div className="text-xs">
                     <p className="text-gray-700 dark:text-gray-200 font-medium truncate max-w-50">{logoFileName || 'logo.png'}</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">Stored as responsive inline Base64</p>
                   </div>
                 </div>
               ) : (
@@ -1189,9 +1188,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="e.g. upi://pay?pa=billing@company&pn=Acme or paypal.me/acme/150 or Stripe link"
                   />
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500">
-                    Provide a standard payment link, email, or UPI string to automatically render a scan-to-pay QR code on the invoice layout.
-                  </p>
                 </div>
 
                 <div className="border-t border-gray-100 dark:border-[#1A3F3F] pt-3">
@@ -1206,7 +1202,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-semibold text-gray-800 dark:text-gray-200 truncate">{qrFileName || 'custom_qr_code.png'}</p>
-                        <p className="text-[9px] text-gray-400 dark:text-gray-500">Custom QR image successfully loaded</p>
                       </div>
                       <button
                         type="button"
@@ -1336,7 +1331,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-[11px] font-semibold text-gray-800 dark:text-gray-200 truncate">{sigFileName || 'signature_image.png'}</p>
-                            <p className="text-[9px] text-gray-400 dark:text-gray-500">Custom signature loaded</p>
                           </div>
                           <button
                             type="button"
@@ -1358,7 +1352,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                             className="hidden"
                           />
                         </label>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500">Supports transparent PNG, JPG</span>
                       </div>
                     )}
                   </div>
@@ -1556,14 +1549,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <Type className="w-5 h-5 text-[#0D2C2C] dark:text-white" />
                     <div className="flex-1 truncate">
                       <p className="text-gray-700 dark:text-gray-200 font-medium truncate">{fontFileName || 'BrandCustomFont.ttf'}</p>
-                      <p className="text-gray-400 dark:text-gray-500 text-[10px]">Embedded and registered successfully</p>
                     </div>
                   </div>
                 ) : (
                   <div className="border border-dashed border-gray-300 dark:border-[#1A3F3F] hover:border-[#0D2C2C] rounded-lg p-4 flex flex-col items-center justify-center text-center transition-all bg-white dark:bg-[#0B1B1B] relative group overflow-hidden">
                     <Type className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-[#C69A5D] mb-1.5 transition-colors" />
                     <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold">Click to Load custom TTF / OTF font</p>
-                    <p className="text-[9px] text-gray-400 dark:text-gray-500 mt-0.5">Enables absolute custom branded PDFs</p>
                     <input
                       type="file"
                       accept=".ttf,.otf"

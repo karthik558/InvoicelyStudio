@@ -281,10 +281,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             <span><kbd>↵</kbd> select</span>
             <span><kbd>esc</kbd> close</span>
           </div>
-          <div className="flex items-center space-x-1">
-            <Keyboard className="w-3 h-3 text-[#C69A5D]" />
-            <span>Version 3.0 Palette</span>
-          </div>
         </div>
       </div>
     </div>
