@@ -29,7 +29,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   onToggle,
   onFilterStatus
 }) => {
-  // Compute analytics
+  // Compute analytics taking advance payments into account
   const getInvoiceTotal = (inv: Invoice) => {
     const subtotal = inv.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const discount = inv.discountType === 'flat' ? inv.discountRate : subtotal * (inv.discountRate / 100);
@@ -39,16 +39,35 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     return subtotal - discount + tax + gst + (inv.shippingFee || 0);
   };
 
+  const getInvoiceCollected = (inv: Invoice) => {
+    const total = getInvoiceTotal(inv);
+    if (inv.status === 'paid') return total;
+    const advance = Math.min(Math.max(0, inv.advanceAmount || 0), total);
+    return advance;
+  };
+
+  const getInvoicePending = (inv: Invoice) => {
+    const total = getInvoiceTotal(inv);
+    const collected = getInvoiceCollected(inv);
+    if (inv.status === 'paid' || inv.status === 'overdue') return 0;
+    return Math.max(0, total - collected);
+  };
+
+  const getInvoiceOverdue = (inv: Invoice) => {
+    if (inv.status !== 'overdue') return 0;
+    const total = getInvoiceTotal(inv);
+    const collected = getInvoiceCollected(inv);
+    return Math.max(0, total - collected);
+  };
+
   const totalInvoiced = invoices.reduce((sum, inv) => sum + getInvoiceTotal(inv), 0);
+  const totalCollected = invoices.reduce((sum, inv) => sum + getInvoiceCollected(inv), 0);
+  const totalPending = invoices.reduce((sum, inv) => sum + getInvoicePending(inv), 0);
+  const totalOverdue = invoices.reduce((sum, inv) => sum + getInvoiceOverdue(inv), 0);
 
-  const paidInvoices = invoices.filter(i => i.status === 'paid');
-  const totalPaid = paidInvoices.reduce((sum, inv) => sum + getInvoiceTotal(inv), 0);
-
-  const pendingInvoices = invoices.filter(i => i.status === 'pending' || i.status === 'advance_paid');
-  const totalPending = pendingInvoices.reduce((sum, inv) => sum + getInvoiceTotal(inv), 0);
-
-  const overdueInvoices = invoices.filter(i => i.status === 'overdue');
-  const totalOverdue = overdueInvoices.reduce((sum, inv) => sum + getInvoiceTotal(inv), 0);
+  const paidInvoicesCount = invoices.filter(i => i.status === 'paid').length;
+  const pendingInvoicesCount = invoices.filter(i => i.status === 'pending' || i.status === 'advance_paid' || i.status === 'draft').length;
+  const overdueInvoicesCount = invoices.filter(i => i.status === 'overdue').length;
 
   const defaultCurrency = invoices[0]?.currency || 'USD';
   const formatter = getCurrencyFormatter(defaultCurrency);
@@ -85,7 +104,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <span className="text-[8px] sm:text-[9px] text-slate-400 block mt-0.5">{invoices.length} invoices</span>
           </div>
 
-          {/* Paid */}
+          {/* Paid / Collected */}
           <div 
             onClick={() => onFilterStatus?.('paid')}
             className="p-2.5 bg-emerald-950/30 hover:bg-emerald-950/50 border border-emerald-500/20 rounded-xl transition-all cursor-pointer group"
@@ -95,9 +114,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <CheckCircle className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-sm font-bold font-mono text-emerald-300 mt-1">
-              {formatter.format(totalPaid)}
+              {formatter.format(totalCollected)}
             </div>
-            <span className="text-[9px] text-emerald-400/80 block mt-0.5">{paidInvoices.length} paid</span>
+            <span className="text-[9px] text-emerald-400/80 block mt-0.5">{paidInvoicesCount} fully paid</span>
           </div>
 
           {/* Pending */}
@@ -112,7 +131,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div className="text-sm font-bold font-mono text-amber-300 mt-1">
               {formatter.format(totalPending)}
             </div>
-            <span className="text-[9px] text-amber-400/80 block mt-0.5">{pendingInvoices.length} pending</span>
+            <span className="text-[9px] text-amber-400/80 block mt-0.5">{pendingInvoicesCount} pending</span>
           </div>
 
           {/* Overdue */}
@@ -127,7 +146,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div className="text-sm font-bold font-mono text-rose-300 mt-1">
               {formatter.format(totalOverdue)}
             </div>
-            <span className="text-[9px] text-rose-400/80 block mt-0.5">{overdueInvoices.length} overdue</span>
+            <span className="text-[9px] text-rose-400/80 block mt-0.5">{overdueInvoicesCount} overdue</span>
           </div>
         </div>
       </div>

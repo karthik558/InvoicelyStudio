@@ -1150,11 +1150,6 @@ export default function App() {
         </div>
         
         <div className="flex gap-4 items-center">
-          <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-            All changes saved locally
-          </span>
-          <span className="text-gray-600/40">•</span>
           <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Shortcuts: ⌘K Command Palette | ? Accessibility</span>
         </div>
       </footer>
