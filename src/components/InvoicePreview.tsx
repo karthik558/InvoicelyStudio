@@ -222,7 +222,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       <div 
         ref={containerRef}
         className={`flex-1 overflow-auto p-4 sm:p-6 bg-[#E8EBEB] dark:bg-slate-950 w-full flex justify-center items-start ${
-          deviceMode === 'tablet' ? 'max-w-[768px] mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : deviceMode === 'mobile' ? 'max-w-[420px] mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : ''
+          deviceMode === 'tablet' ? 'max-w-3xl mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : deviceMode === 'mobile' ? 'max-w-105 mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : ''
         }`}
       >
 
@@ -367,7 +367,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
             <div className="w-full relative">
               {/* Modern Left Border Bar */}
               <div 
-                className={`absolute ${isCompact ? 'left-[-24px] top-[-24px] bottom-[-24px]' : 'left-[-40px] top-[-40px] bottom-[-40px]'} w-2`}
+                className={`absolute ${isCompact ? '-left-6 -top-6 -bottom-6' : '-left-10 -top-10 -bottom-10'} w-2`}
                 style={{ backgroundColor: theme.primaryColor }}
               />
               
@@ -899,7 +899,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
                 {/* Right Signature Block */}
                 {invoice.signatureType && invoice.signatureType !== 'none' && (
-                  <div className="flex flex-col items-center justify-end shrink-0 text-center space-y-1 self-end min-w-[130px] pb-1">
+                  <div className="flex flex-col items-center justify-end shrink-0 text-center space-y-1 self-end min-w-32.5 pb-1">
                     {invoice.signatureType === 'text' && invoice.signatureText ? (
                       <span className={`font-serif italic text-sm border-b pb-1 px-3 ${theme.templateId === 'dark' ? 'text-slate-100 border-slate-700' : 'text-slate-800 border-slate-300'}`}>
                         {invoice.signatureText}
@@ -909,11 +909,11 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                         <img
                           src={invoice.signatureImage}
                           alt="Signature"
-                          className={`${isCompact ? 'h-8' : 'h-11'} w-auto object-contain max-w-[140px]`}
+                          className={`${isCompact ? 'h-8' : 'h-11'} w-auto object-contain max-w-35`}
                         />
                       )
                     )}
-                    <div className="h-[1px] w-full" style={{ backgroundColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }} />
+                    <div className="h-px w-full" style={{ backgroundColor: theme.templateId === 'dark' ? '#334155' : '#e2e8f0' }} />
                     <span className={`text-[8px] uppercase tracking-wider font-bold ${theme.templateId === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                       {invoice.signatureDesignation || 'Authorized Signatory'}
                     </span>

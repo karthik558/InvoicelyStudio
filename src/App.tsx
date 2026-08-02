@@ -66,7 +66,7 @@ const InvoiceFormSkeleton = () => (
 
 const InvoicePreviewSkeleton = () => (
   <div className="flex flex-col h-full bg-[#E8EBEB] p-6 items-center justify-center animate-pulse overflow-hidden">
-    <div className="bg-white dark:bg-[#0B1B1B] w-full max-w-[480px] sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
+    <div className="bg-white dark:bg-[#0B1B1B] w-full max-w-120 sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
       <div className="flex justify-between shrink-0">
         <div className="space-y-2 w-1/3">
           <div className="h-6 bg-slate-200 rounded-lg w-full" />
@@ -755,12 +755,12 @@ export default function App() {
       
       {/* Aesthetic Brand Preloader */}
       {isInitialLoading && (
-        <div className={`fixed inset-0 bg-[#0D2C2C] z-[100] flex items-center justify-center transition-all duration-300 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
+        <div className={`fixed inset-0 bg-[#0D2C2C] z-100 flex items-center justify-center transition-all duration-300 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
           <div className="flex items-center text-3xl sm:text-5xl font-bold tracking-tight text-white select-none">
             <span>Invo</span>
             <span className="relative inline-block">
               ı
-              <span className="absolute top-[8px] sm:top-[10px] left-[3.5px] sm:left-[4px] w-[5.5px] sm:w-[7px] h-[5.5px] sm:h-[7px] bg-[#C69A5D] rounded-[0.8px] sm:rounded-[1px] animate-dotBounce"></span>
+              <span className="absolute top-2 sm:top-2.5 left-1 sm:left-1 w-1.5 sm:w-1.75 h-1.5 sm:h-1.75 bg-[#C69A5D] rounded-xs animate-dotBounce"></span>
             </span>
             <span>cely</span>
             <span className="font-light text-slate-300 ml-2">Studio</span>
@@ -803,13 +803,13 @@ export default function App() {
                 <span>Invo</span>
                 <span className="relative inline-block">
                   ı
-                  <span className="absolute top-[4px] left-[2px] w-[3.5px] h-[3.5px] bg-[#C69A5D] rounded-[0.5px]"></span>
+                  <span className="absolute top-1 left-0.5 w-1 h-1 bg-[#C69A5D] rounded-xs"></span>
                 </span>
                 <span>cely</span>
                 <span className="font-light text-slate-300 ml-1.5">Studio</span>
               </div>
               <div className="h-4 w-px bg-white/20 mx-2 hidden lg:block"></div>
-              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium truncate hidden lg:block max-w-[150px] xl:max-w-none">Workspace / Invoice Dashboard</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium truncate hidden lg:block max-w-37.5 xl:max-w-none">Workspace / Invoice Dashboard</span>
             </div>
           </div>
         </div>
@@ -1058,7 +1058,7 @@ export default function App() {
         {/* RIGHT COLUMN: HTML Live Preview (Visible on laptop, or active preview mobile tab) */}
         <div 
           className={`
-            flex-1 xl:flex-none xl:w-[540px] 2xl:w-[620px] h-full overflow-hidden border-l border-gray-200 dark:border-[#1A3F3F] bg-[#E8EBEB]
+            flex-1 xl:flex-none xl:w-135 2xl:w-155 h-full overflow-hidden border-l border-gray-200 dark:border-[#1A3F3F] bg-[#E8EBEB]
             ${activeMobileView === 'preview' ? 'block' : 'hidden lg:block'}
           `}
         >
@@ -1205,26 +1205,28 @@ export default function App() {
 
       {/* Custom Confirmation Modal */}
       {confirmModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn no-print">
-          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-100 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
-            <h3 className="text-sm font-bold text-[#0D2C2C] flex items-center gap-2">
-              <AlertCircle className={`w-4 h-4 ${confirmModal.isDestructive ? 'text-rose-600' : 'text-[#C69A5D]'}`} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn no-print">
+          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-200 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
+            <h3 className="text-sm font-bold text-[#0D2C2C] dark:text-white flex items-center gap-2">
+              <AlertCircle className={`w-4 h-4 ${confirmModal.isDestructive ? 'text-rose-500' : 'text-[#C69A5D]'}`} />
               <span>{confirmModal.title}</span>
             </h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2.5 leading-relaxed">{confirmModal.message}</p>
-            <div className="flex items-center justify-end space-x-2 mt-5">
+            <p className="text-xs text-gray-600 dark:text-gray-300 mt-2.5 leading-relaxed">{confirmModal.message}</p>
+            <div className="flex items-center justify-end space-x-2.5 mt-5">
               <button
+                type="button"
                 onClick={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
-                className="px-3 py-1.5 border border-gray-200 dark:border-[#1A3F3F] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] text-gray-500 hover:text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 border border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] hover:bg-gray-100 dark:hover:bg-[#1A3F3F] text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-2xs"
               >
                 {confirmModal.cancelText || 'Cancel'}
               </button>
               <button
+                type="button"
                 onClick={confirmModal.onConfirm}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer text-white shadow-sm ${
+                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer text-white shadow-md ${
                   confirmModal.isDestructive 
-                    ? 'bg-rose-600 hover:bg-rose-700' 
-                    : 'bg-[#0D2C2C] hover:bg-[#164E4E]'
+                    ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20' 
+                    : 'bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] font-extrabold shadow-[#C69A5D]/20'
                 }`}
               >
                 {confirmModal.confirmText || 'Confirm'}
@@ -1236,17 +1238,18 @@ export default function App() {
 
       {/* Custom Alert Modal */}
       {alertModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn no-print">
-          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-100 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
-            <h3 className="text-sm font-bold text-[#0D2C2C] flex items-center gap-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn no-print">
+          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-200 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
+            <h3 className="text-sm font-bold text-[#0D2C2C] dark:text-white flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-[#C69A5D]" />
               <span>{alertModal.title}</span>
             </h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2.5 leading-relaxed">{alertModal.message}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-300 mt-2.5 leading-relaxed">{alertModal.message}</p>
             <div className="flex items-center justify-end mt-5">
               <button
+                type="button"
                 onClick={() => setAlertModal((prev) => ({ ...prev, isOpen: false }))}
-                className="px-4 py-1.5 bg-[#0D2C2C] hover:bg-[#164E4E] text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                className="px-4 py-1.5 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] text-xs font-extrabold rounded-xl transition-all cursor-pointer shadow-md shadow-[#C69A5D]/20"
               >
                 OK
               </button>

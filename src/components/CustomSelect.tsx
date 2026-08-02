@@ -68,7 +68,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
       {isOpen && !disabled && (
         <div 
-          className={`absolute z-[100] left-0 right-0 max-h-60 overflow-y-auto bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] rounded-lg shadow-xl py-1 text-xs divide-y divide-gray-50 dark:divide-[#1A3F3F] animate-fadeIn ${
+          className={`absolute z-100 left-0 right-0 max-h-60 overflow-y-auto bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] rounded-lg shadow-xl py-1 text-xs divide-y divide-gray-50 dark:divide-[#1A3F3F] animate-fadeIn ${
             openDirection === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
           }`}
         >

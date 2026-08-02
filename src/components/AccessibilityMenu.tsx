@@ -152,7 +152,7 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
       {/* Keyboard Shortcuts Modal */}
       {showShortcutsModal && (
         <div 
-          className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-110 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
           onClick={() => setShowShortcutsModal(false)}
         >
           <div 

@@ -632,7 +632,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     referrerPolicy="no-referrer"
                   />
                   <div className="text-xs">
-                    <p className="text-gray-700 dark:text-gray-200 font-medium truncate max-w-[200px]">{logoFileName || 'logo.png'}</p>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium truncate max-w-50">{logoFileName || 'logo.png'}</p>
                     <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">Stored as responsive inline Base64</p>
                   </div>
                 </div>
@@ -717,7 +717,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.sender.address}
                     onChange={(e) => updateField('sender', 'address', e.target.value)}
                     rows={2.5}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="123 Studio Blvd, Suite 100&#10;San Francisco, CA 94107"
                   />
                 </div>
@@ -812,7 +812,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.receiver.address}
                     onChange={(e) => updateField('receiver', 'address', e.target.value)}
                     rows={2.5}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="987 Corporate Way&#10;Austin, TX 78701"
                   />
                 </div>
@@ -1252,109 +1252,103 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* NOTES & TERMS */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3.5">
+            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5">
-                <Info className="w-4 h-4 text-[#C69A5D]" />
-                <span>Notes &amp; Terms Statement</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C69A5D]"></span>
+                <span>Notes & Terms & Signature</span>
               </h3>
 
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Memo / Notes (Client visible)</label>
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Invoice Notes</label>
                   <textarea
+                    rows={2.5}
                     value={invoice.notes}
                     onChange={(e) => updateField(null, 'notes', e.target.value)}
-                    rows={2.5}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
-                    placeholder="e.g. Thank you for your business..."
+                    placeholder="e.g. Thank you for your business! Please remit payment via wire transfer."
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Terms &amp; Conditions</label>
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Terms & Conditions</label>
                   <textarea
+                    rows={2.5}
                     value={invoice.terms}
                     onChange={(e) => updateField(null, 'terms', e.target.value)}
-                    rows={2.5}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
-                    placeholder="e.g. Please pay within 14 days. Late fees apply..."
+                    placeholder="e.g. Payment due within 14 days. Late fees apply after 30 days."
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                   />
                 </div>
-              </div>
-            </div>
 
-            {/* AUTHORIZED SIGNATURE */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5">
-                <PenTool className="w-4 h-4 text-[#C69A5D]" />
-                <span>Authorized Signature</span>
-              </h3>
-
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Signature Type</label>
-                    <CustomSelect
-                      value={invoice.signatureType || 'none'}
-                      onChange={(val) => updateField(null, 'signatureType', val)}
-                      options={[
-                        { value: 'none', label: 'No Signature' },
-                        { value: 'text', label: 'Digital Text Signature' },
-                        { value: 'image', label: 'Image Upload' }
-                      ]}
-                    />
+                {/* SIGNATURE SECTION */}
+                <div className="pt-2 border-t border-gray-100 dark:border-[#1A3F3F] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Authorized Signature</label>
+                    <div className="flex bg-gray-100 dark:bg-[#1A3F3F] p-0.5 rounded-lg border border-gray-200/60 dark:border-[#1A3F3F]">
+                      <button
+                        type="button"
+                        onClick={() => updateField(null, 'signatureType', 'text')}
+                        className={`px-2 py-0.5 text-[10px] rounded-md font-semibold transition-colors ${
+                          (invoice.signatureType || 'text') === 'text'
+                            ? 'bg-white dark:bg-[#0B1B1B] text-[#0D2C2C] dark:text-white shadow-xs'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-800'
+                        }`}
+                      >
+                        Typed Text
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateField(null, 'signatureType', 'image')}
+                        className={`px-2 py-0.5 text-[10px] rounded-md font-semibold transition-colors ${
+                          invoice.signatureType === 'image'
+                            ? 'bg-white dark:bg-[#0B1B1B] text-[#0D2C2C] dark:text-white shadow-xs'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-800'
+                        }`}
+                      >
+                        Image Upload
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Designation / Title</label>
-                    <input
-                      type="text"
-                      value={invoice.signatureDesignation || ''}
-                      onChange={(e) => updateField(null, 'signatureDesignation', e.target.value)}
-                      placeholder="e.g. Authorized Signatory, Director"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
-                    />
-                  </div>
-                </div>
+                  {(invoice.signatureType || 'text') === 'text' && (
+                    <div className="space-y-1 animate-fadeIn">
+                      <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Signature Text / Name</label>
+                      <input
+                        type="text"
+                        value={invoice.signatureText || ''}
+                        onChange={(e) => updateField(null, 'signatureText', e.target.value)}
+                        placeholder="e.g. John Doe"
+                        className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-serif italic focus:ring-1 focus:ring-[#0D2C2C]"
+                      />
+                    </div>
+                  )}
 
-                {invoice.signatureType === 'text' && (
-                  <div className="space-y-1 animate-fadeIn">
-                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Signature Text / Name</label>
-                    <input
-                      type="text"
-                      value={invoice.signatureText || ''}
-                      onChange={(e) => updateField(null, 'signatureText', e.target.value)}
-                      placeholder="e.g. John Doe"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-serif italic focus:ring-1 focus:ring-[#0D2C2C]"
-                    />
-                  </div>
-                )}
-
-                {invoice.signatureType === 'image' && (
-                  <div className="space-y-3 animate-fadeIn">
-                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Signature Image</label>
-                    {invoice.signatureImage ? (
-                      <div className="flex items-center space-x-3 p-2 border border-gray-200 dark:border-[#1A3F3F] rounded-lg bg-white/50">
-                        <img 
-                          src={invoice.signatureImage} 
-                          alt="Signature Preview" 
-                          className="h-10 w-auto object-contain max-w-[120px] bg-white dark:bg-[#0B1B1B] border border-gray-100 dark:border-[#1A3F3F] rounded p-1"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] font-semibold text-gray-800 dark:text-gray-200 truncate">{sigFileName || 'signature_image.png'}</p>
-                          <p className="text-[9px] text-gray-400 dark:text-gray-500">Custom signature loaded</p>
+                  {invoice.signatureType === 'image' && (
+                    <div className="space-y-3 animate-fadeIn">
+                      <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Signature Image</label>
+                      {invoice.signatureImage ? (
+                        <div className="flex items-center space-x-3 p-2 border border-gray-200 dark:border-[#1A3F3F] rounded-lg bg-white/50">
+                          <img 
+                            src={invoice.signatureImage} 
+                            alt="Signature Preview" 
+                            className="h-10 w-auto object-contain max-w-30 bg-white dark:bg-[#0B1B1B] border border-gray-100 dark:border-[#1A3F3F] rounded p-1"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-semibold text-gray-800 dark:text-gray-200 truncate">{sigFileName || 'signature_image.png'}</p>
+                            <p className="text-[9px] text-gray-400 dark:text-gray-500">Custom signature loaded</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={clearSigImage}
+                            className="px-2.5 py-1 text-[10px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg cursor-pointer transition-colors"
+                          >
+                            Remove
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={clearSigImage}
-                          className="px-2.5 py-1 text-[10px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg cursor-pointer transition-colors"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-3">
-                        <label className="flex items-center justify-center space-x-2 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] hover:border-[#0D2C2C] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
+                      ) : (
+                        <div className="flex items-center space-x-3">
+                          <label className="flex items-center justify-center space-x-2 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] hover:border-[#0D2C2C] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
                           <FileUp className="w-4 h-4 text-[#C69A5D]" />
                           <span>Upload Signature Image</span>
                           <input
@@ -1372,7 +1366,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* TAB 5: DESIGN & STYLE */}
         {activeTab === 'design' && (
@@ -1620,7 +1615,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     referrerPolicy="no-referrer"
                   />
                   <div className="text-xs">
-                    <p className="text-gray-700 dark:text-gray-200 font-medium truncate max-w-[200px]">Default Brand Logo</p>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium truncate max-w-50">Default Brand Logo</p>
                     <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">Stored globally</p>
                   </div>
                 </div>
