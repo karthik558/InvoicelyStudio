@@ -1230,15 +1230,17 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
                 {/* Real-time QR Code Preview within the editor */}
                 {(invoice.sender.paymentQrLink || invoice.sender.paymentQrImage) && (
-                  <div className="flex flex-col items-center justify-center p-4 bg-white/60 rounded-xl border border-dashed border-gray-200 dark:border-[#1A3F3F] mt-2">
-                    <span className="text-[9px] uppercase tracking-wider font-bold text-[#0D2C2C] dark:text-white mb-2">Scan Preview</span>
-                    <img
-                      src={invoice.sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(invoice.sender.paymentQrLink || '')}`}
-                      alt="Invoice Payment QR"
-                      className="w-24 h-24 border p-1 bg-white dark:bg-[#0B1B1B] rounded shadow-xs"
-                      referrerPolicy="no-referrer"
-                    />
-                    <span className="text-[9px] text-gray-400 dark:text-gray-300 mt-1.5 font-mono text-center max-w-xs truncate">
+                  <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#0B1B1B] rounded-xl border border-gray-200 dark:border-[#1A3F3F] mt-2">
+                    <span className="text-[9px] uppercase tracking-wider font-bold text-[#0D2C2C] dark:text-[#C69A5D] mb-2">Scan Preview</span>
+                    <div className="p-2 bg-white rounded-lg border border-gray-100 shadow-xs">
+                      <img
+                        src={invoice.sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(invoice.sender.paymentQrLink || '')}`}
+                        alt="Invoice Payment QR"
+                        className="w-24 h-24 object-contain"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <span className="text-[9px] text-gray-400 dark:text-slate-400 mt-2 font-mono text-center max-w-xs truncate">
                       {invoice.sender.paymentQrImage ? 'Using Uploaded QR Code' : `Generating: ${invoice.sender.paymentQrLink}`}
                     </span>
                   </div>
