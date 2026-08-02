@@ -490,19 +490,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
       </div>
 
-      {/* Editor Main Navigation Tabs (Floating Gold Capsule Chips) */}
-      <div className="flex border-b border-gray-200/80 dark:border-[#1A3F3F] bg-gray-50/70 dark:bg-[#0A2323] px-3 sm:px-4 py-2.5 overflow-x-auto no-scrollbar items-center shrink-0 w-full select-none transition-colors">
-        <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto">
+      {/* Editor Main Navigation Tabs (Clean Modern Flat Capsule Chips) */}
+      <div className="flex border-b border-gray-200 dark:border-[#1A3F3F] bg-gray-50 dark:bg-[#0A2323] px-3 sm:px-4 py-2.5 overflow-x-auto no-scrollbar items-center shrink-0 w-full select-none transition-colors">
+        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto">
           {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
             const isActive = activeTab === tab;
             const label = tab.charAt(0).toUpperCase() + tab.slice(1);
             const icons = {
-              details: <FileText className="w-3.5 h-3.5" />,
-              parties: <Users className="w-3.5 h-3.5" />,
-              items: <Plus className="w-3.5 h-3.5" />,
-              payment: <CreditCard className="w-3.5 h-3.5" />,
-              design: <Palette className="w-3.5 h-3.5" />,
-              settings: <Settings className="w-3.5 h-3.5" />
+              details: <FileText className="w-3.5 h-3.5 shrink-0" />,
+              parties: <Users className="w-3.5 h-3.5 shrink-0" />,
+              items: <Plus className="w-3.5 h-3.5 shrink-0" />,
+              payment: <CreditCard className="w-3.5 h-3.5 shrink-0" />,
+              design: <Palette className="w-3.5 h-3.5 shrink-0" />,
+              settings: <Settings className="w-3.5 h-3.5 shrink-0" />
             };
 
             return (
@@ -510,14 +510,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`
-                  flex items-center space-x-2 py-1.5 px-3.5 sm:px-4 text-xs font-bold tracking-wide transition-all duration-200 cursor-pointer whitespace-nowrap rounded-full outline-none select-none shrink-0
+                  flex items-center space-x-2 py-1.5 px-3.5 text-xs font-bold tracking-wide transition-colors duration-150 cursor-pointer whitespace-nowrap rounded-full outline-none select-none shrink-0
                   ${isActive 
-                    ? 'bg-[#C69A5D] text-[#0D2C2C] font-extrabold shadow-md shadow-[#C69A5D]/20 scale-[1.02]' 
-                    : 'bg-white/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/15'
+                    ? 'bg-[#0D2C2C] dark:bg-[#C69A5D] text-white dark:text-[#0D2C2C] font-extrabold' 
+                    : 'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/15'
                   }
                 `}
               >
-                <span className={`transition-colors duration-200 ${isActive ? 'text-[#0D2C2C]' : 'text-gray-400 dark:text-slate-400'}`}>
+                <span className={`transition-colors duration-150 ${isActive ? 'text-[#C69A5D] dark:text-[#0D2C2C]' : 'text-gray-400 dark:text-slate-400'}`}>
                   {icons[tab]}
                 </span>
                 <span>{label}</span>
