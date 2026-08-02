@@ -976,7 +976,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         className={`px-1.5 py-0.5 text-[9px] rounded font-semibold transition-colors ${
                           invoice.discountType !== 'flat'
                             ? 'bg-white dark:bg-[#0B1B1B] text-gray-800 dark:text-gray-200 shadow-xs'
-                            : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400'
+                            : 'text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200'
                         }`}
                       >
                         %
@@ -987,7 +987,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         className={`px-1.5 py-0.5 text-[9px] rounded font-semibold transition-colors ${
                           invoice.discountType === 'flat'
                             ? 'bg-white dark:bg-[#0B1B1B] text-gray-800 dark:text-gray-200 shadow-xs'
-                            : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400'
+                            : 'text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200'
                         }`}
                       >
                         Val
@@ -1213,7 +1213,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3">
-                      <label className="flex items-center justify-center space-x-2 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] hover:border-[#0D2C2C] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
+                      <label className="flex items-center justify-center space-x-2 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] hover:border-[#0D2C2C] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
                         <FileUp className="w-4 h-4 text-[#C69A5D]" />
                         <span>Upload QR Code Image</span>
                         <input
