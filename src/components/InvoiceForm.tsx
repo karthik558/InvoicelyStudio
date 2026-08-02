@@ -546,7 +546,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.invoiceNumber}
                     onChange={(e) => updateField(null, 'invoiceNumber', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="e.g. INV-2026-001"
                   />
                 </div>
@@ -681,7 +681,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.sender.name}
                     onChange={(e) => updateField('sender', 'name', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="e.g. Aesthetic Studio Inc."
                   />
                 </div>
@@ -693,7 +693,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="email"
                       value={invoice.sender.email}
                       onChange={(e) => updateField('sender', 'email', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                       placeholder="hello@aesthetic.studio"
                     />
                   </div>
@@ -703,7 +703,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="text"
                       value={invoice.sender.phone}
                       onChange={(e) => updateField('sender', 'phone', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                       placeholder="+1 (555) 123-4567"
                     />
                   </div>
@@ -726,7 +726,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.sender.taxId}
                     onChange={(e) => updateField('sender', 'taxId', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="Tax Registration ID"
                   />
                 </div>
@@ -776,7 +776,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.receiver.name}
                     onChange={(e) => updateField('receiver', 'name', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="Client Company Name LLC"
                   />
                 </div>
@@ -788,7 +788,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="email"
                       value={invoice.receiver.email}
                       onChange={(e) => updateField('receiver', 'email', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                       placeholder="accounts@client.com"
                     />
                   </div>
@@ -798,7 +798,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="text"
                       value={invoice.receiver.phone}
                       onChange={(e) => updateField('receiver', 'phone', e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                       placeholder="+1 (555) 987-6543"
                     />
                   </div>
@@ -821,7 +821,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.receiver.taxId}
                     onChange={(e) => updateField('receiver', 'taxId', e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
                     placeholder="Tax Registration ID"
                   />
                 </div>
@@ -1805,52 +1805,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
           </div>
         )}
-      </div>
-
-
-
-      {/* Mobile Navigation Bar UI Sector */}
-      <div className="lg:hidden bg-[#0A2323] border-t border-white/10 py-2.5 px-3 flex items-center justify-between z-20 shrink-0 no-print w-full">
-        {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
-          const isActive = activeTab === tab;
-          const label = tab.charAt(0).toUpperCase() + tab.slice(1);
-          const icons = {
-            details: <FileText className="w-4 h-4" />,
-            parties: <Users className="w-4 h-4" />,
-            items: <Plus className="w-4 h-4" />,
-            payment: <CreditCard className="w-4 h-4" />,
-            design: <Palette className="w-4 h-4" />,
-            settings: <Settings className="w-4 h-4" />
-          };
-
-          return (
-            <div
-              key={tab}
-              role="button"
-              onClick={() => setActiveTab(tab)}
-              className={`
-                flex flex-col items-center justify-center flex-1 py-1 transition-all duration-300 relative cursor-pointer outline-none select-none rounded-none
-                ${isActive ? 'text-[#C69A5D] scale-105' : 'text-slate-400 active:scale-95'}
-              `}
-            >
-              <div className={`p-1.5 rounded-lg transition-all duration-300 transform ${
-                isActive 
-                  ? 'bg-white/10 text-[#C69A5D] -translate-y-0.5 shadow-sm' 
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}>
-                {icons[tab]}
-              </div>
-              <span className={`text-[8px] font-bold mt-1 tracking-wider uppercase transition-colors ${
-                isActive ? 'text-[#C69A5D] font-extrabold' : 'text-slate-500'
-              }`}>
-                {label}
-              </span>
-              {isActive && (
-                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#C69A5D] shadow-[0_0_8px_rgba(198,154,93,0.8)]"></span>
-              )}
-            </div>
-          );
-        })}
       </div>
     </div>
   );

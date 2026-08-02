@@ -109,7 +109,8 @@ import {
   Search,
   ShieldCheck,
   PieChart,
-  Command
+  Command,
+  Layers
 } from 'lucide-react';
 
 const createStarterInvoice = (defaultSender?: any): Invoice => {
@@ -769,10 +770,10 @@ export default function App() {
 
       {/* Dynamic Toast Notice */}
       {toastMessage && (
-        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[#0D2C2C] border border-[#1A3F3F] pl-4 pr-3 py-2.5 rounded-xl shadow-xl shadow-slate-950/25 z-50 flex items-center space-x-2.5 text-xs font-semibold text-white tracking-wide animate-slideUp select-none min-w-[200px] justify-between border-white/5">
+        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[#0D2C2C] border border-[#1A3F3F] pl-4 pr-3 py-2.5 rounded-xl shadow-xl shadow-slate-950/25 z-50 flex items-center space-x-2.5 text-xs font-semibold text-white tracking-wide animate-slideUp select-none min-w-50 justify-between">
           <div className="flex items-center space-x-2.5">
             <CheckCircle className="w-4 h-4 text-[#C69A5D] shrink-0" />
-            <span className="max-w-[220px] sm:max-w-xs truncate">{toastMessage}</span>
+            <span className="max-w-55 sm:max-w-xs truncate">{toastMessage}</span>
           </div>
           <button 
             type="button"
@@ -1074,6 +1075,74 @@ export default function App() {
 
       </main>
 
+      {/* Version 3.0 Mobile Bottom Navigation Dock */}
+      <nav className="lg:hidden h-14 bg-[#0D2C2C] border-t border-[#1A3F3F] text-white flex items-center justify-around px-2 shrink-0 z-30 no-print select-none shadow-2xl">
+        {/* 1. Sidebar Registry Toggle */}
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="flex flex-col items-center justify-center flex-1 py-1 text-slate-400 hover:text-white transition-colors relative cursor-pointer"
+          title="Invoice Registry"
+        >
+          <div className="relative">
+            <FileText className="w-4 h-4" />
+            <span className="absolute -top-1 -right-2 bg-[#C69A5D] text-[#0D2C2C] text-[8px] font-black px-1 rounded-full">
+              {invoices.length}
+            </span>
+          </div>
+          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Invoices</span>
+        </button>
+
+        {/* 2. Form Editor Tab */}
+        <button
+          onClick={() => setActiveMobileView('edit')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer relative ${
+            activeMobileView === 'edit' ? 'text-[#C69A5D]' : 'text-slate-400 hover:text-white'
+          }`}
+          title="Invoice Editor"
+        >
+          <Edit className="w-4 h-4" />
+          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Editor</span>
+          {activeMobileView === 'edit' && (
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[#C69A5D]"></span>
+          )}
+        </button>
+
+        {/* 3. Live Preview Tab */}
+        <button
+          onClick={() => setActiveMobileView('preview')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer relative ${
+            activeMobileView === 'preview' ? 'text-[#C69A5D]' : 'text-slate-400 hover:text-white'
+          }`}
+          title="Live Preview"
+        >
+          <Eye className="w-4 h-4" />
+          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Preview</span>
+          {activeMobileView === 'preview' && (
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[#C69A5D]"></span>
+          )}
+        </button>
+
+        {/* 4. Catalog Presets Trigger */}
+        <button
+          onClick={() => setIsItemPresetsModalOpen(true)}
+          className="flex flex-col items-center justify-center flex-1 py-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+          title="Service Catalog Presets"
+        >
+          <Layers className="w-4 h-4 text-[#C69A5D]" />
+          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Catalog</span>
+        </button>
+
+        {/* 5. Command Palette Trigger */}
+        <button
+          onClick={() => setIsCommandPaletteOpen(true)}
+          className="flex flex-col items-center justify-center flex-1 py-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+          title="Search & Commands"
+        >
+          <Search className="w-4 h-4" />
+          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Search</span>
+        </button>
+      </nav>
+
       {/* Sleek footer */}
       <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 dark:text-gray-500 gap-4">
         <div className="flex items-center gap-4">
@@ -1146,7 +1215,7 @@ export default function App() {
             <div className="flex items-center justify-end space-x-2 mt-5">
               <button
                 onClick={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
-                className="px-3 py-1.5 border border-gray-200 dark:border-[#1A3F3F] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                className="px-3 py-1.5 border border-gray-200 dark:border-[#1A3F3F] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] text-gray-500 hover:text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
               >
                 {confirmModal.cancelText || 'Cancel'}
               </button>
