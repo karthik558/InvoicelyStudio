@@ -302,15 +302,15 @@ export default function App() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isFadeOut, setIsFadeOut] = useState(false);
 
-  // Preloader transition controller
+  // Preloader transition controller (Snappy 800ms total)
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
       setIsFadeOut(true);
-    }, 1800);
+    }, 400);
 
     const removeTimer = setTimeout(() => {
       setIsInitialLoading(false);
-    }, 2500);
+    }, 800);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -754,7 +754,7 @@ export default function App() {
       
       {/* Aesthetic Brand Preloader */}
       {isInitialLoading && (
-        <div className={`fixed inset-0 bg-[#0D2C2C] z-[100] flex items-center justify-center transition-all duration-700 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
+        <div className={`fixed inset-0 bg-[#0D2C2C] z-[100] flex items-center justify-center transition-all duration-300 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
           <div className="flex items-center text-3xl sm:text-5xl font-bold tracking-tight text-white select-none">
             <span>Invo</span>
             <span className="relative inline-block">
