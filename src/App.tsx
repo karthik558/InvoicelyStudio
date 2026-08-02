@@ -86,6 +86,12 @@ const InvoicePreviewSkeleton = () => (
     </div>
   </div>
 );
+import { AccessibilitySettings, LineItem } from './types';
+import { CommandPalette } from './components/CommandPalette';
+import { AccessibilityMenu } from './components/AccessibilityMenu';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
+import { ItemPresetsModal } from './components/ItemPresetsModal';
+
 import { 
   Moon,
   Sun,
@@ -99,7 +105,11 @@ import {
   Save,
   Edit,
   Eye,
-  Sliders
+  Sliders,
+  Search,
+  ShieldCheck,
+  PieChart,
+  Command
 } from 'lucide-react';
 
 const createStarterInvoice = (defaultSender?: any): Invoice => {
@@ -215,6 +225,62 @@ export default function App() {
     }
     localStorage.setItem('invoicely_theme', appTheme);
   }, [appTheme]);
+
+  // Version 3.0 Accessibility & Modals State
+  const [a11y, setA11y] = useState<AccessibilitySettings>(() => {
+    const local = localStorage.getItem('invoicely_a11y');
+    if (local) {
+      try { return JSON.parse(local); } catch (e) {}
+    }
+    return { fontScale: 'normal', highContrast: false, colorblindIcons: true, reducedMotion: false };
+  });
+
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isA11yMenuOpen, setIsA11yMenuOpen] = useState(false);
+  const [isAnalyticsDashboardOpen, setIsAnalyticsDashboardOpen] = useState(false);
+  const [isItemPresetsModalOpen, setIsItemPresetsModalOpen] = useState(false);
+
+  const handleUpdateA11y = (updates: Partial<AccessibilitySettings>) => {
+    setA11y((prev) => {
+      const next = { ...prev, ...updates };
+      localStorage.setItem('invoicely_a11y', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('font-scale-large', 'font-scale-xlarge', 'high-contrast-mode');
+    if (a11y.fontScale === 'large') root.classList.add('font-scale-large');
+    if (a11y.fontScale === 'xlarge') root.classList.add('font-scale-xlarge');
+    if (a11y.highContrast) root.classList.add('high-contrast-mode');
+  }, [a11y]);
+
+  // Global Keyboard Shortcuts (Cmd+K for Command Palette, ? for A11y Guide)
+  useEffect(() => {
+    const handleGlobalShortcuts = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      } else if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+        e.preventDefault();
+        setIsA11yMenuOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => window.removeEventListener('keydown', handleGlobalShortcuts);
+  }, []);
+
+  const handleAddItemFromPreset = (newItem: LineItem) => {
+    if (!activeInvoice) return;
+    const updated = {
+      ...activeInvoice,
+      items: [...activeInvoice.items, newItem],
+      updatedAt: Date.now()
+    };
+    handleInvoiceChange(updated);
+    showToast(`Added catalog preset item: ${newItem.description.split('-')[0]}`);
+  };
 
   // PDF Layout settings state & click outside listener
   const [isLayoutSettingsOpen, setIsLayoutSettingsOpen] = useState(false);
@@ -732,7 +798,7 @@ export default function App() {
 
           <div className="flex items-center min-w-0 select-none">
             <div className="flex items-center min-w-0">
-              <div className="flex items-center text-base sm:text-lg font-bold tracking-tight text-white mr-1 sm:mr-2 shrink-0">
+              <div className="hidden sm:flex items-center text-base sm:text-lg font-bold tracking-tight text-white mr-1 sm:mr-2 shrink-0">
                 <span>Invo</span>
                 <span className="relative inline-block">
                   ı
@@ -748,18 +814,55 @@ export default function App() {
         </div>
 
         {/* Global actions: Switcher & Operations */}
-        <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+
+          {/* Command Palette Trigger (Cmd+K) */}
+          <button
+            onClick={() => setIsCommandPaletteOpen(true)}
+            className="hidden md:flex items-center space-x-2 h-9 px-3 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg border border-white/10 text-xs transition-all cursor-pointer shrink-0"
+            title="Open Command Palette (Cmd+K)"
+          >
+            <Search className="w-4 h-4 text-[#C69A5D]" />
+            <span className="text-slate-300 text-xs font-medium">Search ⌘K</span>
+          </button>
+
+          {/* Financial Analytics Summary Toggle */}
+          <button
+            onClick={() => setIsAnalyticsDashboardOpen(prev => !prev)}
+            className={`flex items-center justify-center h-9 w-9 rounded-lg border transition-all cursor-pointer shrink-0 ${
+              isAnalyticsDashboardOpen 
+                ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
+                : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+            }`}
+            title="Toggle Financial Metrics Summary"
+          >
+            <PieChart className="w-4 h-4" />
+          </button>
+
+          {/* Accessibility Settings Menu Trigger */}
+          <button
+            onClick={() => setIsA11yMenuOpen(prev => !prev)}
+            className={`flex items-center justify-center h-9 w-9 rounded-lg border transition-all cursor-pointer shrink-0 ${
+              isA11yMenuOpen 
+                ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
+                : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+            }`}
+            title="Accessibility & Preferences"
+          >
+            <ShieldCheck className="w-4 h-4" />
+          </button>
+
           {/* Theme Toggle */}
           <button
             onClick={() => setAppTheme(prev => prev === 'light' ? 'dark' : 'light')}
-            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg border border-white/10 transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center h-9 w-9 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg border border-white/10 transition-all cursor-pointer shrink-0"
             title="Toggle Theme"
           >
             {appTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-300" />}
           </button>
 
           {/* Mobile View Tabs (Form vs Preview) */}
-          <div className="flex lg:hidden bg-slate-950/80 p-1 rounded-lg border border-white/5 shrink-0">
+          <div className="flex lg:hidden bg-slate-950/80 p-0.5 h-9 rounded-lg border border-white/5 shrink-0 items-center">
             <button
               onClick={() => setActiveMobileView('edit')}
               className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'edit' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
@@ -779,7 +882,7 @@ export default function App() {
           {/* Dynamic react-pdf Download Link Trigger (Lazy Loaded) */}
           {activeInvoice && (
             <Suspense fallback={
-              <div className="flex items-center justify-center p-2 bg-white/5 rounded-lg text-sm border border-white/10 text-gray-400 dark:text-gray-500 shrink-0 select-none animate-pulse">
+              <div className="flex items-center justify-center h-9 px-3 bg-white/5 rounded-lg text-sm border border-white/10 text-gray-400 dark:text-gray-500 shrink-0 select-none animate-pulse">
                 <Download className="w-4 h-4 text-[#C69A5D]/60" />
                 <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Compiling...</span>
               </div>
@@ -794,7 +897,7 @@ export default function App() {
               <button
                 id="pdf-layout-settings-btn"
                 onClick={() => setIsLayoutSettingsOpen(!isLayoutSettingsOpen)}
-                className={`flex items-center justify-center p-2 rounded-lg border transition-all cursor-pointer shrink-0 ${
+                className={`flex items-center justify-center h-9 px-2.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                   isLayoutSettingsOpen 
                     ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
                     : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
@@ -866,7 +969,7 @@ export default function App() {
           {/* Golden Save Button (Icon-only) */}
           <button
             onClick={handleSave}
-            className="flex items-center justify-center p-2 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] rounded-lg shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center h-9 w-9 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] rounded-lg shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer shrink-0"
             title="Save Invoice"
           >
             <Save className="w-4 h-4 text-[#0D2C2C]" />
@@ -874,13 +977,20 @@ export default function App() {
         </div>
       </header>
 
+      {/* Financial Analytics Summary Drawer */}
+      <AnalyticsDashboard
+        invoices={invoices}
+        isOpen={isAnalyticsDashboardOpen}
+        onToggle={() => setIsAnalyticsDashboardOpen(!isAnalyticsDashboardOpen)}
+      />
+
       {/* Main SaaS Workspace Block */}
       <main className="flex-1 flex relative overflow-hidden">
         
         {/* SIDEBAR: Registry Invoices List (Collapsible on mobile) */}
         <div 
           className={`
-            absolute inset-y-0 left-0 w-80 bg-white dark:bg-[#0B1B1B] z-30 transform transition-transform duration-200 lg:relative lg:translate-x-0 no-print
+            absolute inset-y-0 left-0 w-72 sm:w-80 max-w-[85vw] bg-white dark:bg-[#0B1B1B] z-30 transform transition-transform duration-200 lg:relative lg:translate-x-0 no-print
             ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
           `}
         >
@@ -927,6 +1037,7 @@ export default function App() {
                 onDelete={() => handleDeleteInvoice()}
                 onNew={handleNewInvoice}
                 onAlert={triggerAlert}
+                onOpenPresets={() => setIsItemPresetsModalOpen(true)}
               />
             </Suspense>
           ) : (
@@ -975,9 +1086,53 @@ export default function App() {
             All changes saved locally
           </span>
           <span className="text-gray-600/40">•</span>
-          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Shortcuts: ⌘S Save</span>
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Shortcuts: ⌘K Command Palette | ? Accessibility</span>
         </div>
       </footer>
+
+      {/* Command Palette (Cmd+K) */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        invoices={invoices}
+        onSelectInvoice={(id) => {
+          setSelectedId(id);
+          setIsSidebarOpen(false);
+        }}
+        onNewInvoice={handleNewInvoice}
+        onSaveInvoice={handleSave}
+        onLoadDemo={handleLoadDemo}
+        onToggleTheme={() => setAppTheme(prev => prev === 'light' ? 'dark' : 'light')}
+        appTheme={appTheme}
+        a11y={a11y}
+        onUpdateA11y={handleUpdateA11y}
+        onExportBackup={() => {
+          const dataStr = JSON.stringify(invoices, null, 2);
+          const blob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `InvoicelyStudio_Backup_${new Date().toISOString().split('T')[0]}.json`;
+          link.click();
+          URL.revokeObjectURL(url);
+        }}
+      />
+
+      {/* Accessibility Menu */}
+      <AccessibilityMenu
+        isOpen={isA11yMenuOpen}
+        onClose={() => setIsA11yMenuOpen(false)}
+        a11y={a11y}
+        onUpdateA11y={handleUpdateA11y}
+      />
+
+      {/* Service Items Preset Catalog Modal */}
+      <ItemPresetsModal
+        isOpen={isItemPresetsModalOpen}
+        onClose={() => setIsItemPresetsModalOpen(false)}
+        onAddItem={handleAddItemFromPreset}
+        currency={activeInvoice?.currency}
+      />
 
       {/* Custom Confirmation Modal */}
       {confirmModal.isOpen && (

@@ -124,3 +124,29 @@ export const getCurrencyFormatter = (currencyCode?: string) => {
     });
   }
 };
+
+export interface AccessibilitySettings {
+  fontScale: 'normal' | 'large' | 'xlarge';
+  highContrast: boolean;
+  colorblindIcons: boolean;
+  reducedMotion: boolean;
+}
+
+export interface ItemPreset {
+  category: string;
+  title: string;
+  description: string;
+  defaultRate: number;
+}
+
+export const ITEM_CATALOG_PRESETS: ItemPreset[] = [
+  { category: 'Development', title: 'Web Application Development', description: 'Full-stack custom web app development', defaultRate: 1200 },
+  { category: 'Development', title: 'API Integration & Middleware', description: 'REST / GraphQL API endpoint setup & integration', defaultRate: 750 },
+  { category: 'Development', title: 'Frontend Component Library', description: 'Custom responsive UI component design & engineering', defaultRate: 850 },
+  { category: 'Design', title: 'UI/UX Design & Wireframing', description: 'User interface mocks, visual hierarchy & design system', defaultRate: 950 },
+  { category: 'Design', title: 'Brand Identity Package', description: 'Logo, typography guidelines, and brand design assets', defaultRate: 1500 },
+  { category: 'Marketing', title: 'SEO Audit & Optimization', description: 'Search engine optimization, Core Web Vitals & metadata', defaultRate: 600 },
+  { category: 'Consulting', title: 'Technical Architecture Consultation', description: 'Strategic advisory, code review, and stack recommendations', defaultRate: 2000 },
+  { category: 'Support', title: 'Monthly Maintenance & Updates', description: 'Bug fixes, server maintenance, security patches', defaultRate: 500 },
+];
+

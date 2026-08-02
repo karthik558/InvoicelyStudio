@@ -17,7 +17,9 @@ import {
   FileText,
   DollarSign,
   Share2,
-  Database
+  Database,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 
 interface InvoiceListProps {
@@ -137,13 +139,26 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
   const getBadgeStyle = (status: InvoiceStatus) => {
     switch (status) {
       case 'paid':
-        return 'bg-green-100 text-green-800 border-green-200/60';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/80';
       case 'advance_paid':
-        return 'bg-blue-100 text-blue-800 border-blue-200/60';
+        return 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/80';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200/60';
+        return 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80';
       case 'overdue':
-        return 'bg-red-100 text-red-800 border-red-200/60';
+        return 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/80';
+    }
+  };
+
+  const renderStatusIcon = (status: InvoiceStatus) => {
+    switch (status) {
+      case 'paid':
+        return <CheckCircle className="w-2.5 h-2.5 mr-1 text-emerald-600 dark:text-emerald-400 shrink-0" />;
+      case 'advance_paid':
+        return <DollarSign className="w-2.5 h-2.5 mr-1 text-blue-600 dark:text-blue-400 shrink-0" />;
+      case 'pending':
+        return <Clock className="w-2.5 h-2.5 mr-1 text-amber-600 dark:text-amber-400 shrink-0" />;
+      case 'overdue':
+        return <AlertCircle className="w-2.5 h-2.5 mr-1 text-rose-600 dark:text-rose-400 shrink-0" />;
     }
   };
 
@@ -247,7 +262,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
               >
                 {/* Visual Accent Bar for Selected Items */}
                 {isSelected && (
-                  <div className="absolute left-0 top-3 bottom-3 w-1.5 bg-[#0D2C2C] rounded-r-md"></div>
+                  <div className="absolute left-0 top-3 bottom-3 w-1.5 bg-[#0D2C2C] dark:bg-[#C69A5D] rounded-r-md"></div>
                 )}
 
                 <div className="flex justify-between items-start pl-1.5">
@@ -276,9 +291,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
 
                 <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100 dark:border-[#1A3F3F] pl-1.5">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${getBadgeStyle(inv.status)}`}>
-                    <span className={`w-1 h-1 rounded-full mr-1.5 ${
-                      inv.status === 'paid' ? 'bg-green-500' : inv.status === 'advance_paid' ? 'bg-blue-500' : inv.status === 'pending' ? 'bg-amber-500' : 'bg-rose-500'
-                    }`} />
+                    {renderStatusIcon(inv.status)}
                     {inv.status.replace('_', ' ')}
                   </span>
                   
@@ -335,9 +348,9 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
 
           <button
             onClick={onClearAll}
-            className="w-full flex items-center justify-center space-x-1.5 py-1.5 bg-rose-50 hover:bg-rose-100/80 active:bg-rose-200/70 border border-rose-100 text-rose-600 rounded-lg text-[9px] font-bold tracking-wider uppercase transition-all cursor-pointer text-center"
+            className="w-full flex items-center justify-center space-x-1.5 py-1.5 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 active:bg-rose-200/70 border border-rose-100 dark:border-rose-900/50 text-rose-600 dark:text-rose-300 rounded-lg text-[9px] font-bold tracking-wider uppercase transition-all cursor-pointer text-center"
           >
-            <Trash2 className="w-3 h-3 text-rose-500" />
+            <Trash2 className="w-3 h-3 text-rose-500 dark:text-rose-400" />
             <span>Wipe Database & Reset</span>
           </button>
 

@@ -37,6 +37,7 @@ interface InvoiceFormProps {
   onDelete: () => void;
   onNew: () => void;
   onAlert?: (title: string, message: string) => void;
+  onOpenPresets?: () => void;
 }
 
 type FormTab = 'details' | 'parties' | 'items' | 'payment' | 'design' | 'settings';
@@ -60,7 +61,22 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   onDelete,
   onNew,
   onAlert,
+  onOpenPresets,
 }) => {
+
+  const duplicateItem = (itemToDuplicate: LineItem) => {
+    const newItem: LineItem = {
+      ...itemToDuplicate,
+      id: `item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      description: itemToDuplicate.description ? `${itemToDuplicate.description} (Copy)` : 'Copy of item'
+    };
+    onChange({
+      ...invoice,
+      items: [...invoice.items, newItem],
+      updatedAt: Date.now()
+    });
+  };
+
   const activeCurrency = invoice.currency || 'USD';
   const currencySymbol = CURRENCIES.find(c => c.code === activeCurrency)?.symbol || '$';
 
@@ -472,9 +488,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
       </div>
 
-      {/* Editor Main Tabs */}
-      <div className="hidden lg:flex bg-gray-50/40 dark:bg-[#0B1B1B] border-b border-gray-200/80 dark:border-[#1A3F3F] px-4 py-2.5 overflow-x-auto no-scrollbar justify-between items-center shrink-0">
-        <div className="flex bg-gray-200/40 dark:bg-[#0A2323] p-1 rounded-xl border border-gray-200/50 dark:border-[#1A3F3F] gap-0.5 shadow-inner">
+      {/* Editor Main Tabs (Mobile Responsive & Scrollable) */}
+      <div className="flex bg-gray-50/40 dark:bg-[#0B1B1B] border-b border-gray-200/80 dark:border-[#1A3F3F] px-3 sm:px-4 py-2 overflow-x-auto no-scrollbar justify-between items-center shrink-0 w-full">
+        <div className="flex bg-gray-200/40 dark:bg-[#0A2323] p-1 rounded-xl border border-gray-200/50 dark:border-[#1A3F3F] gap-0.5 shadow-inner overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto">
           {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
             const isActive = activeTab === tab;
             const label = tab.charAt(0).toUpperCase() + tab.slice(1);
@@ -821,13 +837,25 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white">
                 Line Items ({invoice.items.length})
               </h3>
-              <button
-                onClick={addItem}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#F0F7F7] dark:bg-[#0B1B1B] hover:bg-[#0D2C2C] dark:hover:bg-white/10 hover:text-white text-[#0D2C2C] dark:text-white text-xs font-semibold rounded-lg cursor-pointer transition-colors border border-[#0D2C2C]/10"
-              >
-                <Plus className="w-3 h-3" />
-                <span>Add Item</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                {onOpenPresets && (
+                  <button
+                    type="button"
+                    onClick={onOpenPresets}
+                    className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-[#C69A5D]/10 hover:bg-[#C69A5D] text-[#C69A5D] hover:text-[#0D2C2C] text-xs font-semibold rounded-lg cursor-pointer transition-colors border border-[#C69A5D]/30"
+                  >
+                    <Layers className="w-3 h-3 shrink-0" />
+                    <span>From Catalog</span>
+                  </button>
+                )}
+                <button
+                  onClick={addItem}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#F0F7F7] dark:bg-[#0B1B1B] hover:bg-[#0D2C2C] dark:hover:bg-white/10 hover:text-white text-[#0D2C2C] dark:text-white text-xs font-semibold rounded-lg cursor-pointer transition-colors border border-[#0D2C2C]/10"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Add Item</span>
+                </button>
+              </div>
             </div>
 
             {/* List of Line Items */}
@@ -839,13 +867,22 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Item #{index + 1}</span>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="text-gray-400 dark:text-gray-500 hover:text-rose-600 transition-colors p-1 rounded hover:bg-rose-50 cursor-pointer"
-                      title="Delete Line Item"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => duplicateItem(item)}
+                        className="text-gray-400 dark:text-gray-500 hover:text-[#C69A5D] transition-colors p-1 rounded hover:bg-gray-200 dark:hover:bg-white/10 cursor-pointer"
+                        title="Duplicate Line Item"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="text-gray-400 dark:text-gray-500 hover:text-rose-600 transition-colors p-1 rounded hover:bg-rose-50 cursor-pointer"
+                        title="Delete Line Item"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">
@@ -1003,12 +1040,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 className="flex items-center justify-between border-b border-gray-100 dark:border-[#1A3F3F] pb-2 cursor-pointer group select-none"
               >
                 <div className="space-y-0.5">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white group-hover:text-[#0D2C2C] dark:text-white/80 transition-colors">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white group-hover:text-[#C69A5D] dark:group-hover:text-[#C69A5D] transition-colors">
                     GST & Tax Category Addon
                   </h4>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className={`text-[11px] font-semibold transition-colors ${invoice.gstEnabled ? 'text-[#0D2C2C] dark:text-white' : 'text-gray-400 dark:text-gray-500'}`}>
+                  <span className={`text-[11px] font-semibold transition-colors ${invoice.gstEnabled ? 'text-[#0D2C2C] dark:text-[#C69A5D]' : 'text-gray-400 dark:text-gray-500'}`}>
                     {invoice.gstEnabled ? 'Enabled' : 'Disabled'}
                   </span>
                   <button
@@ -1019,12 +1056,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       e.stopPropagation();
                       updateField(null, 'gstEnabled', !invoice.gstEnabled);
                     }}
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-[#0D2C2C]/50 ${
-                      invoice.gstEnabled ? 'bg-[#0D2C2C]' : 'bg-gray-200 hover:bg-gray-300'
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#C69A5D] ${
+                      invoice.gstEnabled ? 'bg-[#C69A5D]' : 'bg-gray-300 dark:bg-[#1A3F3F] hover:bg-gray-400 dark:hover:bg-[#255757]'
                     }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white dark:bg-[#0B1B1B] shadow-sm ring-0 transition duration-200 ease-in-out ${
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
                         invoice.gstEnabled ? 'translate-x-4' : 'translate-x-0'
                       }`}
                     />
@@ -1546,12 +1583,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         {/* TAB 6: SETTINGS */}
         {activeTab === 'settings' && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="bg-amber-50 border border-amber-200/40 rounded-xl p-4 text-xs text-amber-800 space-y-1.5 shadow-sm">
-              <p className="font-bold flex items-center gap-1.5 text-amber-900">
+            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-500/30 rounded-xl p-4 text-xs text-amber-800 dark:text-amber-200 space-y-1.5 shadow-sm">
+              <p className="font-bold flex items-center gap-1.5 text-amber-900 dark:text-amber-300">
                 <Info className="w-4 h-4 text-[#C69A5D]" />
                 <span>Default Global Details</span>
               </p>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-[11px]">
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-[11px]">
                 Save your primary company information here. Whenever you click <strong>Create New</strong>, these default details will auto-populate as your sender parameters automatically.
               </p>
             </div>

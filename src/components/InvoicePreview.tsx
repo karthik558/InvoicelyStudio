@@ -6,6 +6,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Invoice, getCurrencyFormatter } from '../types';
 
+import { Monitor, Tablet, Smartphone, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+
 const getAlphaColor = (hex: string, alpha: number): string => {
   if (!hex || typeof hex !== 'string') return `rgba(15, 118, 110, ${alpha})`;
   let cleanHex = hex.trim().replace('#', '');
@@ -44,11 +46,12 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     theme,
   } = invoice;
 
-  const [zoom, setZoom] = useState<number>(100); // default 100% to fit exactly
+  const [zoom, setZoom] = useState<number>(100); // default 100%
+  const [deviceMode, setDeviceMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const outerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const printAreaRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(500); // stable default
+  const [containerWidth, setContainerWidth] = useState<number>(500);
   const [printAreaHeight, setPrintAreaHeight] = useState<number>(1122);
 
   useEffect(() => {
@@ -64,7 +67,6 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
   useEffect(() => {
     if (!printAreaRef.current) return;
-    // Set a small delay to ensure rendering of any changes is complete
     const updateHeight = () => {
       if (printAreaRef.current) {
         setPrintAreaHeight(printAreaRef.current.scrollHeight);
@@ -154,28 +156,64 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   return (
     <div ref={outerRef} className="flex flex-col h-full bg-[#FAFAFA] border-l border-gray-200 dark:border-[#1A3F3F] text-gray-800 dark:text-gray-200 select-none w-full">
       {/* Zoom and Preview Head Controls */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#0D2C2C] text-white no-print shadow-sm">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#0D2C2C] text-white no-print border-b border-[#1A3F3F]">
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-[#C69A5D]"></span>
-          <span className="text-xs font-bold uppercase tracking-wider text-white">Live Preview</span>
+          <span className="w-2 h-2 rounded-full bg-[#C69A5D] animate-pulse"></span>
+          <span className="text-xs font-bold uppercase tracking-wider text-white">Live Document Preview</span>
+          <span className="text-[10px] text-slate-300 font-mono hidden sm:inline">({theme.templateId.toUpperCase()})</span>
+        </div>
+
+        {/* Device Frames Mode */}
+        <div className="hidden sm:flex items-center space-x-1 bg-black/20 p-1 rounded-lg border border-white/10">
+          <button
+            onClick={() => setDeviceMode('desktop')}
+            className={`p-1.5 rounded text-xs transition-all cursor-pointer ${deviceMode === 'desktop' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400 hover:text-white'}`}
+            title="Desktop Print View"
+          >
+            <Monitor className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setDeviceMode('tablet')}
+            className={`p-1.5 rounded text-xs transition-all cursor-pointer ${deviceMode === 'tablet' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400 hover:text-white'}`}
+            title="Tablet Preview View"
+          >
+            <Tablet className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setDeviceMode('mobile')}
+            className={`p-1.5 rounded text-xs transition-all cursor-pointer ${deviceMode === 'mobile' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400 hover:text-white'}`}
+            title="Mobile Preview View"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+          </button>
         </div>
         
-        <div className="flex items-center space-x-3 text-xs">
-          <span className="text-gray-200 font-medium">Zoom: {zoom}%</span>
-          <input
-            type="range"
-            min="60"
-            max="150"
-            step="5"
-            value={zoom}
-            onChange={(e) => setZoom(Number(e.target.value))}
-            className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#C69A5D]"
-          />
+        {/* Zoom Controls */}
+        <div className="flex items-center space-x-2 text-xs">
+          <button
+            onClick={() => setZoom(prev => Math.max(50, prev - 10))}
+            className="p-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
+            title="Zoom Out"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          
+          <span className="text-[11px] font-mono font-bold w-9 text-center text-slate-200">{zoom}%</span>
+
+          <button
+            onClick={() => setZoom(prev => Math.min(150, prev + 10))}
+            className="p-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
+            title="Zoom In"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+
           <button
             onClick={() => setZoom(100)}
-            className="px-2 py-1 rounded bg-[#164E4E] hover:bg-[#1C5E5E] text-[10px] text-white font-semibold transition-colors cursor-pointer"
+            className="p-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
+            title="Reset Zoom"
           >
-            Reset
+            <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -183,8 +221,11 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       {/* Sheet Container */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-auto p-4 sm:p-6 bg-[#F5F5F5] dark:bg-slate-950 w-full"
+        className={`flex-1 overflow-auto p-4 sm:p-6 bg-[#E8EBEB] dark:bg-slate-950 w-full flex justify-center items-start ${
+          deviceMode === 'tablet' ? 'max-w-[768px] mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : deviceMode === 'mobile' ? 'max-w-[420px] mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : ''
+        }`}
       >
+
         {customFontStyles}
 
         {/* Scaled viewport container */}

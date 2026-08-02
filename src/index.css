@@ -141,3 +141,59 @@ html.dark body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
 }
 
+/* Accessibility Focus Visible Ring */
+*:focus-visible {
+  outline: 2px solid #C69A5D !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessibility Font Scale Modes */
+html.font-scale-large {
+  font-size: 112.5%; /* 18px base */
+}
+
+html.font-scale-xlarge {
+  font-size: 125%; /* 20px base */
+}
+
+/* High Contrast Mode Overrides */
+html.high-contrast-mode body {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast-mode input,
+html.high-contrast-mode select,
+html.high-contrast-mode textarea,
+html.high-contrast-mode button {
+  border-color: #C69A5D !important;
+  font-weight: 600 !important;
+}
+
+html.high-contrast-mode .border,
+html.high-contrast-mode [class*="border-"] {
+  border-color: #C69A5D !important;
+}
+
+/* Keyboard Shortcut key display */
+kbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
