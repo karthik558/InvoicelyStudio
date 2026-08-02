@@ -192,7 +192,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C]/50 rounded-lg pl-9 pr-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 placeholder-gray-400 outline-none transition-all focus:bg-white dark:focus:bg-[#0B1B1B] dark:bg-[#0B1B1B] focus:ring-1 focus:ring-[#0D2C2C]"
+            className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C]/50 rounded-lg pl-9 pr-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 placeholder-gray-400 outline-none transition-all focus:bg-white focus:ring-1 focus:ring-[#0D2C2C]"
             placeholder="Search invoices, clients..."
           />
         </div>
@@ -255,7 +255,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
                 className={`
                   p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-200 relative group select-none
                   ${isSelected
-                    ? 'bg-gradient-to-r from-emerald-50/20 to-[#F0F7F7] dark:from-[#1A3F3F] dark:to-[#0A2323] border-[#0D2C2C] dark:border-[#C69A5D] shadow-md shadow-[#0D2C2C]/5 translate-x-[2px]'
+                    ? 'bg-linear-to-r from-emerald-50/20 to-[#F0F7F7] dark:from-[#1A3F3F] dark:to-[#0A2323] border-[#0D2C2C] dark:border-[#C69A5D] shadow-md shadow-[#0D2C2C]/5 translate-x-0.5'
                     : 'bg-white dark:bg-[#0B1B1B] border-gray-200 dark:border-[#1A3F3F] hover:border-gray-300 dark:hover:border-[#C69A5D] dark:hover:bg-[#1A3F3F] hover:shadow-sm'
                   }
                 `}
@@ -310,7 +310,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
       </div>
 
       {/* Backup Utility Buttons (Bottom rail) */}
-      <div className="p-4 border-t border-gray-200/80 dark:border-[#1A3F3F] bg-gradient-to-b from-white to-gray-50 dark:from-[#0B1B1B] dark:to-[#0A2323] text-xs">
+      <div className="p-4 border-t border-gray-200/80 dark:border-[#1A3F3F] bg-linear-to-b from-white to-gray-50 dark:from-[#0B1B1B] dark:to-[#0A2323] text-xs">
         <div className="bg-gray-100/50 dark:bg-[#1A3F3F]/30 border border-gray-200/60 dark:border-[#1A3F3F] rounded-xl p-3.5 space-y-3">
           <div className="flex items-center justify-between text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-0.5">
             <span className="flex items-center gap-1.5">
@@ -321,7 +321,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={exportAllInvoices}
-              className="flex items-center justify-center space-x-1 py-1.5 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] text-gray-600 dark:text-gray-400 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
+              className="flex items-center justify-center space-x-1 py-1.5 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] text-gray-600 dark:text-gray-400 rounded-lg cursor-pointer transition-all shadow-sm font-bold text-[9px] uppercase tracking-wider"
               title="Download full backup file"
             >
               <Download className="w-3 h-3 text-[#C69A5D]" />

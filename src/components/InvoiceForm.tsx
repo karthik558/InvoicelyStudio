@@ -25,7 +25,9 @@ import {
   Copy,
   QrCode,
   ChevronDown,
-  PenTool
+  PenTool,
+  Download,
+  Save
 } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -488,9 +490,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
       </div>
 
-      {/* Editor Main Tabs (Mobile Responsive & Scrollable) */}
-      <div className="flex bg-gray-50/40 dark:bg-[#0B1B1B] border-b border-gray-200/80 dark:border-[#1A3F3F] px-3 sm:px-4 py-2 overflow-x-auto no-scrollbar justify-between items-center shrink-0 w-full">
-        <div className="flex bg-gray-200/40 dark:bg-[#0A2323] p-1 rounded-xl border border-gray-200/50 dark:border-[#1A3F3F] gap-0.5 shadow-inner overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto">
+      {/* Editor Main Navigation Tabs (Floating Gold Capsule Chips) */}
+      <div className="flex border-b border-gray-200/80 dark:border-[#1A3F3F] bg-gray-50/70 dark:bg-[#0A2323] px-3 sm:px-4 py-2.5 overflow-x-auto no-scrollbar items-center shrink-0 w-full select-none transition-colors">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto">
           {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
             const isActive = activeTab === tab;
             const label = tab.charAt(0).toUpperCase() + tab.slice(1);
@@ -508,14 +510,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`
-                  flex items-center space-x-2 py-1.5 px-3.5 text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer whitespace-nowrap rounded-lg outline-none focus:outline-none select-none
+                  flex items-center space-x-2 py-1.5 px-3.5 sm:px-4 text-xs font-bold tracking-wide transition-all duration-200 cursor-pointer whitespace-nowrap rounded-full outline-none select-none shrink-0
                   ${isActive 
-                    ? 'bg-white dark:bg-[#0B1B1B] text-[#0D2C2C] dark:text-white shadow-sm font-bold scale-[1.02]' 
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/40 dark:hover:bg-[#1A3F3F]'
+                    ? 'bg-[#C69A5D] text-[#0D2C2C] font-extrabold shadow-md shadow-[#C69A5D]/20 scale-[1.02]' 
+                    : 'bg-white/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/15'
                   }
                 `}
               >
-                <span className={`transition-colors duration-200 ${isActive ? 'text-[#C69A5D]' : 'text-gray-400 dark:text-gray-500'}`}>
+                <span className={`transition-colors duration-200 ${isActive ? 'text-[#0D2C2C]' : 'text-gray-400 dark:text-slate-400'}`}>
                   {icons[tab]}
                 </span>
                 <span>{label}</span>
@@ -523,8 +525,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             );
           })}
         </div>
-
-
       </div>
 
       {/* Editor Fields Area (Scrollable) */}
@@ -667,9 +667,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <button
                     type="button"
                     onClick={handleApplyGlobalSender}
-                    className="text-[10px] bg-[#0D2C2C] hover:bg-[#164E4E] text-white px-2 py-1 rounded font-semibold cursor-pointer transition-colors"
+                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white text-[11px] rounded-lg border border-gray-200 dark:border-[#1A3F3F] transition-all font-semibold cursor-pointer shadow-2xs shrink-0"
+                    title="Load pre-saved default company sender and bank parameters"
                   >
-                    Load Default Settings
+                    <Download className="w-3 h-3 text-[#C69A5D]" />
+                    <span>Load Default Settings</span>
                   </button>
                 )}
               </div>
@@ -1323,7 +1325,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={invoice.signatureText || ''}
                       onChange={(e) => updateField(null, 'signatureText', e.target.value)}
                       placeholder="e.g. John Doe"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-serif italic text-base focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-serif italic focus:ring-1 focus:ring-[#0D2C2C]"
                     />
                   </div>
                 )}
@@ -1423,7 +1425,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         p-2.5 rounded-lg text-left border cursor-pointer transition-all duration-150
                         ${isSelected 
                           ? 'border-[#0D2C2C] bg-[#F0F7F7] dark:border-[#C69A5D] dark:bg-[#C69A5D]/10 text-[#0D2C2C] dark:text-[#C69A5D] shadow-sm' 
-                          : 'border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:border-[#1A3F3F] hover:text-gray-700 dark:text-gray-200'
+                          : 'border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] text-gray-500 hover:border-gray-300 dark:hover:border-[#C69A5D] hover:text-gray-700 dark:text-gray-300'
                         }
                       `}
                     >
@@ -1528,7 +1530,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                           p-2 rounded-lg border cursor-pointer text-left transition-all flex items-center justify-between
                           ${isSelected 
                             ? 'border-[#0D2C2C] bg-[#F0F7F7] dark:border-[#C69A5D] dark:bg-[#C69A5D]/10 text-[#0D2C2C] dark:text-[#C69A5D]' 
-                            : 'border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:border-[#1A3F3F] hover:text-gray-700 dark:text-gray-200'
+                            : 'border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] text-gray-500 hover:border-gray-300 dark:hover:border-[#C69A5D] hover:text-gray-700 dark:text-gray-300'
                           }
                         `}
                       >
@@ -1790,17 +1792,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <button
                 type="button"
                 onClick={handleSaveGlobalSettings}
-                className="flex-1 py-2.5 bg-[#0D2C2C] hover:bg-[#164E4E] text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer text-center"
+                className="flex-1 flex items-center justify-center space-x-1.5 py-2.5 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] font-extrabold text-xs rounded-xl shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer text-center"
               >
-                Save Default Settings
+                <Save className="w-4 h-4 text-[#0D2C2C]" />
+                <span>Save Default Settings</span>
               </button>
               <button
                 type="button"
                 onClick={handleUseCurrentAsDefault}
-                className="py-2.5 px-4 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] dark:bg-[#0A2323] text-gray-700 dark:text-gray-200 font-semibold text-xs rounded-xl border border-gray-200 dark:border-[#1A3F3F] transition-all cursor-pointer text-center"
+                className="flex items-center justify-center space-x-1.5 py-2.5 px-4 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] text-gray-700 dark:text-gray-200 font-semibold text-xs rounded-xl border border-gray-200 dark:border-[#1A3F3F] transition-all cursor-pointer text-center"
                 title="Fill settings with currently opened invoice's details"
               >
-                Use Current Sender Info
+                <Copy className="w-4 h-4 text-[#C69A5D]" />
+                <span>Use Current Sender Info</span>
               </button>
             </div>
           </div>
