@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Invoice, AccessibilitySettings } from '../types';
 import { 
   Search, 
@@ -78,6 +79,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-new',
       title: 'Create New Invoice',
       category: 'Actions',
+      keywords: 'new invoice blank',
       icon: Plus,
       run: () => { onNewInvoice(); onClose(); }
     },
@@ -85,6 +87,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-save',
       title: 'Save Current Invoice',
       category: 'Actions',
+      keywords: 'save',
       icon: Save,
       shortcut: '⌘S',
       run: () => { onSaveInvoice(); onClose(); }
@@ -93,6 +96,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-theme',
       title: `Switch to ${appTheme === 'dark' ? 'Light' : 'Dark'} Mode`,
       category: 'Preferences',
+      keywords: 'theme dark light mode',
       icon: appTheme === 'dark' ? Sun : Moon,
       run: () => { onToggleTheme(); onClose(); }
     },
@@ -100,6 +104,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-contrast',
       title: `Toggle High Contrast Mode (${a11y.highContrast ? 'Active' : 'Off'})`,
       category: 'Accessibility',
+      keywords: 'contrast accessibility',
       icon: Contrast,
       run: () => { onUpdateA11y({ highContrast: !a11y.highContrast }); onClose(); }
     },
@@ -107,6 +112,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-[#-scale]',
       title: `Cycle Font Size (${a11y.fontScale.toUpperCase()})`,
       category: 'Accessibility',
+      keywords: 'font size text',
       icon: Type,
       run: () => {
         const nextScale = a11y.fontScale === 'normal' ? 'large' : a11y.fontScale === 'large' ? 'xlarge' : 'normal';
@@ -118,6 +124,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-demo',
       title: 'Load Aesthetic Demo Samples',
       category: 'Templates',
+      keywords: 'demo sample template',
       icon: Layers,
       run: () => { onLoadDemo(); onClose(); }
     },
@@ -125,15 +132,18 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'action-export',
       title: 'Export Database JSON Backup',
       category: 'Data',
+      keywords: 'export backup json download',
       icon: Download,
       run: () => { onExportBackup(); onClose(); }
     }
   ];
 
-  const filteredActions = actions.filter(a =>
-    a.title.toLowerCase().includes(query.toLowerCase()) ||
-    a.category.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredActions = actions.filter(a => {
+    const q = query.toLowerCase();
+    return a.title.toLowerCase().includes(q) ||
+      a.category.toLowerCase().includes(q) ||
+      (a.keywords || '').includes(q);
+  });
 
   const totalItems = matchingInvoices.length + filteredActions.length;
 
@@ -164,9 +174,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-100 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 animate-fadeIn"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -177,21 +187,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
-        {/* Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-[var(--line)] bg-[var(--chrome)]">
-          <Search className="w-5 h-5 text-[var(--accent-text)] mr-3 shrink-0" />
+        <div className="flex items-center gap-3 h-14 px-4 border-b border-[var(--line)] bg-[var(--surface)]">
+          <Search className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
-            placeholder="Type a command or search invoices... (e.g. INV-2026, theme, font)"
-            className="flex-1 bg-transparent text-sm text-[var(--ink)] placeholder-[var(--muted)] outline-none border-none focus:ring-0"
+            placeholder="Search invoices or commands"
+            className="command-search min-w-0 w-full flex-1 bg-transparent border-0 p-0 text-sm text-[var(--ink)] placeholder:text-[var(--muted)] shadow-none outline-none ring-0"
             aria-label="Command search input"
           />
           <button 
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)] transition-colors cursor-pointer shrink-0"
             aria-label="Close command palette"
           >
             <X className="w-4 h-4" />
@@ -246,7 +255,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     }`}
                   >
                     <div className="flex items-center space-x-2.5 min-w-0">
-                      <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[var(--ink)]' : 'text-[var(--accent-text)]'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[var(--on-accent)]' : 'text-[var(--accent-text)]'}`} />
                       <span className="truncate">{action.title}</span>
                     </div>
                     <div className="flex items-center space-x-2 shrink-0">
@@ -283,6 +292,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
