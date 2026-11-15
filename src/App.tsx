@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { Invoice, AppSettings, localISODate } from './types';
 import { sampleInvoicesList } from './data/sampleInvoice';
 
@@ -782,18 +783,24 @@ export default function App() {
     <div className="app-ui flex flex-col h-screen bg-[var(--canvas)] text-[var(--ink)] overflow-hidden font-sans">
       
       {/* Aesthetic Brand Preloader */}
-      {isInitialLoading && (
-        <div className={`fixed inset-0 bg-[var(--ink)] z-100 flex items-center justify-center transition-all duration-300 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
-          <div className="flex items-center text-3xl sm:text-5xl font-bold tracking-tight text-white select-none">
-            <span>Invo</span>
-            <span className="relative inline-block">
-              ı
-              <span className="absolute top-2 sm:top-2.5 left-1 sm:left-1 w-1.5 sm:w-1.75 h-1.5 sm:h-1.75 bg-white rounded-xs animate-dotBounce"></span>
-            </span>
-            <span>cely</span>
-            <span className="font-light text-slate-300 ml-2">Studio</span>
+      {isInitialLoading && createPortal(
+        <div className={`fixed inset-0 z-[200] bg-[var(--canvas)] grid place-items-center transition-opacity duration-300 ease-out ${isFadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className="flex flex-col items-center">
+            <div className="flex items-baseline text-3xl sm:text-5xl font-bold tracking-tight text-[var(--ink)] select-none">
+              <span>Invo</span>
+              <span className="relative inline-block">
+                ı
+                <span className="absolute top-[0.22em] left-1/2 ml-[-0.09em] w-[0.18em] h-[0.18em] rounded-full bg-[var(--accent)] animate-dotBounce"></span>
+              </span>
+              <span>cely</span>
+              <span className="font-light text-[var(--muted)] ml-[0.28em]">Studio</span>
+            </div>
+            <div className="mt-6 h-1 w-24 overflow-hidden rounded-full bg-[var(--line)]">
+              <div className="h-full w-full origin-left rounded-full bg-[var(--accent)] animate-preloaderBar"></div>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Dynamic Toast Notice */}

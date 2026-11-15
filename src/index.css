@@ -98,9 +98,14 @@ body {
 }
 
 @keyframes infiniteProgress {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(0%); }
-  100% { transform: translateX(100%); }
+  from { transform: translateX(-120%); }
+  to { transform: translateX(240%); }
+}
+
+@keyframes preloaderBar {
+  0% { transform: scaleX(0.18); }
+  50% { transform: scaleX(1); }
+  100% { transform: scaleX(0.18); }
 }
 
 .animate-fadeIn { animation: fadeIn 0.18s ease-out forwards; }
@@ -108,7 +113,8 @@ body {
 .animate-slideUp { animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slideDown { animation: slideDown 0.16s ease-out forwards; }
 .animate-dotBounce { animation: dotBounce 1.4s infinite ease-in-out; transform-origin: bottom center; }
-.animate-infiniteProgress { animation: infiniteProgress 1.6s infinite ease-in-out; }
+.animate-infiniteProgress { animation: infiniteProgress 1.1s infinite linear; }
+.animate-preloaderBar { animation: preloaderBar 1.2s ease-in-out infinite; }
 
 @media print {
   body {
