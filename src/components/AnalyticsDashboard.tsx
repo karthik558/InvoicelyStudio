@@ -99,7 +99,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           >
             <div className="flex justify-between items-center text-[9px] sm:text-[10px] text-slate-400">
               <span className="font-semibold uppercase tracking-wider truncate">Total Billed</span>
-              <TrendingUp className="w-3 h-3 text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
+              <TrendingUp className="w-3 h-3 text-[var(--gold)] group-hover:scale-110 transition-transform shrink-0" />
             </div>
             <div className="text-xs sm:text-sm font-bold font-mono text-[var(--ink)] mt-1 truncate">
               {formatter.format(totalInvoiced)}

@@ -177,8 +177,8 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
     notes: defaultSender?.notes || 'Thank you for your business!',
     terms: defaultSender?.terms || 'Payment is due within 14 days of issue.',
     theme: {
-      primaryColor: '#1e3a8a',
-      accentColor: '#c2410c',
+      primaryColor: '#114048',
+      accentColor: '#d8a748',
       fontFamily: 'Inter',
       templateId: 'teal'
     },
@@ -600,8 +600,8 @@ export default function App() {
       notes,
       terms,
       theme: {
-        primaryColor: '#1e3a8a',
-        accentColor: '#c2410c',
+        primaryColor: '#114048',
+        accentColor: '#d8a748',
         fontFamily: 'Inter',
         templateId: 'teal'
       },
@@ -838,7 +838,7 @@ export default function App() {
                 <span>Invo</span>
                 <span className="relative inline-block">
                   ı
-                  <span className="absolute top-1 left-0.5 w-1 h-1 bg-[var(--accent)] rounded-xs"></span>
+                  <span className="absolute top-1 left-0.5 w-1 h-1 bg-[var(--gold)] rounded-xs"></span>
                 </span>
                 <span>cely</span>
                 <span className="font-light text-[var(--muted)] ml-1.5">Studio</span>
@@ -1251,10 +1251,10 @@ export default function App() {
               <button
                 type="button"
                 onClick={confirmModal.onConfirm}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer text-white shadow-md ${
+                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer shadow-md ${
                   confirmModal.isDestructive 
-                    ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20' 
-                    : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--ink)] font-extrabold shadow-[var(--accent)]/20'
+                    ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20' 
+                    : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] font-extrabold shadow-[var(--accent)]/20'
                 }`}
               >
                 {confirmModal.confirmText || 'Confirm'}

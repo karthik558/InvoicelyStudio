@@ -75,8 +75,8 @@ const formatCurrency = (val: number) => {
 };
 
 const getStyles = (theme: InvoiceTheme) => {
-  const primary = theme.primaryColor || '#1e3a8a';
-  const accent = theme.accentColor || '#c2410c';
+  const primary = theme.primaryColor || '#114048';
+  const accent = theme.accentColor || '#d8a748';
   const templateId = theme.templateId || 'teal';
   const isDark = templateId === 'dark';
   const isCompact = theme.pdfLayout === 'compact';
@@ -536,7 +536,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
     paid: { bg: '#dcfce7', text: '#166534' },
     pending: { bg: '#fef3c7', text: '#92400e' },
     overdue: { bg: '#fee2e2', text: '#991b1b' },
-    advance_paid: { bg: '#dbeafe', text: '#1e3a8a' },
+    advance_paid: { bg: '#e4f0f1', text: '#0e3a40' },
   };
 
   const currentStatusStyle = statusColors[status] || statusColors.pending;

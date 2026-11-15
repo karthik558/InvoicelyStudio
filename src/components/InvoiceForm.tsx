@@ -59,6 +59,7 @@ type FormTab = 'details' | 'parties' | 'items' | 'payment' | 'design' | 'setting
 
 // Predefined premium color palettes
 const COLOR_PALETTES = [
+  { name: 'Studio Teal & Gold', primary: '#114048', accent: '#d8a748' },
   { name: 'Ink Navy & Terracotta', primary: '#1e3a8a', accent: '#c2410c' },
   { name: 'Sleek Obsidian & Emerald', primary: '#0f172a', accent: '#10b981' },
   { name: 'Classic Corporate Navy', primary: '#1e3a8a', accent: '#3b82f6' },
@@ -1421,7 +1422,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 ].map((item) => {
                   const isSelected = invoice.theme.templateId === item.id;
                   const TEMPLATE_DEFAULTS: Record<string, { primary: string; accent: string }> = {
-                    teal: { primary: '#1e3a8a', accent: '#c2410c' },
+                    teal: { primary: '#114048', accent: '#d8a748' },
                     classic: { primary: '#1e3a8a', accent: '#3b82f6' },
                     modern: { primary: '#1f2937', accent: '#f59e0b' },
                     simple: { primary: '#0f172a', accent: '#10b981' },
@@ -1433,7 +1434,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <button
                       key={item.id}
                       onClick={() => {
-                        const defaults = TEMPLATE_DEFAULTS[item.id] || { primary: '#1e3a8a', accent: '#c2410c' };
+                        const defaults = TEMPLATE_DEFAULTS[item.id] || { primary: '#114048', accent: '#d8a748' };
                         onChange({
                           ...invoice,
                           theme: {

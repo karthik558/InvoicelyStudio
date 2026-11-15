@@ -62,8 +62,8 @@ export const sampleInvoice: Invoice = {
   notes: 'Thank you for partnering with Aesthetic Design Agency Inc. We sincerely appreciate your business and look forward to collaborating again on future milestones.',
   terms: 'Please pay this invoice within 14 days of issue. Balance is overdue after July 10, 2026. A 1.5% late interest fee per month will be applied to all past-due balances.',
   theme: {
-    primaryColor: '#1e3a8a', // Deep Teal
-    accentColor: '#c2410c',  // Warm Amber/Gold
+    primaryColor: '#114048', // Studio teal, matched to the favicon
+    accentColor: '#d8a748',  // Favicon gold
     fontFamily: 'Inter',
     templateId: 'teal'
   },
