@@ -15,17 +15,17 @@ const PDFExporter = React.lazy(() => import('./components/PDFExporter').then(m =
 
 // Beautiful, responsive skeletal loading designs
 const InvoiceListSkeleton = () => (
-  <div className="flex flex-col h-full bg-[#0E2C2C] text-white p-5 space-y-4 animate-pulse">
-    <div className="h-5 bg-white/10 rounded-lg w-1/3" />
-    <div className="h-10 bg-white/5 rounded-xl w-full border border-white/5" />
+  <div className="flex flex-col h-full bg-[var(--surface)] p-5 space-y-4 animate-pulse">
+    <div className="h-5 bg-[var(--line)] rounded-lg w-1/3" />
+    <div className="h-10 bg-[var(--surface-muted)] rounded-xl w-full border border-[var(--line)]" />
     <div className="space-y-3 pt-3 flex-1 overflow-hidden">
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+        <div key={i} className="p-3.5 bg-[var(--surface-muted)] rounded-xl border border-[var(--line)] space-y-2">
           <div className="flex justify-between">
-            <div className="h-4 bg-white/10 rounded w-1/3" />
-            <div className="h-3 bg-white/10 rounded w-1/5" />
+            <div className="h-4 bg-[var(--line)] rounded w-1/3" />
+            <div className="h-3 bg-[var(--line)] rounded w-1/5" />
           </div>
-          <div className="h-3 bg-white/5 rounded w-1/2" />
+          <div className="h-3 bg-[var(--line)] rounded w-1/2" />
         </div>
       ))}
     </div>
@@ -33,8 +33,8 @@ const InvoiceListSkeleton = () => (
 );
 
 const InvoiceFormSkeleton = () => (
-  <div className="flex flex-col h-full bg-white dark:bg-[#0B1B1B] p-6 space-y-6 animate-pulse overflow-hidden">
-    <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-[#1A3F3F] shrink-0">
+  <div className="flex flex-col h-full bg-[var(--surface)] p-6 space-y-6 animate-pulse overflow-hidden">
+    <div className="flex justify-between items-center pb-4 border-b border-[var(--line)] shrink-0">
       <div className="h-6 bg-slate-200 rounded-lg w-1/4" />
       <div className="flex space-x-2">
         <div className="h-8 bg-slate-100 rounded-lg w-20" />
@@ -65,8 +65,8 @@ const InvoiceFormSkeleton = () => (
 );
 
 const InvoicePreviewSkeleton = () => (
-  <div className="flex flex-col h-full bg-[#E8EBEB] p-6 items-center justify-center animate-pulse overflow-hidden">
-    <div className="bg-white dark:bg-[#0B1B1B] w-full max-w-120 sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
+  <div className="flex flex-col h-full bg-[var(--preview)] p-6 items-center justify-center animate-pulse overflow-hidden">
+    <div className="bg-[var(--surface)] w-full max-w-120 sm:max-w-xl aspect-[1/1.41] rounded-2xl shadow-xl shadow-slate-900/5 p-8 space-y-8 flex flex-col justify-between border border-slate-200/40">
       <div className="flex justify-between shrink-0">
         <div className="space-y-2 w-1/3">
           <div className="h-6 bg-slate-200 rounded-lg w-full" />
@@ -164,8 +164,8 @@ const createStarterInvoice = (defaultSender?: any): Invoice => {
     notes: defaultSender?.notes || 'Thank you for your business!',
     terms: defaultSender?.terms || 'Payment is due within 14 days of issue.',
     theme: {
-      primaryColor: '#0f766e', // Deep Teal
-      accentColor: '#b45309',  // Gold
+      primaryColor: '#1e3a8a',
+      accentColor: '#c2410c',
       fontFamily: 'Inter',
       templateId: 'teal'
     },
@@ -578,8 +578,8 @@ export default function App() {
       notes,
       terms,
       theme: {
-        primaryColor: '#0f766e', // Deep Teal
-        accentColor: '#b45309',  // Gold
+        primaryColor: '#1e3a8a',
+        accentColor: '#c2410c',
         fontFamily: 'Inter',
         templateId: 'teal'
       },
@@ -751,16 +751,16 @@ export default function App() {
 
 
   return (
-    <div className="flex flex-col h-screen bg-[#F3F5F5] text-slate-800 overflow-hidden font-sans">
+    <div className="app-ui flex flex-col h-screen bg-[var(--canvas)] text-[var(--ink)] overflow-hidden font-sans">
       
       {/* Aesthetic Brand Preloader */}
       {isInitialLoading && (
-        <div className={`fixed inset-0 bg-[#0D2C2C] z-100 flex items-center justify-center transition-all duration-300 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
+        <div className={`fixed inset-0 bg-[var(--ink)] z-100 flex items-center justify-center transition-all duration-300 ease-in-out ${isFadeOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
           <div className="flex items-center text-3xl sm:text-5xl font-bold tracking-tight text-white select-none">
             <span>Invo</span>
             <span className="relative inline-block">
               ı
-              <span className="absolute top-2 sm:top-2.5 left-1 sm:left-1 w-1.5 sm:w-1.75 h-1.5 sm:h-1.75 bg-[#C69A5D] rounded-xs animate-dotBounce"></span>
+              <span className="absolute top-2 sm:top-2.5 left-1 sm:left-1 w-1.5 sm:w-1.75 h-1.5 sm:h-1.75 bg-white rounded-xs animate-dotBounce"></span>
             </span>
             <span>cely</span>
             <span className="font-light text-slate-300 ml-2">Studio</span>
@@ -770,9 +770,9 @@ export default function App() {
 
       {/* Dynamic Toast Notice */}
       {toastMessage && (
-        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[#0D2C2C] border border-[#1A3F3F] pl-4 pr-3 py-2.5 rounded-xl shadow-xl shadow-slate-950/25 z-50 flex items-center space-x-2.5 text-xs font-semibold text-white tracking-wide animate-slideUp select-none min-w-50 justify-between">
+        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-[var(--accent)] border border-[var(--line)] pl-4 pr-3 py-2.5 rounded-xl shadow-xl shadow-slate-950/25 z-50 flex items-center space-x-2.5 text-xs font-semibold text-white tracking-wide animate-slideUp select-none min-w-50 justify-between">
           <div className="flex items-center space-x-2.5">
-            <CheckCircle className="w-4 h-4 text-[#C69A5D] shrink-0" />
+            <CheckCircle className="w-4 h-4 text-white shrink-0" />
             <span className="max-w-55 sm:max-w-xs truncate">{toastMessage}</span>
           </div>
           <button 
@@ -787,26 +787,26 @@ export default function App() {
       )}
 
       {/* Main SaaS App Bar Header */}
-      <header className="h-16 bg-[#0D2C2C] text-white flex items-center justify-between px-3 sm:px-6 border-b border-[#1A3F3F] shrink-0 z-20 no-print">
+      <header className="h-14 bg-[var(--chrome)] text-[var(--chrome-fg)] flex items-center justify-between px-3 sm:px-5 border-b border-[var(--line)] shrink-0 z-20 no-print">
         <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
           {/* Mobile Hamburger toggle */}
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="lg:hidden p-1.5 rounded hover:bg-white/10 text-gray-300 hover:text-white cursor-pointer shrink-0"
+            className="lg:hidden p-1.5 rounded hover:bg-[var(--accent-soft)] text-[var(--muted)] hover:text-[var(--ink)] cursor-pointer shrink-0"
           >
             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
           <div className="flex items-center min-w-0 select-none">
             <div className="flex items-center min-w-0">
-              <div className="hidden sm:flex items-center text-base sm:text-lg font-bold tracking-tight text-white mr-1 sm:mr-2 shrink-0">
+              <div className="hidden sm:flex items-center text-base sm:text-lg font-bold tracking-tight text-[var(--ink)] mr-1 sm:mr-2 shrink-0">
                 <span>Invo</span>
                 <span className="relative inline-block">
                   ı
-                  <span className="absolute top-1 left-0.5 w-1 h-1 bg-[#C69A5D] rounded-xs"></span>
+                  <span className="absolute top-1 left-0.5 w-1 h-1 bg-[var(--accent)] rounded-xs"></span>
                 </span>
                 <span>cely</span>
-                <span className="font-light text-slate-300 ml-1.5">Studio</span>
+                <span className="font-light text-[var(--muted)] ml-1.5">Studio</span>
               </div>
             </div>
           </div>
@@ -818,11 +818,11 @@ export default function App() {
           {/* Command Palette Trigger (Cmd+K) */}
           <button
             onClick={() => setIsCommandPaletteOpen(true)}
-            className="hidden md:flex items-center space-x-2 h-9 px-3 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg border border-white/10 text-xs transition-all cursor-pointer shrink-0"
+            className="hidden md:flex items-center space-x-2 h-9 px-3 bg-[var(--surface-muted)] hover:bg-[var(--accent-soft)] text-[var(--muted)] rounded-lg border border-[var(--line)] text-xs transition-all cursor-pointer shrink-0"
             title="Open Command Palette (Cmd+K)"
           >
-            <Search className="w-4 h-4 text-[#C69A5D]" />
-            <span className="text-slate-300 text-xs font-medium">Search ⌘K</span>
+            <Search className="w-4 h-4 text-[var(--accent-text)]" />
+            <span className="text-[var(--ink)] text-xs font-medium">Search</span>
           </button>
 
           {/* Financial Analytics Summary Toggle */}
@@ -830,8 +830,8 @@ export default function App() {
             onClick={() => setIsAnalyticsDashboardOpen(prev => !prev)}
             className={`flex items-center justify-center h-9 w-9 rounded-lg border transition-all cursor-pointer shrink-0 ${
               isAnalyticsDashboardOpen 
-                ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
-                : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]' 
+                : 'bg-[var(--surface)] border-[var(--line)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
             }`}
             title="Toggle Financial Metrics Summary"
           >
@@ -843,8 +843,8 @@ export default function App() {
             onClick={() => setIsA11yMenuOpen(prev => !prev)}
             className={`flex items-center justify-center h-9 w-9 rounded-lg border transition-all cursor-pointer shrink-0 ${
               isA11yMenuOpen 
-                ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
-                : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]' 
+                : 'bg-[var(--surface)] border-[var(--line)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
             }`}
             title="Accessibility & Preferences"
           >
@@ -854,24 +854,24 @@ export default function App() {
           {/* Theme Toggle */}
           <button
             onClick={() => setAppTheme(prev => prev === 'light' ? 'dark' : 'light')}
-            className="flex items-center justify-center h-9 w-9 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg border border-white/10 transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center h-9 w-9 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] rounded-lg border border-[var(--accent)] transition-all cursor-pointer shrink-0"
             title="Toggle Theme"
           >
-            {appTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-300" />}
+            {appTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
           {/* Mobile View Tabs (Form vs Preview) */}
-          <div className="flex lg:hidden bg-slate-950/80 p-0.5 h-9 rounded-lg border border-white/5 shrink-0 items-center">
+          <div className="flex lg:hidden bg-[var(--surface-muted)] p-0.5 h-9 rounded-lg border border-[var(--line)] shrink-0 items-center">
             <button
               onClick={() => setActiveMobileView('edit')}
-              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'edit' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
+              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'edit' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--muted)]'}`}
               title="Editor"
             >
               <Edit className="w-4 h-4" />
             </button>
             <button
               onClick={() => setActiveMobileView('preview')}
-              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'preview' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400'}`}
+              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'preview' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--muted)]'}`}
               title="Preview"
             >
               <Eye className="w-4 h-4" />
@@ -881,8 +881,8 @@ export default function App() {
           {/* Dynamic react-pdf Download Link Trigger (Lazy Loaded) */}
           {activeInvoice && (
             <Suspense fallback={
-              <div className="flex items-center justify-center h-9 px-3 bg-white/5 rounded-lg text-sm border border-white/10 text-gray-400 dark:text-gray-500 shrink-0 select-none animate-pulse">
-                <Download className="w-4 h-4 text-[#C69A5D]/60" />
+              <div className="flex items-center justify-center h-9 px-3 bg-[var(--surface-muted)] rounded-lg text-sm border border-[var(--line)] text-[var(--muted)] shrink-0 select-none animate-pulse">
+                <Download className="w-4 h-4 text-[var(--accent-text)]/60" />
                 <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Compiling...</span>
               </div>
             }>
@@ -898,8 +898,8 @@ export default function App() {
                 onClick={() => setIsLayoutSettingsOpen(!isLayoutSettingsOpen)}
                 className={`flex items-center justify-center h-9 px-2.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                   isLayoutSettingsOpen 
-                    ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D]' 
-                    : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+                    ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]' 
+                    : 'bg-[var(--surface)] border-[var(--line)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
                 }`}
                 title="PDF Layout Settings"
               >
@@ -910,14 +910,14 @@ export default function App() {
               {isLayoutSettingsOpen && (
                 <div 
                   id="pdf-layout-settings-panel"
-                  className="absolute right-0 mt-2 w-72 bg-[#123636] border border-[#1D4A4A] text-white rounded-xl shadow-2xl p-4 z-50 animate-slideDown animate-in fade-in zoom-in-95 duration-150"
+                  className="absolute right-0 mt-2 w-72 bg-[var(--surface)] border border-[var(--line)] text-[var(--ink)] rounded-xl shadow-2xl p-4 z-50 animate-slideDown"
                 >
                   <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">PDF Output Settings</h4>
-                    <span className="text-[10px] bg-[#C69A5D]/10 text-[#C69A5D] font-mono px-1.5 py-0.5 rounded font-semibold">A4 / Letter</span>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">PDF Output Settings</h4>
+                    <span className="text-[10px] bg-[var(--accent-soft)] text-[var(--accent-text)] font-mono px-1.5 py-0.5 rounded font-semibold">A4 / Letter</span>
                   </div>
 
-                  <p className="text-[11px] text-slate-300 leading-relaxed mb-4">
+                  <p className="text-[11px] text-[var(--muted)] leading-relaxed mb-4">
                     Toggle spacing density for the exported PDF output to fit more items and prevent text overlapping.
                   </p>
 
@@ -930,8 +930,8 @@ export default function App() {
                         onClick={() => handleToggleLayoutMode('standard')}
                         className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all border cursor-pointer flex flex-col items-center justify-center gap-1 ${
                           (activeInvoice.theme.pdfLayout || 'standard') === 'standard'
-                            ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D] shadow-md shadow-[#C69A5D]/10'
-                            : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300'
+                            ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)] shadow-md shadow-[var(--accent)]/15'
+                            : 'bg-[var(--surface-muted)] border-[var(--line)] hover:bg-[var(--accent-soft)] text-[var(--ink)]'
                         }`}
                       >
                         <span className="text-xs">Standard</span>
@@ -944,8 +944,8 @@ export default function App() {
                         onClick={() => handleToggleLayoutMode('compact')}
                         className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all border cursor-pointer flex flex-col items-center justify-center gap-1 ${
                           activeInvoice.theme.pdfLayout === 'compact'
-                            ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D] shadow-md shadow-[#C69A5D]/10'
-                            : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300'
+                            ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)] shadow-md shadow-[var(--accent)]/15'
+                            : 'bg-[var(--surface-muted)] border-[var(--line)] hover:bg-[var(--accent-soft)] text-[var(--ink)]'
                         }`}
                       >
                         <span className="text-xs">Compact</span>
@@ -956,7 +956,7 @@ export default function App() {
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400">
                     <span>Active PDF preset:</span>
-                    <strong className="text-white uppercase font-mono font-bold">
+                    <strong className="text-[var(--ink)] uppercase font-mono font-bold">
                       {activeInvoice.theme.pdfLayout === 'compact' ? 'Compact' : 'Standard'}
                     </strong>
                   </div>
@@ -968,10 +968,10 @@ export default function App() {
           {/* Golden Save Button (Icon-only) */}
           <button
             onClick={handleSave}
-            className="flex items-center justify-center h-9 w-9 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] rounded-lg shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center h-9 w-9 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] rounded-lg shadow-lg shadow-[var(--accent)]/20 transition-all cursor-pointer shrink-0"
             title="Save Invoice"
           >
-            <Save className="w-4 h-4 text-[#0D2C2C]" />
+            <Save className="w-4 h-4 text-[var(--on-accent)]" />
           </button>
         </div>
       </header>
@@ -989,7 +989,7 @@ export default function App() {
         {/* SIDEBAR: Registry Invoices List (Collapsible on mobile) */}
         <div 
           className={`
-            absolute inset-y-0 left-0 w-72 sm:w-80 max-w-[85vw] bg-white dark:bg-[#0B1B1B] z-30 transform transition-transform duration-200 lg:relative lg:translate-x-0 no-print
+            absolute inset-y-0 left-0 w-72 sm:w-80 max-w-[85vw] bg-[var(--surface)] z-30 transform transition-transform duration-200 lg:relative lg:translate-x-0 no-print
             ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
           `}
         >
@@ -1021,7 +1021,7 @@ export default function App() {
         {/* MIDDLE COLUMN: Form Editor (Visible on laptop, or active edit mobile tab) */}
         <div 
           className={`
-            flex-1 h-full overflow-hidden no-print bg-white dark:bg-[#0B1B1B]
+            flex-1 min-w-0 h-full overflow-hidden no-print bg-[var(--surface)]
             ${activeMobileView === 'edit' ? 'block' : 'hidden lg:block'}
           `}
         >
@@ -1040,13 +1040,13 @@ export default function App() {
               />
             </Suspense>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-4 bg-white dark:bg-[#0B1B1B]">
-              <AlertCircle className="w-12 h-12 text-[#0D2C2C]" />
+            <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-4 bg-[var(--surface)]">
+              <AlertCircle className="w-12 h-12 text-[var(--on-accent)]" />
               <div>
                 <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">No Invoice Selected</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Select an existing invoice from the registry or create a new one.</p>
               </div>
-              <button onClick={handleNewInvoice} className="px-4 py-1.5 bg-[#0D2C2C] text-white rounded text-xs font-semibold">
+              <button onClick={handleNewInvoice} className="px-4 py-1.5 bg-[var(--accent)] text-white rounded text-xs font-semibold">
                 Create First Invoice
               </button>
             </div>
@@ -1056,7 +1056,7 @@ export default function App() {
         {/* RIGHT COLUMN: HTML Live Preview (Visible on laptop, or active preview mobile tab) */}
         <div 
           className={`
-            flex-1 xl:flex-none xl:w-135 2xl:w-155 h-full overflow-hidden border-l border-gray-200 dark:border-[#1A3F3F] bg-[#E8EBEB]
+            flex-1 xl:flex-none xl:w-[34rem] 2xl:w-[40rem] min-w-0 h-full overflow-hidden border-l border-[var(--line)] bg-[var(--preview)]
             ${activeMobileView === 'preview' ? 'block' : 'hidden lg:block'}
           `}
         >
@@ -1065,7 +1065,7 @@ export default function App() {
               <InvoicePreview invoice={activeInvoice} />
             </Suspense>
           ) : (
-            <div className="flex items-center justify-center h-full bg-[#E8EBEB] text-gray-500 dark:text-gray-400 text-xs">
+            <div className="flex items-center justify-center h-full bg-[var(--preview)] text-gray-500 dark:text-gray-400 text-xs">
               Preview is empty
             </div>
           )}
@@ -1074,16 +1074,16 @@ export default function App() {
       </main>
 
       {/* Version 3.0 Mobile Bottom Navigation Dock */}
-      <nav className="lg:hidden h-14 bg-[#0D2C2C] border-t border-[#1A3F3F] text-white flex items-center justify-around px-2 shrink-0 z-30 no-print select-none shadow-2xl">
+      <nav className="lg:hidden h-14 bg-[var(--chrome)] border-t border-[var(--line)] text-[var(--ink)] flex items-center justify-around px-2 shrink-0 z-30 no-print select-none">
         {/* 1. Sidebar Registry Toggle */}
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 text-slate-400 hover:text-white transition-colors relative cursor-pointer"
+          className="flex flex-col items-center justify-center flex-1 py-1 text-[var(--muted)] hover:text-[var(--ink)] transition-colors relative cursor-pointer"
           title="Invoice Registry"
         >
           <div className="relative">
             <FileText className="w-4 h-4" />
-            <span className="absolute -top-1 -right-2 bg-[#C69A5D] text-[#0D2C2C] text-[8px] font-black px-1 rounded-full">
+            <span className="absolute -top-1 -right-2 bg-[var(--accent)] text-[var(--on-accent)] text-[8px] font-black px-1 rounded-full">
               {invoices.length}
             </span>
           </div>
@@ -1094,14 +1094,14 @@ export default function App() {
         <button
           onClick={() => setActiveMobileView('edit')}
           className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer relative ${
-            activeMobileView === 'edit' ? 'text-[#C69A5D]' : 'text-slate-400 hover:text-white'
+            activeMobileView === 'edit' ? 'text-[var(--accent-text)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'
           }`}
           title="Invoice Editor"
         >
           <Edit className="w-4 h-4" />
           <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Editor</span>
           {activeMobileView === 'edit' && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[#C69A5D]"></span>
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[var(--accent)]"></span>
           )}
         </button>
 
@@ -1109,31 +1109,31 @@ export default function App() {
         <button
           onClick={() => setActiveMobileView('preview')}
           className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer relative ${
-            activeMobileView === 'preview' ? 'text-[#C69A5D]' : 'text-slate-400 hover:text-white'
+            activeMobileView === 'preview' ? 'text-[var(--accent-text)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'
           }`}
           title="Live Preview"
         >
           <Eye className="w-4 h-4" />
           <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Preview</span>
           {activeMobileView === 'preview' && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[#C69A5D]"></span>
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[var(--accent)]"></span>
           )}
         </button>
 
         {/* 4. Catalog Presets Trigger */}
         <button
           onClick={() => setIsItemPresetsModalOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+          className="flex flex-col items-center justify-center flex-1 py-1 text-[var(--muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
           title="Service Catalog Presets"
         >
-          <Layers className="w-4 h-4 text-[#C69A5D]" />
+          <Layers className="w-4 h-4 text-[var(--accent-text)]" />
           <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Catalog</span>
         </button>
 
         {/* 5. Command Palette Trigger */}
         <button
           onClick={() => setIsCommandPaletteOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+          className="flex flex-col items-center justify-center flex-1 py-1 text-[var(--muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
           title="Search & Commands"
         >
           <Search className="w-4 h-4" />
@@ -1142,7 +1142,7 @@ export default function App() {
       </nav>
 
       {/* Sleek footer */}
-      <footer className="hidden sm:flex h-10 bg-[#0A2323] border-t border-white/5 items-center justify-between px-6 shrink-0 z-20 no-print text-gray-400 dark:text-gray-500 gap-4">
+      <footer className="hidden sm:flex h-9 bg-[var(--chrome)] border-t border-[var(--line)] items-center justify-between px-6 shrink-0 z-20 no-print text-[var(--muted)] gap-4">
         <div className="flex items-center gap-4">
           <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Copyright © 2026 Invoicely Studio</span>
         </div>
@@ -1199,9 +1199,9 @@ export default function App() {
       {/* Custom Confirmation Modal */}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn no-print">
-          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-200 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
-            <h3 className="text-sm font-bold text-[#0D2C2C] dark:text-white flex items-center gap-2">
-              <AlertCircle className={`w-4 h-4 ${confirmModal.isDestructive ? 'text-rose-500' : 'text-[#C69A5D]'}`} />
+          <div className="bg-[var(--surface)] rounded-2xl border border-[var(--line)] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
+            <h3 className="text-sm font-bold text-[var(--ink)] dark:text-white flex items-center gap-2">
+              <AlertCircle className={`w-4 h-4 ${confirmModal.isDestructive ? 'text-rose-500' : 'text-[var(--accent-text)]'}`} />
               <span>{confirmModal.title}</span>
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-300 mt-2.5 leading-relaxed">{confirmModal.message}</p>
@@ -1209,7 +1209,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
-                className="px-3.5 py-1.5 border border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] hover:bg-gray-100 dark:hover:bg-[#1A3F3F] text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-2xs"
+                className="px-3.5 py-1.5 border border-[var(--line)] bg-[var(--surface)] hover:bg-gray-100 hover:bg-[var(--surface-muted)] text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-2xs"
               >
                 {confirmModal.cancelText || 'Cancel'}
               </button>
@@ -1219,7 +1219,7 @@ export default function App() {
                 className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer text-white shadow-md ${
                   confirmModal.isDestructive 
                     ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20' 
-                    : 'bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] font-extrabold shadow-[#C69A5D]/20'
+                    : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--ink)] font-extrabold shadow-[var(--accent)]/20'
                 }`}
               >
                 {confirmModal.confirmText || 'Confirm'}
@@ -1232,9 +1232,9 @@ export default function App() {
       {/* Custom Alert Modal */}
       {alertModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn no-print">
-          <div className="bg-white dark:bg-[#0B1B1B] rounded-2xl border border-gray-200 dark:border-[#1A3F3F] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
-            <h3 className="text-sm font-bold text-[#0D2C2C] dark:text-white flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-[#C69A5D]" />
+          <div className="bg-[var(--surface)] rounded-2xl border border-[var(--line)] max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-left">
+            <h3 className="text-sm font-bold text-[var(--ink)] dark:text-white flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-[var(--accent-text)]" />
               <span>{alertModal.title}</span>
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-300 mt-2.5 leading-relaxed">{alertModal.message}</p>
@@ -1242,7 +1242,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setAlertModal((prev) => ({ ...prev, isOpen: false }))}
-                className="px-4 py-1.5 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] text-xs font-extrabold rounded-xl transition-all cursor-pointer shadow-md shadow-[#C69A5D]/20"
+                className="px-4 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] text-xs font-extrabold rounded-xl transition-all cursor-pointer shadow-md shadow-[var(--accent)]/20"
               >
                 OK
               </button>

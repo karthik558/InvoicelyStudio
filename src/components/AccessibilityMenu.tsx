@@ -42,18 +42,18 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
         aria-label="Accessibility & Preferences"
       >
         <div 
-          className="w-full max-w-sm bg-[#0D2C2C] border border-[#1A3F3F] text-white rounded-2xl shadow-2xl overflow-hidden animate-scaleUp"
+          className="w-full max-w-sm bg-[var(--surface)] border border-[var(--line)] text-[var(--ink)] rounded-2xl shadow-2xl overflow-hidden animate-scaleUp"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#1A3F3F] bg-[#0A2323]">
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--line)] bg-[var(--chrome)]">
             <div className="flex items-center space-x-2">
-              <ShieldCheck className="w-4 h-4 text-[#C69A5D]" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">Accessibility & Ease of Access</h3>
+              <ShieldCheck className="w-4 h-4 text-[var(--accent-text)]" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)]">Accessibility & Ease of Access</h3>
             </div>
             <button 
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-[var(--ink)] transition-colors cursor-pointer"
               aria-label="Close settings"
             >
               <X className="w-4 h-4" />
@@ -65,8 +65,8 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
             {/* 1. Font Size Scaling */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Type className="w-3.5 h-3.5 text-[#C69A5D]" /> Text Scaling</span>
-                <span className="font-mono text-[#C69A5D] capitalize">{a11y.fontScale}</span>
+                <span className="flex items-center gap-1.5"><Type className="w-3.5 h-3.5 text-[var(--accent-text)]" /> Text Scaling</span>
+                <span className="font-mono text-[var(--accent-text)] capitalize">{a11y.fontScale}</span>
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -79,8 +79,8 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
                     onClick={() => onUpdateA11y({ fontScale: option.id as any })}
                     className={`py-2 px-2 rounded-xl text-center border text-[11px] font-semibold transition-all cursor-pointer ${
                       a11y.fontScale === option.id 
-                        ? 'bg-[#C69A5D] text-[#0D2C2C] border-[#C69A5D] shadow-sm font-bold' 
-                        : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                        ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)] shadow-sm font-bold' 
+                        : 'bg-[var(--surface-muted)] border-[var(--line)] text-[var(--ink)] hover:bg-[var(--accent-soft)]'
                     }`}
                   >
                     {option.label}
@@ -90,10 +90,10 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
             </div>
 
             {/* 2. High Contrast Boost */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--line)]">
               <div className="pr-2">
-                <div className="font-semibold text-white flex items-center gap-1.5">
-                  <Contrast className="w-3.5 h-3.5 text-[#C69A5D]" />
+                <div className="font-semibold text-[var(--ink)] flex items-center gap-1.5">
+                  <Contrast className="w-3.5 h-3.5 text-[var(--accent-text)]" />
                   <span>High Contrast Boost</span>
                 </div>
                 <p className="text-[10px] text-slate-400 mt-0.5">Enhance border lines and text visibility for low vision.</p>
@@ -102,18 +102,18 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
                 type="button"
                 onClick={() => onUpdateA11y({ highContrast: !a11y.highContrast })}
                 className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors shrink-0 ${
-                  a11y.highContrast ? 'bg-[#C69A5D]' : 'bg-slate-700'
+                  a11y.highContrast ? 'bg-[var(--accent)]' : 'bg-slate-700'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full bg-[#0D2C2C] transform transition-transform ${a11y.highContrast ? 'translate-x-5' : 'translate-x-0'}`} />
+                <div className={`w-4 h-4 rounded-full bg-white transform transition-transform ${a11y.highContrast ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>
 
             {/* 3. Colorblind Badge Glyphs */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--line)]">
               <div className="pr-2">
-                <div className="font-semibold text-white flex items-center gap-1.5">
-                  <Eye className="w-3.5 h-3.5 text-[#C69A5D]" />
+                <div className="font-semibold text-[var(--ink)] flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5 text-[var(--accent-text)]" />
                   <span>Colorblind Status Glyphs</span>
                 </div>
                 <p className="text-[10px] text-slate-400 mt-0.5">Show distinct shape icons alongside badge colors.</p>
@@ -122,28 +122,28 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
                 type="button"
                 onClick={() => onUpdateA11y({ colorblindIcons: !a11y.colorblindIcons })}
                 className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors shrink-0 ${
-                  a11y.colorblindIcons ? 'bg-[#C69A5D]' : 'bg-slate-700'
+                  a11y.colorblindIcons ? 'bg-[var(--accent)]' : 'bg-slate-700'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full bg-[#0D2C2C] transform transition-transform ${a11y.colorblindIcons ? 'translate-x-5' : 'translate-x-0'}`} />
+                <div className={`w-4 h-4 rounded-full bg-white transform transition-transform ${a11y.colorblindIcons ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>
 
             {/* 4. Keyboard Shortcuts Sheet Button */}
             <button
               onClick={() => setShowShortcutsModal(true)}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-[#0A2323] hover:bg-[#123636] border border-[#1A3F3F] text-slate-200 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--accent-soft)] border border-[var(--line)] text-[var(--ink)] transition-colors cursor-pointer"
             >
               <div className="flex items-center space-x-2">
-                <Keyboard className="w-4 h-4 text-[#C69A5D]" />
+                <Keyboard className="w-4 h-4 text-[var(--accent-text)]" />
                 <span className="font-semibold">Keyboard Shortcuts Guide</span>
               </div>
-              <span className="text-[10px] text-[#C69A5D] font-mono">Press ?</span>
+              <span className="text-[10px] text-[var(--accent-text)] font-mono">Press ?</span>
             </button>
 
           </div>
 
-          <div className="px-4 py-3 border-t border-[#1A3F3F] bg-[#0A2323] text-center text-[10px] text-slate-400">
+          <div className="px-4 py-3 border-t border-[var(--line)] bg-[var(--chrome)] text-center text-[10px] text-slate-400">
             InvoiceStudio Accessibility & Preferences
           </div>
         </div>
@@ -156,17 +156,17 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
           onClick={() => setShowShortcutsModal(false)}
         >
           <div 
-            className="w-full max-w-md bg-[#0D2C2C] border border-[#1A3F3F] text-white rounded-2xl shadow-2xl p-5 space-y-4 animate-scaleUp"
+            className="w-full max-w-md bg-[var(--surface)] border border-[var(--line)] text-[var(--ink)] rounded-2xl shadow-2xl p-5 space-y-4 animate-scaleUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#1A3F3F]">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Keyboard className="w-4 h-4 text-[#C69A5D]" />
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--line)]">
+              <h3 className="text-sm font-bold text-[var(--ink)] flex items-center gap-2">
+                <Keyboard className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Keyboard Shortcuts Reference</span>
               </h3>
               <button 
                 onClick={() => setShowShortcutsModal(false)}
-                className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-[var(--ink)] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -182,14 +182,14 @@ export const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
                   <span className="text-slate-300">{item.description}</span>
-                  <kbd className="text-[#C69A5D] font-mono font-bold">{item.shortcut}</kbd>
+                  <kbd className="text-[var(--accent-text)] font-mono font-bold">{item.shortcut}</kbd>
                 </div>
               ))}
             </div>
 
             <button
               onClick={() => setShowShortcutsModal(false)}
-              className="w-full py-2 bg-[#C69A5D] text-[#0D2C2C] font-bold rounded-xl text-xs hover:bg-[#b5894d] transition-colors cursor-pointer"
+              className="w-full py-2 bg-[var(--accent)] text-[var(--on-accent)] font-bold rounded-xl text-xs hover:bg-[var(--accent-hover)] transition-colors cursor-pointer"
             >
               Got it
             </button>

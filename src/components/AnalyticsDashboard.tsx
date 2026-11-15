@@ -75,14 +75,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="bg-[#0A2323] border-b border-[#1A3F3F] text-white px-3 sm:px-6 py-2.5 transition-all animate-fadeIn no-print">
+    <div className="bg-[var(--chrome)] border-b border-[var(--line)] text-[var(--ink)] px-3 sm:px-6 py-3 transition-all animate-fadeIn no-print">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5">
         <div className="flex items-center space-x-2 shrink-0">
-          <div className="p-1.5 sm:p-2 bg-[#C69A5D]/10 rounded-xl border border-[#C69A5D]/20">
-            <PieChart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C69A5D]" />
+          <div className="p-1.5 sm:p-2 bg-[var(--accent-soft)] rounded-xl border border-[var(--accent)]/20">
+            <PieChart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent-text)]" />
           </div>
           <div>
-            <h3 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white">Financial Dashboard Summary</h3>
+            <h3 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--ink)]">Financial Dashboard Summary</h3>
             <p className="text-[9px] sm:text-[10px] text-slate-400">Live metrics across {invoices.length} invoices</p>
           </div>
         </div>
@@ -92,13 +92,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           {/* Total Billed */}
           <div 
             onClick={() => onFilterStatus?.('all')}
-            className="p-2 sm:p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all cursor-pointer group"
+            className="p-2 sm:p-2.5 bg-[var(--surface)] hover:bg-[var(--accent-soft)] border border-[var(--line)] rounded-xl transition-all cursor-pointer group"
           >
             <div className="flex justify-between items-center text-[9px] sm:text-[10px] text-slate-400">
               <span className="font-semibold uppercase tracking-wider truncate">Total Billed</span>
               <TrendingUp className="w-3 h-3 text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
             </div>
-            <div className="text-xs sm:text-sm font-bold font-mono text-white mt-1 truncate">
+            <div className="text-xs sm:text-sm font-bold font-mono text-[var(--ink)] mt-1 truncate">
               {formatter.format(totalInvoiced)}
             </div>
             <span className="text-[8px] sm:text-[9px] text-slate-400 block mt-0.5">{invoices.length} invoices</span>
@@ -107,13 +107,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           {/* Paid / Collected */}
           <div 
             onClick={() => onFilterStatus?.('paid')}
-            className="p-2.5 bg-emerald-950/30 hover:bg-emerald-950/50 border border-emerald-500/20 rounded-xl transition-all cursor-pointer group"
+            className="p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all cursor-pointer group"
           >
             <div className="flex justify-between items-center text-[10px] text-emerald-400">
               <span className="font-semibold uppercase tracking-wider">Collected</span>
               <CheckCircle className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
             </div>
-            <div className="text-sm font-bold font-mono text-emerald-300 mt-1">
+            <div className="text-sm font-bold font-mono text-emerald-800 mt-1">
               {formatter.format(totalCollected)}
             </div>
             <span className="text-[9px] text-emerald-400/80 block mt-0.5">{paidInvoicesCount} fully paid</span>
@@ -122,13 +122,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           {/* Pending */}
           <div 
             onClick={() => onFilterStatus?.('pending')}
-            className="p-2.5 bg-amber-950/30 hover:bg-amber-950/50 border border-amber-500/20 rounded-xl transition-all cursor-pointer group"
+            className="p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-all cursor-pointer group"
           >
             <div className="flex justify-between items-center text-[10px] text-amber-400">
               <span className="font-semibold uppercase tracking-wider">Pending</span>
               <Clock className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
             </div>
-            <div className="text-sm font-bold font-mono text-amber-300 mt-1">
+            <div className="text-sm font-bold font-mono text-amber-800 mt-1">
               {formatter.format(totalPending)}
             </div>
             <span className="text-[9px] text-amber-400/80 block mt-0.5">{pendingInvoicesCount} pending</span>
@@ -137,13 +137,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           {/* Overdue */}
           <div 
             onClick={() => onFilterStatus?.('overdue')}
-            className="p-2.5 bg-rose-950/30 hover:bg-rose-950/50 border border-rose-500/20 rounded-xl transition-all cursor-pointer group"
+            className="p-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all cursor-pointer group"
           >
             <div className="flex justify-between items-center text-[10px] text-rose-400">
               <span className="font-semibold uppercase tracking-wider">Overdue</span>
               <AlertTriangle className="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform animate-pulse" />
             </div>
-            <div className="text-sm font-bold font-mono text-rose-300 mt-1">
+            <div className="text-sm font-bold font-mono text-rose-800 mt-1">
               {formatter.format(totalOverdue)}
             </div>
             <span className="text-[9px] text-rose-400/80 block mt-0.5">{overdueInvoicesCount} overdue</span>

@@ -173,20 +173,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       aria-label="Command Palette"
     >
       <div 
-        className="w-full max-w-xl bg-[#0D2C2C] border border-[#1A3F3F] text-white rounded-2xl shadow-2xl overflow-hidden animate-scaleUp"
+        className="w-full max-w-xl bg-[var(--surface)] border border-[var(--line)] text-[var(--ink)] rounded-2xl shadow-2xl overflow-hidden animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-[#1A3F3F] bg-[#0A2323]">
-          <Search className="w-5 h-5 text-[#C69A5D] mr-3 shrink-0" />
+        <div className="flex items-center px-4 py-3.5 border-b border-[var(--line)] bg-[var(--chrome)]">
+          <Search className="w-5 h-5 text-[var(--accent-text)] mr-3 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
             placeholder="Type a command or search invoices... (e.g. INV-2026, theme, font)"
-            className="flex-1 bg-transparent text-sm text-white placeholder-slate-400 outline-none border-none focus:ring-0"
+            className="flex-1 bg-transparent text-sm text-[var(--ink)] placeholder-[var(--muted)] outline-none border-none focus:ring-0"
             aria-label="Command search input"
           />
           <button 
@@ -203,7 +203,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {matchingInvoices.length > 0 && (
             <div className="py-1">
               <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <FileText className="w-3 h-3 text-[#C69A5D]" />
+                <FileText className="w-3 h-3 text-[var(--accent-text)]" />
                 <span>Invoices ({matchingInvoices.length})</span>
               </div>
               {matchingInvoices.map((inv, index) => {
@@ -213,7 +213,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     key={inv.id}
                     onClick={() => { onSelectInvoice(inv.id); onClose(); }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer text-left ${
-                      isSelected ? 'bg-[#C69A5D] text-[#0D2C2C] font-semibold' : 'text-slate-200 hover:bg-white/5'
+                      isSelected ? 'bg-[var(--accent)] text-[var(--on-accent)] font-semibold' : 'text-[var(--ink)] hover:bg-[var(--surface-muted)]'
                     }`}
                   >
                     <div className="min-w-0 pr-2">
@@ -230,7 +230,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {filteredActions.length > 0 && (
             <div className="py-1">
               <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Sliders className="w-3 h-3 text-[#C69A5D]" />
+                <Sliders className="w-3 h-3 text-[var(--accent-text)]" />
                 <span>Actions & Commands</span>
               </div>
               {filteredActions.map((action, index) => {
@@ -242,21 +242,21 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     key={action.id}
                     onClick={() => action.run()}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-colors cursor-pointer text-left ${
-                      isSelected ? 'bg-[#C69A5D] text-[#0D2C2C] font-semibold' : 'text-slate-200 hover:bg-white/5'
+                      isSelected ? 'bg-[var(--accent)] text-[var(--on-accent)] font-semibold' : 'text-[var(--ink)] hover:bg-[var(--surface-muted)]'
                     }`}
                   >
                     <div className="flex items-center space-x-2.5 min-w-0">
-                      <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[#0D2C2C]' : 'text-[#C69A5D]'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[var(--ink)]' : 'text-[var(--accent-text)]'}`} />
                       <span className="truncate">{action.title}</span>
                     </div>
                     <div className="flex items-center space-x-2 shrink-0">
                       {action.shortcut && (
-                        <kbd className={isSelected ? 'bg-[#0D2C2C]/20 border-[#0D2C2C]/30 text-[#0D2C2C]' : ''}>
+                        <kbd className={isSelected ? 'bg-[var(--accent)]/20 border-[var(--accent)]/30 text-[var(--on-accent)]' : ''}>
                           {action.shortcut}
                         </kbd>
                       )}
                       <span className={`text-[9px] uppercase font-mono px-1.5 py-0.5 rounded ${
-                        isSelected ? 'bg-[#0D2C2C]/15 text-[#0D2C2C]' : 'bg-white/5 text-slate-400'
+                        isSelected ? 'bg-white/20 text-[var(--on-accent)]' : 'bg-[var(--surface-muted)] text-[var(--muted)]'
                       }`}>
                         {action.category}
                       </span>
@@ -275,7 +275,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2 border-t border-[#1A3F3F] bg-[#0A2323] flex items-center justify-between text-[10px] text-slate-400">
+        <div className="px-4 py-2 border-t border-[var(--line)] bg-[var(--chrome)] flex items-center justify-between text-[10px] text-slate-400">
           <div className="flex items-center space-x-3">
             <span><kbd>↑↓</kbd> navigate</span>
             <span><kbd>↵</kbd> select</span>

@@ -194,20 +194,20 @@ export function DatePicker({ value, onChange, label, className = '', align = 'le
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-gray-50 dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] hover:border-gray-300 dark:hover:border-[#1A3F3F] focus:border-[#0D2C2C] dark:focus:border-[#C69A5D] rounded-lg px-3 py-2 text-xs text-gray-800 dark:text-gray-200 outline-none transition-all focus:ring-1 focus:ring-[#0D2C2C] dark:focus:ring-[#C69A5D] text-left cursor-pointer shadow-sm"
+        className="w-full flex items-center justify-between bg-gray-50 bg-[var(--surface)] border border-[var(--line)] hover:border-gray-300 dark:hover:border-[var(--line)] focus:border-[var(--accent)] dark:focus:border-[var(--accent)] rounded-lg px-3 py-2 text-xs text-gray-800 dark:text-gray-200 outline-none transition-all focus:ring-1 focus:ring-[var(--accent)] dark:focus:ring-[var(--accent)] text-left cursor-pointer shadow-sm"
       >
         <span className="truncate font-medium">{formattedButtonText}</span>
-        <CalendarIcon className="w-3.5 h-3.5 text-[#C69A5D] ml-2 shrink-0" />
+        <CalendarIcon className="w-3.5 h-3.5 text-[var(--accent-text)] ml-2 shrink-0" />
       </button>
 
       {isOpen && (
-        <div className={`absolute top-full mt-1.5 w-64 bg-white dark:bg-[#0B1B1B] border border-gray-200/90 dark:border-[#1A3F3F] rounded-xl shadow-xl z-50 p-3 animate-fadeIn select-none ${align === 'right' ? 'right-0' : 'left-0'}`}>
+        <div className={`absolute top-full mt-1.5 w-64 bg-[var(--surface)] border border-gray-200/90 border-[var(--line)] rounded-xl shadow-xl z-50 p-3 animate-fadeIn select-none ${align === 'right' ? 'right-0' : 'left-0'}`}>
           {/* Calendar Header: Month & Year & Chevrons */}
           <div className="flex items-center justify-between mb-3">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-[#1A3F3F] text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors cursor-pointer"
+              className="p-1 rounded-md hover:bg-gray-100 hover:bg-[var(--surface-muted)] text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -217,7 +217,7 @@ export function DatePicker({ value, onChange, label, className = '', align = 'le
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-[#1A3F3F] text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors cursor-pointer"
+              className="p-1 rounded-md hover:bg-gray-100 hover:bg-[var(--surface-muted)] text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -233,7 +233,7 @@ export function DatePicker({ value, onChange, label, className = '', align = 'le
           </div>
 
           {/* Calendar Days Grid */}
-          <div className="grid grid-cols-7 gap-px bg-gray-50 dark:bg-[#0A2323] rounded-lg overflow-hidden border border-gray-100 dark:border-[#1A3F3F]">
+          <div className="grid grid-cols-7 gap-px bg-gray-50 bg-[var(--surface-muted)] rounded-lg overflow-hidden border border-[var(--line)]">
             {gridCells.map((cell, idx) => {
               const selected = isSelected(cell);
               const today = isToday(cell);
@@ -245,16 +245,16 @@ export function DatePicker({ value, onChange, label, className = '', align = 'le
                   onClick={() => handleSelectDay(cell)}
                   className={`
                     py-1.5 text-[11px] text-center font-medium transition-all relative cursor-pointer outline-none focus:z-10
-                    ${cell.isCurrentMonth ? 'bg-white dark:bg-[#0B1B1B] text-gray-800 dark:text-gray-200' : 'bg-gray-50/60 dark:bg-[#0A2323]/80 text-gray-300 dark:text-gray-600'}
+                    ${cell.isCurrentMonth ? 'bg-[var(--surface)] text-gray-800 dark:text-gray-200' : 'bg-gray-50/60 bg-[var(--surface-muted)] text-gray-300 dark:text-gray-600'}
                     ${selected 
-                      ? 'bg-[#C69A5D] text-[#0D2C2C] font-extrabold shadow-xs z-10' 
-                      : 'hover:bg-gray-100 dark:hover:bg-[#1A3F3F] hover:text-[#0D2C2C] dark:hover:text-[#C69A5D]'
+                      ? 'bg-[var(--accent)] text-[var(--on-accent)] font-extrabold shadow-xs z-10' 
+                      : 'hover:bg-gray-100 hover:bg-[var(--surface-muted)] hover:text-[var(--on-accent)] dark:hover:text-[var(--accent-text)]'
                     }
                   `}
                 >
                   {cell.day}
                   {today && !selected && (
-                    <span className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-[#C69A5D] rounded-full"></span>
+                    <span className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-[var(--accent)] rounded-full"></span>
                   )}
                 </button>
               );
@@ -262,7 +262,7 @@ export function DatePicker({ value, onChange, label, className = '', align = 'le
           </div>
 
           {/* Quick Preset Buttons */}
-          <div className="flex items-center justify-between border-t border-gray-100 dark:border-[#1A3F3F] pt-2 mt-2">
+          <div className="flex items-center justify-between border-t border-[var(--line)] pt-2 mt-2">
             <button
               type="button"
               onClick={() => {

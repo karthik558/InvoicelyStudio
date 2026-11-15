@@ -56,10 +56,10 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between bg-white dark:bg-[#0B1B1B] border rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C] dark:focus:ring-[#C69A5D] transition-all cursor-pointer text-left ${
+        className={`w-full flex items-center justify-between bg-[var(--surface)] border rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)] dark:focus:ring-[var(--accent)] transition-all cursor-pointer text-left ${
           disabled 
-            ? 'bg-gray-100/80 dark:bg-[#1A3F3F]/50 border-gray-100 dark:border-[#1A3F3F] text-gray-400 dark:text-gray-500 cursor-not-allowed select-none' 
-            : 'border-gray-200 dark:border-[#1A3F3F] hover:border-gray-300 dark:hover:border-[#1A3F3F] focus:border-[#0D2C2C] dark:focus:border-[#C69A5D]'
+            ? 'bg-gray-100/80 bg-[var(--surface-muted)]/50 border-[var(--line)] text-gray-400 dark:text-gray-500 cursor-not-allowed select-none' 
+            : 'border-[var(--line)] hover:border-gray-300 dark:hover:border-[var(--line)] focus:border-[var(--accent)] dark:focus:border-[var(--accent)]'
         } ${className}`}
       >
         <span className="truncate font-medium">{selectedOption?.label}</span>
@@ -68,7 +68,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
       {isOpen && !disabled && (
         <div 
-          className={`absolute z-100 left-0 right-0 max-h-60 overflow-y-auto bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] rounded-lg shadow-xl py-1 text-xs divide-y divide-gray-50 dark:divide-[#1A3F3F] animate-fadeIn ${
+          className={`absolute z-100 left-0 right-0 max-h-60 overflow-y-auto bg-[var(--surface)] border border-[var(--line)] rounded-lg shadow-xl py-1 text-xs divide-y divide-gray-50 dark:divide-[#1A3F3F] animate-fadeIn ${
             openDirection === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
           }`}
         >
@@ -80,8 +80,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 hover:bg-[#0D2C2C]/5 dark:hover:bg-[#1A3F3F] transition-colors focus:outline-none flex flex-col ${
-                option.value === value ? 'bg-[#0D2C2C]/5 dark:bg-[#1A3F3F] font-semibold text-[#0D2C2C] dark:text-[#C69A5D]' : 'text-gray-700 dark:text-gray-200'
+              className={`w-full text-left px-3 py-2 hover:bg-[var(--accent)]/5 hover:bg-[var(--surface-muted)] transition-colors focus:outline-none flex flex-col ${
+                option.value === value ? 'bg-[var(--accent)]/5 bg-[var(--surface-muted)] font-semibold text-[var(--on-accent)] text-[var(--accent-text)]' : 'text-gray-700 dark:text-gray-200'
               }`}
             >
               <span>{option.label}</span>

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId, CURRENCIES } from '../types';
 import { sampleInvoice } from '../data/sampleInvoice';
 import { CustomSelect } from './CustomSelect';
@@ -46,7 +46,7 @@ type FormTab = 'details' | 'parties' | 'items' | 'payment' | 'design' | 'setting
 
 // Predefined premium color palettes
 const COLOR_PALETTES = [
-  { name: 'Rich Teal & Gold (Default)', primary: '#0f766e', accent: '#b45309' },
+  { name: 'Ink Navy & Terracotta', primary: '#1e3a8a', accent: '#c2410c' },
   { name: 'Sleek Obsidian & Emerald', primary: '#0f172a', accent: '#10b981' },
   { name: 'Classic Corporate Navy', primary: '#1e3a8a', accent: '#3b82f6' },
   { name: 'Royal Amethyst & Rose', primary: '#581c87', accent: '#ec4899' },
@@ -83,6 +83,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const currencySymbol = CURRENCIES.find(c => c.code === activeCurrency)?.symbol || '$';
 
   const [activeTab, setActiveTab] = useState<FormTab>('details');
+  const editorScrollRef = useRef<HTMLDivElement>(null);
   const [logoFileName, setLogoFileName] = useState<string>('');
   const [qrFileName, setQrFileName] = useState<string>('');
   const [sigFileName, setSigFileName] = useState<string>('');
@@ -467,14 +468,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0B1B1B] lg:border-r border-gray-200 dark:border-[#1A3F3F]">
+    <div className="flex flex-col h-full bg-[var(--surface)] lg:border-r border-[var(--line)]">
       
       {/* Action Toolbar Header */}
-      <div className="px-4 sm:px-5 py-3 bg-gray-50/50 dark:bg-[#0A2323]/80 border-b border-gray-200 dark:border-[#1A3F3F] flex flex-wrap gap-2.5 items-center justify-end">
+      <div className="px-4 sm:px-5 py-3 bg-gray-50/50 bg-[var(--surface-muted)] border-b border-[var(--line)] flex flex-wrap gap-2.5 items-center justify-end">
         <div className="flex gap-2 items-center">
           <button 
             onClick={onDuplicate}
-            className="flex items-center space-x-1 px-3 py-1.5 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-xs rounded-lg border border-gray-200 dark:border-[#1A3F3F] transition-all font-semibold cursor-pointer shrink-0"
+            className="flex items-center space-x-1 px-3 py-1.5 bg-[var(--surface)] hover:bg-[var(--surface-muted)] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-xs rounded-lg border border-[var(--line)] transition-all font-semibold cursor-pointer shrink-0"
             title="Duplicate Invoice"
           >
             <Copy className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
@@ -491,7 +492,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Editor Main Navigation Tabs (Clean Modern Flat Capsule Chips) */}
-      <div className="flex border-b border-gray-200 dark:border-[#1A3F3F] bg-gray-50 dark:bg-[#0A2323] px-3 sm:px-4 py-2.5 overflow-x-auto no-scrollbar items-center shrink-0 w-full select-none transition-colors">
+      <div className="flex border-b border-[var(--line)] bg-gray-50 bg-[var(--surface-muted)] px-3 sm:px-4 py-2.5 overflow-x-auto no-scrollbar items-center shrink-0 w-full select-none transition-colors">
         <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto">
           {(['details', 'parties', 'items', 'payment', 'design', 'settings'] as FormTab[]).map((tab) => {
             const isActive = activeTab === tab;
@@ -508,16 +509,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             return (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  if (editorScrollRef.current) editorScrollRef.current.scrollTop = 0;
+                }}
                 className={`
-                  flex items-center space-x-2 py-1.5 px-3.5 text-xs font-bold tracking-wide transition-colors duration-150 cursor-pointer whitespace-nowrap rounded-full outline-none select-none shrink-0
+                  flex items-center space-x-2 h-9 px-3 text-xs font-semibold tracking-wide transition-colors duration-150 cursor-pointer whitespace-nowrap rounded-lg outline-none select-none shrink-0 border
                   ${isActive 
-                    ? 'bg-[#0D2C2C] dark:bg-[#C69A5D] text-white dark:text-[#0D2C2C] font-extrabold' 
-                    : 'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/15'
+                    ? 'bg-[var(--accent)] border-[var(--accent)] text-[var(--on-accent)]' 
+                    : 'bg-[var(--surface)] border-[var(--line)] text-[var(--ink)] hover:bg-[var(--accent-soft)]'
                   }
                 `}
               >
-                <span className={`transition-colors duration-150 ${isActive ? 'text-[#C69A5D] dark:text-[#0D2C2C]' : 'text-gray-400 dark:text-slate-400'}`}>
+                <span className={`transition-colors duration-150 ${isActive ? 'text-[var(--on-accent)]' : 'text-[var(--muted)]'}`}>
                   {icons[tab]}
                 </span>
                 <span>{label}</span>
@@ -528,14 +532,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Editor Fields Area (Scrollable) */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-5 no-scrollbar">
+      <div ref={editorScrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 no-scrollbar">
         
         {/* TAB 1: DETAILS */}
         {activeTab === 'details' && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2">
+                <FileText className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Invoice Meta Credentials</span>
               </h3>
 
@@ -546,7 +550,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.invoiceNumber}
                     onChange={(e) => updateField(null, 'invoiceNumber', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="e.g. INV-2026-001"
                   />
                 </div>
@@ -587,7 +591,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
 
               {/* Global Currency Selection */}
-              <div className="border-t border-gray-100 dark:border-[#1A3F3F] pt-4">
+              <div className="border-t border-[var(--line)] pt-4">
                 <div className="space-y-1.5">
                   <CustomSelect
                     label="Global Currency"
@@ -607,10 +611,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* Logo upload widget */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3">
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2">
-                  <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2">
+                  <FileUp className="w-4 h-4 text-[var(--accent-text)]" />
                   <span>Company Branding Logo</span>
                 </h3>
                 {invoice.sender.logoUrl && (
@@ -624,11 +628,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
 
               {invoice.sender.logoUrl ? (
-                <div className="flex items-center space-x-4 bg-white dark:bg-[#0B1B1B] p-3 rounded-lg border border-gray-200 dark:border-[#1A3F3F]">
+                <div className="flex items-center space-x-4 bg-[var(--surface)] p-3 rounded-lg border border-[var(--line)]">
                   <img 
                     src={invoice.sender.logoUrl} 
                     alt="Uploaded logo" 
-                    className="w-16 h-16 object-contain bg-gray-50 dark:bg-[#0A2323] rounded p-1 border border-gray-100 dark:border-[#1A3F3F]"
+                    className="w-16 h-16 object-contain bg-gray-50 bg-[var(--surface-muted)] rounded p-1 border border-[var(--line)]"
                     referrerPolicy="no-referrer"
                   />
                   <div className="text-xs">
@@ -636,8 +640,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="border border-dashed border-gray-300 dark:border-[#1A3F3F] hover:border-[#0D2C2C] rounded-lg p-5 flex flex-col items-center justify-center text-center transition-all bg-white dark:bg-[#0B1B1B] group relative overflow-hidden">
-                  <FileUp className="w-7 h-7 text-gray-400 dark:text-gray-500 group-hover:text-[#C69A5D] mb-2 transition-colors" />
+                <div className="border border-dashed border-[var(--line)] hover:border-[var(--accent)] rounded-lg p-5 flex flex-col items-center justify-center text-center transition-all bg-[var(--surface)] group relative overflow-hidden">
+                  <FileUp className="w-7 h-7 text-gray-400 dark:text-gray-500 group-hover:text-[var(--accent-text)] mb-2 transition-colors" />
                   <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold">Click or Drag to Upload Logo</p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Supports PNG, JPG, SVG (Max 500KB)</p>
                   <input
@@ -656,20 +660,20 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         {activeTab === 'parties' && (
           <div className="space-y-4 animate-fadeIn">
             {/* SENDER INFO */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3">
-              <div className="flex justify-between items-center border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5 mb-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C69A5D]"></span>
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3">
+              <div className="flex justify-between items-center border-b border-[var(--line)] pb-2.5 mb-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                   <span>Bill From (Sender Details)</span>
                 </h3>
                 {localStorage.getItem('invoicely_global_sender') && (
                   <button
                     type="button"
                     onClick={handleApplyGlobalSender}
-                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white text-[11px] rounded-lg border border-gray-200 dark:border-[#1A3F3F] transition-all font-semibold cursor-pointer shadow-2xs shrink-0"
+                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-[var(--surface)] hover:bg-[var(--surface-muted)] text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white text-[11px] rounded-lg border border-[var(--line)] transition-all font-semibold cursor-pointer shadow-2xs shrink-0"
                     title="Load pre-saved default company sender and bank parameters"
                   >
-                    <Download className="w-3 h-3 text-[#C69A5D]" />
+                    <Download className="w-3 h-3 text-[var(--accent-text)]" />
                     <span>Load Default Settings</span>
                   </button>
                 )}
@@ -682,7 +686,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.sender.name}
                     onChange={(e) => updateField('sender', 'name', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="e.g. Aesthetic Studio Inc."
                   />
                 </div>
@@ -694,7 +698,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="email"
                       value={invoice.sender.email}
                       onChange={(e) => updateField('sender', 'email', e.target.value)}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                       placeholder="hello@aesthetic.studio"
                     />
                   </div>
@@ -704,7 +708,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="text"
                       value={invoice.sender.phone}
                       onChange={(e) => updateField('sender', 'phone', e.target.value)}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                       placeholder="+1 (555) 123-4567"
                     />
                   </div>
@@ -716,7 +720,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.sender.address}
                     onChange={(e) => updateField('sender', 'address', e.target.value)}
                     rows={2.5}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="123 Studio Blvd, Suite 100&#10;San Francisco, CA 94107"
                   />
                 </div>
@@ -727,7 +731,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.sender.taxId}
                     onChange={(e) => updateField('sender', 'taxId', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="Tax Registration ID"
                   />
                 </div>
@@ -735,14 +739,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* RECEIVER INFO */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5 mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#C69A5D]"></span>
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 border-b border-[var(--line)] pb-2.5 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                 <span>Bill To (Client / Receiver Details)</span>
               </h3>
 
                {previousClients.length > 0 && (
-                <div className="mb-4 bg-white dark:bg-[#0B1B1B] p-3 rounded-lg border border-gray-100 dark:border-[#1A3F3F] space-y-1.5">
+                <div className="mb-4 bg-[var(--surface)] p-3 rounded-lg border border-[var(--line)] space-y-1.5">
                   <CustomSelect
                     label="Select Stored Client"
                     value=""
@@ -777,7 +781,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.receiver.name}
                     onChange={(e) => updateField('receiver', 'name', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="Client Company Name LLC"
                   />
                 </div>
@@ -789,7 +793,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="email"
                       value={invoice.receiver.email}
                       onChange={(e) => updateField('receiver', 'email', e.target.value)}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                       placeholder="accounts@client.com"
                     />
                   </div>
@@ -799,7 +803,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="text"
                       value={invoice.receiver.phone}
                       onChange={(e) => updateField('receiver', 'phone', e.target.value)}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                       placeholder="+1 (555) 987-6543"
                     />
                   </div>
@@ -811,7 +815,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.receiver.address}
                     onChange={(e) => updateField('receiver', 'address', e.target.value)}
                     rows={2.5}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="987 Corporate Way&#10;Austin, TX 78701"
                   />
                 </div>
@@ -822,7 +826,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.receiver.taxId}
                     onChange={(e) => updateField('receiver', 'taxId', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="Tax Registration ID"
                   />
                 </div>
@@ -834,8 +838,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         {/* TAB 3: LINE ITEMS */}
         {activeTab === 'items' && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="flex justify-between items-center border-b border-gray-200 dark:border-[#1A3F3F] pb-2.5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white">
+            <div className="flex justify-between items-center border-b border-[var(--line)] pb-2.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white">
                 Line Items ({invoice.items.length})
               </h3>
               <div className="flex items-center space-x-2">
@@ -843,7 +847,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <button
                     type="button"
                     onClick={onOpenPresets}
-                    className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-[#C69A5D]/10 hover:bg-[#C69A5D] text-[#C69A5D] hover:text-[#0D2C2C] text-xs font-semibold rounded-lg cursor-pointer transition-colors border border-[#C69A5D]/30"
+                    className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-[var(--accent-soft)] hover:bg-[var(--accent)] text-[var(--accent-text)] hover:text-[var(--on-accent)] text-xs font-semibold rounded-lg cursor-pointer transition-colors border border-[var(--accent)]/30"
                   >
                     <Layers className="w-3 h-3 shrink-0" />
                     <span>From Catalog</span>
@@ -851,7 +855,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 )}
                 <button
                   onClick={addItem}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#F0F7F7] dark:bg-[#0B1B1B] hover:bg-[#0D2C2C] dark:hover:bg-white/10 hover:text-white text-[#0D2C2C] dark:text-white text-xs font-semibold rounded-lg cursor-pointer transition-colors border border-[#0D2C2C]/10"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] text-xs font-semibold rounded-lg cursor-pointer transition-colors"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Item</span>
@@ -864,14 +868,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               {invoice.items.map((item, index) => (
                 <div 
                   key={item.id || index} 
-                  className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-4 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] relative space-y-3 group"
+                  className="bg-gray-50/50 bg-[var(--surface-muted)] p-4 rounded-xl border border-gray-200/80 border-[var(--line)] relative space-y-3 group"
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Item #{index + 1}</span>
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => duplicateItem(item)}
-                        className="text-gray-400 dark:text-gray-500 hover:text-[#C69A5D] transition-colors p-1 rounded hover:bg-gray-200 dark:hover:bg-white/10 cursor-pointer"
+                        className="text-gray-400 dark:text-gray-500 hover:text-[var(--accent-text)] transition-colors p-1 rounded hover:bg-gray-200 dark:hover:bg-white/10 cursor-pointer"
                         title="Duplicate Line Item"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -892,7 +896,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={item.description}
                       onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
                       rows={2}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none"
                       placeholder="Service description, details, milestones..."
                     />
                   </div>
@@ -907,7 +911,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         value={item.quantity || ''}
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
-                        className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono"
+                        className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono"
                       />
                     </div>
                     <div className="col-span-4 space-y-1.5">
@@ -919,7 +923,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         value={item.rate || ''}
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
-                        className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono"
+                        className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono"
                       />
                     </div>
                     <div className="col-span-4 space-y-1.5 text-right">
@@ -934,9 +938,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* FINANCIAL OVERRIDES */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3.5 mt-2">
-              <div className="flex items-center justify-between border-b border-gray-100 dark:border-[#1A3F3F] pb-1.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white">
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3.5 mt-2">
+              <div className="flex items-center justify-between border-b border-[var(--line)] pb-1.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white">
                   Financial Additions / Reductions
                 </h4>
               </div>
@@ -955,10 +959,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.gstEnabled ? 0 : (invoice.taxRate || '')}
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'taxRate', Number(e.target.value))}
-                    className={`w-full border rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C] transition-colors ${
+                    className={`w-full border rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)] transition-colors ${
                       invoice.gstEnabled 
-                        ? 'bg-gray-100/80 border-gray-100 dark:border-[#1A3F3F] text-gray-400 dark:text-gray-500 cursor-not-allowed select-none' 
-                        : 'bg-white dark:bg-[#0B1B1B] border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C]'
+                        ? 'bg-gray-100/80 border-[var(--line)] text-gray-400 dark:text-gray-500 cursor-not-allowed select-none' 
+                        : 'bg-[var(--surface)] border-[var(--line)] focus:border-[var(--accent)]'
                     }`}
                     title={invoice.gstEnabled ? "Disable GST Addon first to use standard Tax Rate" : ""}
                   />
@@ -975,7 +979,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         onClick={() => updateField(null, 'discountType', 'percentage')}
                         className={`px-1.5 py-0.5 text-[9px] rounded font-semibold transition-colors ${
                           invoice.discountType !== 'flat'
-                            ? 'bg-white dark:bg-[#0B1B1B] text-gray-800 dark:text-gray-200 shadow-xs'
+                            ? 'bg-[var(--surface)] text-gray-800 dark:text-gray-200 shadow-xs'
                             : 'text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200'
                         }`}
                       >
@@ -986,7 +990,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         onClick={() => updateField(null, 'discountType', 'flat')}
                         className={`px-1.5 py-0.5 text-[9px] rounded font-semibold transition-colors ${
                           invoice.discountType === 'flat'
-                            ? 'bg-white dark:bg-[#0B1B1B] text-gray-800 dark:text-gray-200 shadow-xs'
+                            ? 'bg-[var(--surface)] text-gray-800 dark:text-gray-200 shadow-xs'
                             : 'text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200'
                         }`}
                       >
@@ -1002,7 +1006,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.discountRate || ''}
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'discountRate', Number(e.target.value))}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
@@ -1015,7 +1019,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.shippingFee || ''}
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'shippingFee', Number(e.target.value))}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
@@ -1028,25 +1032,25 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.advanceAmount || ''}
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => updateField(null, 'advanceAmount', Number(e.target.value))}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
               </div>
             </div>
 
             {/* GST ADDON SECTION */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3.5 mt-4 select-none">
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3.5 mt-4 select-none">
               <div 
                 onClick={() => updateField(null, 'gstEnabled', !invoice.gstEnabled)}
-                className="flex items-center justify-between border-b border-gray-100 dark:border-[#1A3F3F] pb-2 cursor-pointer group select-none"
+                className="flex items-center justify-between border-b border-[var(--line)] pb-2 cursor-pointer group select-none"
               >
                 <div className="space-y-0.5">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white group-hover:text-[#C69A5D] dark:group-hover:text-[#C69A5D] transition-colors">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent-text)] transition-colors">
                     GST & Tax Category Addon
                   </h4>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className={`text-[11px] font-semibold transition-colors ${invoice.gstEnabled ? 'text-[#0D2C2C] dark:text-[#C69A5D]' : 'text-gray-400 dark:text-gray-500'}`}>
+                  <span className={`text-[11px] font-semibold transition-colors ${invoice.gstEnabled ? 'text-[var(--ink)] text-[var(--accent-text)]' : 'text-gray-400 dark:text-gray-500'}`}>
                     {invoice.gstEnabled ? 'Enabled' : 'Disabled'}
                   </span>
                   <button
@@ -1057,8 +1061,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       e.stopPropagation();
                       updateField(null, 'gstEnabled', !invoice.gstEnabled);
                     }}
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#C69A5D] ${
-                      invoice.gstEnabled ? 'bg-[#C69A5D]' : 'bg-gray-300 dark:bg-[#1A3F3F] hover:bg-gray-400 dark:hover:bg-[#255757]'
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--accent)] ${
+                      invoice.gstEnabled ? 'bg-[var(--accent)]' : 'bg-gray-300 bg-[var(--surface-muted)] hover:bg-gray-400 dark:hover:bg-[#255757]'
                     }`}
                   >
                     <span
@@ -1083,7 +1087,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={invoice.gstRate !== undefined ? (invoice.gstRate || '') : 18}
                       onFocus={(e) => e.target.select()}
                       onChange={(e) => updateField(null, 'gstRate', Number(e.target.value))}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                     />
                   </div>
 
@@ -1117,9 +1121,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         {activeTab === 'payment' && (
           <div className="space-y-4 animate-fadeIn">
             {/* WIRE TRANSFER INFO */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3.5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5">
-                <CreditCard className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 border-b border-[var(--line)] pb-2.5">
+                <CreditCard className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Bank Payment Details</span>
               </h3>
 
@@ -1130,7 +1134,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.sender.bankName || ''}
                     onChange={(e) => updateField('sender', 'bankName', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="e.g. Sovereign Mutual Bank"
                   />
                 </div>
@@ -1142,7 +1146,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="text"
                       value={invoice.sender.bankAccount || ''}
                       onChange={(e) => updateField('sender', 'bankAccount', e.target.value)}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono focus:ring-1 focus:ring-[var(--accent)]"
                       placeholder="e.g. 1029-3847-55"
                     />
                   </div>
@@ -1152,7 +1156,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="text"
                       value={invoice.sender.bankRouting || ''}
                       onChange={(e) => updateField('sender', 'bankRouting', e.target.value)}
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono focus:ring-1 focus:ring-[var(--accent)]"
                       placeholder="e.g. 122105155"
                     />
                   </div>
@@ -1164,7 +1168,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.sender.paymentDetails || ''}
                     onChange={(e) => updateField('sender', 'paymentDetails', e.target.value)}
                     rows={2.5}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors resize-none focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="e.g. Please send wire and email transfer receipt within 5 business days..."
                   />
                 </div>
@@ -1172,9 +1176,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* PAYMENT QR CODE CONFIGURATION */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3.5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5">
-                <QrCode className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 border-b border-[var(--line)] pb-2.5">
+                <QrCode className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Payment QR Code Option</span>
               </h3>
 
@@ -1185,16 +1189,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="text"
                     value={invoice.sender.paymentQrLink || ''}
                     onChange={(e) => updateField('sender', 'paymentQrLink', e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                     placeholder="e.g. upi://pay?pa=billing@company&pn=Acme or paypal.me/acme/150 or Stripe link"
                   />
                 </div>
 
-                <div className="border-t border-gray-100 dark:border-[#1A3F3F] pt-3">
+                <div className="border-t border-[var(--line)] pt-3">
                   <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block mb-2">Or Upload Custom QR Code Image</label>
                   
                   {invoice.sender.paymentQrImage ? (
-                    <div className="flex items-center space-x-3 bg-white dark:bg-[#0B1B1B] p-3 border border-gray-200 dark:border-[#1A3F3F] rounded-xl">
+                    <div className="flex items-center space-x-3 bg-[var(--surface)] p-3 border border-[var(--line)] rounded-xl">
                       <img 
                         src={invoice.sender.paymentQrImage} 
                         alt="Custom QR Code" 
@@ -1213,8 +1217,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3">
-                      <label className="flex items-center justify-center space-x-2 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] hover:border-[#0D2C2C] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
-                        <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                      <label className="flex items-center justify-center space-x-2 bg-[var(--surface)] hover:bg-[var(--surface-muted)] border border-[var(--line)] hover:border-[var(--accent)] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
+                        <FileUp className="w-4 h-4 text-[var(--accent-text)]" />
                         <span>Upload QR Code Image</span>
                         <input
                           type="file"
@@ -1230,8 +1234,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
                 {/* Real-time QR Code Preview within the editor */}
                 {(invoice.sender.paymentQrLink || invoice.sender.paymentQrImage) && (
-                  <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#0B1B1B] rounded-xl border border-gray-200 dark:border-[#1A3F3F] mt-2">
-                    <span className="text-[9px] uppercase tracking-wider font-bold text-[#0D2C2C] dark:text-[#C69A5D] mb-2">Scan Preview</span>
+                  <div className="flex flex-col items-center justify-center p-4 bg-[var(--surface)] rounded-xl border border-[var(--line)] mt-2">
+                    <span className="text-[9px] uppercase tracking-wider font-bold text-[var(--ink)] text-[var(--accent-text)] mb-2">Scan Preview</span>
                     <div className="p-2 bg-white rounded-lg border border-gray-100 shadow-xs">
                       <img
                         src={invoice.sender.paymentQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(invoice.sender.paymentQrLink || '')}`}
@@ -1249,9 +1253,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* NOTES & TERMS */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 border-b border-gray-100 dark:border-[#1A3F3F] pb-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#C69A5D]"></span>
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 border-b border-[var(--line)] pb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                 <span>Notes & Terms & Signature</span>
               </h3>
 
@@ -1263,7 +1267,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.notes}
                     onChange={(e) => updateField(null, 'notes', e.target.value)}
                     placeholder="e.g. Thank you for your business! Please remit payment via wire transfer."
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
@@ -1274,21 +1278,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={invoice.terms}
                     onChange={(e) => updateField(null, 'terms', e.target.value)}
                     placeholder="e.g. Payment due within 14 days. Late fees apply after 30 days."
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
                 {/* SIGNATURE SECTION */}
-                <div className="pt-2 border-t border-gray-100 dark:border-[#1A3F3F] space-y-3">
+                <div className="pt-2 border-t border-[var(--line)] space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Authorized Signature</label>
-                    <div className="flex bg-gray-100 dark:bg-[#1A3F3F] p-0.5 rounded-lg border border-gray-200/60 dark:border-[#1A3F3F]">
+                    <div className="flex bg-gray-100 bg-[var(--surface-muted)] p-0.5 rounded-lg border border-gray-200/60 border-[var(--line)]">
                       <button
                         type="button"
                         onClick={() => updateField(null, 'signatureType', 'text')}
                         className={`px-2 py-0.5 text-[10px] rounded-md font-semibold transition-colors ${
                           (invoice.signatureType || 'text') === 'text'
-                            ? 'bg-white dark:bg-[#0B1B1B] text-[#0D2C2C] dark:text-white shadow-xs'
+                            ? 'bg-[var(--surface)] text-[var(--ink)] dark:text-white shadow-xs'
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-800'
                         }`}
                       >
@@ -1299,7 +1303,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         onClick={() => updateField(null, 'signatureType', 'image')}
                         className={`px-2 py-0.5 text-[10px] rounded-md font-semibold transition-colors ${
                           invoice.signatureType === 'image'
-                            ? 'bg-white dark:bg-[#0B1B1B] text-[#0D2C2C] dark:text-white shadow-xs'
+                            ? 'bg-[var(--surface)] text-[var(--ink)] dark:text-white shadow-xs'
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-800'
                         }`}
                       >
@@ -1316,7 +1320,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         value={invoice.signatureText || ''}
                         onChange={(e) => updateField(null, 'signatureText', e.target.value)}
                         placeholder="e.g. John Doe"
-                        className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-serif italic focus:ring-1 focus:ring-[#0D2C2C]"
+                        className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-serif italic focus:ring-1 focus:ring-[var(--accent)]"
                       />
                     </div>
                   )}
@@ -1325,11 +1329,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <div className="space-y-3 animate-fadeIn">
                       <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Signature Image</label>
                       {invoice.signatureImage ? (
-                        <div className="flex items-center space-x-3 p-2 border border-gray-200 dark:border-[#1A3F3F] rounded-lg bg-white/50">
+                        <div className="flex items-center space-x-3 p-2 border border-[var(--line)] rounded-lg bg-white/50">
                           <img 
                             src={invoice.signatureImage} 
                             alt="Signature Preview" 
-                            className="h-10 w-auto object-contain max-w-30 bg-white dark:bg-[#0B1B1B] border border-gray-100 dark:border-[#1A3F3F] rounded p-1"
+                            className="h-10 w-auto object-contain max-w-30 bg-[var(--surface)] border border-[var(--line)] rounded p-1"
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-[11px] font-semibold text-gray-800 dark:text-gray-200 truncate">{sigFileName || 'signature_image.png'}</p>
@@ -1344,8 +1348,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         </div>
                       ) : (
                         <div className="flex items-center space-x-3">
-                          <label className="flex items-center justify-center space-x-2 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] hover:border-[#0D2C2C] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
-                          <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                          <label className="flex items-center justify-center space-x-2 bg-[var(--surface)] hover:bg-[var(--surface-muted)] border border-[var(--line)] hover:border-[var(--accent)] text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-all duration-200">
+                          <FileUp className="w-4 h-4 text-[var(--accent-text)]" />
                           <span>Upload Signature Image</span>
                           <input
                             type="file"
@@ -1369,15 +1373,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           <div className="space-y-4 animate-fadeIn">
             
             {/* TEMPLATES SELECTOR */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2">
-                <Layers className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2">
+                <Layers className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Invoice Structural Templates</span>
               </h3>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
-                  { id: 'teal', label: 'Rich Teal (Default)', desc: 'Elegant teal + gold accents' },
+                  { id: 'teal', label: 'Banded Header (Default)', desc: 'Full-width color band and mark' },
                   { id: 'classic', label: 'Classic Corporate', desc: 'Symmetrical traditional style' },
                   { id: 'modern', label: 'Modern Minimal', desc: 'Contemporary side-accent bar' },
                   { id: 'simple', label: 'Clean Simple', desc: 'Direct, clear, ink-friendly' },
@@ -1387,7 +1391,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 ].map((item) => {
                   const isSelected = invoice.theme.templateId === item.id;
                   const TEMPLATE_DEFAULTS: Record<string, { primary: string; accent: string }> = {
-                    teal: { primary: '#0f766e', accent: '#b45309' },
+                    teal: { primary: '#1e3a8a', accent: '#c2410c' },
                     classic: { primary: '#1e3a8a', accent: '#3b82f6' },
                     modern: { primary: '#1f2937', accent: '#f59e0b' },
                     simple: { primary: '#0f172a', accent: '#10b981' },
@@ -1399,7 +1403,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <button
                       key={item.id}
                       onClick={() => {
-                        const defaults = TEMPLATE_DEFAULTS[item.id] || { primary: '#0f766e', accent: '#b45309' };
+                        const defaults = TEMPLATE_DEFAULTS[item.id] || { primary: '#1e3a8a', accent: '#c2410c' };
                         onChange({
                           ...invoice,
                           theme: {
@@ -1414,8 +1418,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       className={`
                         p-2.5 rounded-lg text-left border cursor-pointer transition-all duration-150
                         ${isSelected 
-                          ? 'border-[#0D2C2C] bg-[#F0F7F7] dark:border-[#C69A5D] dark:bg-[#C69A5D]/10 text-[#0D2C2C] dark:text-[#C69A5D] shadow-sm' 
-                          : 'border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] text-gray-500 hover:border-gray-300 dark:hover:border-[#C69A5D] hover:text-gray-700 dark:text-gray-300'
+                          ? 'border-[var(--accent)] bg-[var(--accent-soft)] dark:border-[var(--accent)] dark:bg-[var(--accent-soft)] text-[var(--ink)] text-[var(--accent-text)] shadow-sm' 
+                          : 'border-[var(--line)] bg-[var(--surface)] text-gray-500 hover:border-gray-300 hover:border-[var(--accent)] hover:text-gray-700 dark:text-gray-300'
                         }
                       `}
                     >
@@ -1428,9 +1432,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* PALETTE PRESETS & COLOR PICKER */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3.5">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2">
-                <Palette className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2">
+                <Palette className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Theme Brand Customization</span>
               </h3>
 
@@ -1442,7 +1446,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <button
                       key={idx}
                       onClick={() => applyPalette(p.primary, p.accent)}
-                      className="p-1.5 rounded-lg bg-white dark:bg-[#0B1B1B] hover:bg-gray-100 dark:hover:bg-[#1A3F3F] border border-gray-200 dark:border-[#1A3F3F] flex items-center space-x-2 text-left cursor-pointer transition-colors shadow-sm"
+                      className="p-1.5 rounded-lg bg-[var(--surface)] hover:bg-gray-100 hover:bg-[var(--surface-muted)] border border-[var(--line)] flex items-center space-x-2 text-left cursor-pointer transition-colors shadow-sm"
                     >
                       <div className="flex space-x-0.5">
                         <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: p.primary }} />
@@ -1463,31 +1467,31 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       type="color"
                       value={invoice.theme.primaryColor}
                       onChange={(e) => updateField('theme', 'primaryColor', e.target.value)}
-                      className="w-8 h-8 rounded-lg border border-gray-200 dark:border-[#1A3F3F] bg-transparent cursor-pointer"
+                      className="w-8 h-8 rounded-lg border border-[var(--line)] bg-transparent cursor-pointer"
                     />
                     <input
                       type="text"
                       value={invoice.theme.primaryColor}
                       onChange={(e) => updateField('theme', 'primaryColor', e.target.value)}
-                      className="flex-1 bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 font-mono"
+                      className="flex-1 bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Accent / Gold</label>
+                  <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Accent</label>
                   <div className="flex items-center space-x-2">
                     <input
                       type="color"
                       value={invoice.theme.accentColor}
                       onChange={(e) => updateField('theme', 'accentColor', e.target.value)}
-                      className="w-8 h-8 rounded-lg border border-gray-200 dark:border-[#1A3F3F] bg-transparent cursor-pointer"
+                      className="w-8 h-8 rounded-lg border border-[var(--line)] bg-transparent cursor-pointer"
                     />
                     <input
                       type="text"
                       value={invoice.theme.accentColor}
                       onChange={(e) => updateField('theme', 'accentColor', e.target.value)}
-                      className="flex-1 bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 font-mono"
+                      className="flex-1 bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 font-mono"
                     />
                   </div>
                 </div>
@@ -1495,9 +1499,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </div>
 
             {/* FONTS SELECTION */}
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2">
-                <Type className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2">
+                <Type className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Typography Configuration</span>
               </h3>
 
@@ -1519,8 +1523,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         className={`
                           p-2 rounded-lg border cursor-pointer text-left transition-all flex items-center justify-between
                           ${isSelected 
-                            ? 'border-[#0D2C2C] bg-[#F0F7F7] dark:border-[#C69A5D] dark:bg-[#C69A5D]/10 text-[#0D2C2C] dark:text-[#C69A5D]' 
-                            : 'border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] text-gray-500 hover:border-gray-300 dark:hover:border-[#C69A5D] hover:text-gray-700 dark:text-gray-300'
+                            ? 'border-[var(--accent)] bg-[var(--accent-soft)] dark:border-[var(--accent)] dark:bg-[var(--accent-soft)] text-[var(--ink)] text-[var(--accent-text)]' 
+                            : 'border-[var(--line)] bg-[var(--surface)] text-gray-500 hover:border-gray-300 hover:border-[var(--accent)] hover:text-gray-700 dark:text-gray-300'
                           }
                         `}
                       >
@@ -1533,7 +1537,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
 
               {/* Custom font upload widget */}
-              <div className="space-y-2 border-t border-gray-200 dark:border-[#1A3F3F] pt-3">
+              <div className="space-y-2 border-t border-[var(--line)] pt-3">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider block">Upload Custom Brand Font</span>
                   {invoice.theme.fontFamily === 'custom' && invoice.theme.customFontUrl && (
@@ -1547,15 +1551,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
 
                 {invoice.theme.fontFamily === 'custom' && invoice.theme.customFontUrl ? (
-                  <div className="flex items-center space-x-3 bg-white dark:bg-[#0B1B1B] p-2.5 rounded-lg border border-gray-200 dark:border-[#1A3F3F] text-xs">
-                    <Type className="w-5 h-5 text-[#0D2C2C] dark:text-white" />
+                  <div className="flex items-center space-x-3 bg-[var(--surface)] p-2.5 rounded-lg border border-[var(--line)] text-xs">
+                    <Type className="w-5 h-5 text-[var(--ink)] dark:text-white" />
                     <div className="flex-1 truncate">
                       <p className="text-gray-700 dark:text-gray-200 font-medium truncate">{fontFileName || 'BrandCustomFont.ttf'}</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="border border-dashed border-gray-300 dark:border-[#1A3F3F] hover:border-[#0D2C2C] rounded-lg p-4 flex flex-col items-center justify-center text-center transition-all bg-white dark:bg-[#0B1B1B] relative group overflow-hidden">
-                    <Type className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-[#C69A5D] mb-1.5 transition-colors" />
+                  <div className="border border-dashed border-[var(--line)] hover:border-[var(--accent)] rounded-lg p-4 flex flex-col items-center justify-center text-center transition-all bg-[var(--surface)] relative group overflow-hidden">
+                    <Type className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-[var(--accent-text)] mb-1.5 transition-colors" />
                     <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold">Click to Load custom TTF / OTF font</p>
                     <input
                       type="file"
@@ -1575,7 +1579,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           <div className="space-y-4 animate-fadeIn">
             <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-500/30 rounded-xl p-4 text-xs text-amber-800 dark:text-amber-200 space-y-1.5 shadow-sm">
               <p className="font-bold flex items-center gap-1.5 text-amber-900 dark:text-amber-300">
-                <Info className="w-4 h-4 text-[#C69A5D]" />
+                <Info className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Default Global Details</span>
               </p>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-[11px]">
@@ -1583,10 +1587,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </p>
             </div>
 
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-3">
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-gray-100 dark:border-[#1A3F3F] w-full mb-2">
-                  <FileUp className="w-4 h-4 text-[#C69A5D]" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-[var(--line)] w-full mb-2">
+                  <FileUp className="w-4 h-4 text-[var(--accent-text)]" />
                   <span>Default Company Logo</span>
                 </h3>
                 {globalSender.logoUrl && (
@@ -1600,11 +1604,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </div>
 
               {globalSender.logoUrl ? (
-                <div className="flex items-center space-x-4 bg-white dark:bg-[#0B1B1B] p-3 rounded-lg border border-gray-200 dark:border-[#1A3F3F]">
+                <div className="flex items-center space-x-4 bg-[var(--surface)] p-3 rounded-lg border border-[var(--line)]">
                   <img 
                     src={globalSender.logoUrl} 
                     alt="Uploaded default logo" 
-                    className="w-16 h-16 object-contain bg-gray-50 dark:bg-[#0A2323] rounded p-1 border border-gray-100 dark:border-[#1A3F3F]"
+                    className="w-16 h-16 object-contain bg-gray-50 bg-[var(--surface-muted)] rounded p-1 border border-[var(--line)]"
                     referrerPolicy="no-referrer"
                   />
                   <div className="text-xs">
@@ -1613,8 +1617,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="border border-dashed border-gray-300 dark:border-[#1A3F3F] hover:border-[#0D2C2C] rounded-lg p-5 flex flex-col items-center justify-center text-center transition-all bg-white dark:bg-[#0B1B1B] group relative overflow-hidden">
-                  <FileUp className="w-7 h-7 text-gray-400 dark:text-gray-500 group-hover:text-[#C69A5D] mb-2 transition-colors" />
+                <div className="border border-dashed border-[var(--line)] hover:border-[var(--accent)] rounded-lg p-5 flex flex-col items-center justify-center text-center transition-all bg-[var(--surface)] group relative overflow-hidden">
+                  <FileUp className="w-7 h-7 text-gray-400 dark:text-gray-500 group-hover:text-[var(--accent-text)] mb-2 transition-colors" />
                   <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold">Click or Drag to Upload Default Logo</p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Supports PNG, JPG, SVG</p>
                   <input
@@ -1627,9 +1631,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               )}
             </div>
 
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-gray-100 dark:border-[#1A3F3F]">
-                <Users className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-[var(--line)]">
+                <Users className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Default Company Details</span>
               </h3>
 
@@ -1641,7 +1645,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.name}
                     onChange={(e) => setGlobalSender({ ...globalSender, name: e.target.value })}
                     placeholder="e.g. Acme Studio LLC"
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
@@ -1653,7 +1657,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={globalSender.email}
                       onChange={(e) => setGlobalSender({ ...globalSender, email: e.target.value })}
                       placeholder="e.g. billing@acme.com"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1663,7 +1667,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={globalSender.phone}
                       onChange={(e) => setGlobalSender({ ...globalSender, phone: e.target.value })}
                       placeholder="e.g. +1 (555) 0199"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                     />
                   </div>
                 </div>
@@ -1675,7 +1679,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.taxId}
                     onChange={(e) => setGlobalSender({ ...globalSender, taxId: e.target.value })}
                     placeholder="e.g. US-9912093"
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
@@ -1686,15 +1690,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.address}
                     onChange={(e) => setGlobalSender({ ...globalSender, address: e.target.value })}
                     placeholder="e.g. 123 Studio Way, Suite 100&#10;San Francisco, CA 94107"
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-gray-100 dark:border-[#1A3F3F]">
-                <CreditCard className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-[var(--line)]">
+                <CreditCard className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Default Bank Payment Details</span>
               </h3>
 
@@ -1706,7 +1710,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.bankName}
                     onChange={(e) => setGlobalSender({ ...globalSender, bankName: e.target.value })}
                     placeholder="e.g. Chase Bank, NA"
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
 
@@ -1718,7 +1722,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={globalSender.bankAccount}
                       onChange={(e) => setGlobalSender({ ...globalSender, bankAccount: e.target.value })}
                       placeholder="e.g. 1029-3847-55"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1728,7 +1732,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       value={globalSender.bankRouting}
                       onChange={(e) => setGlobalSender({ ...globalSender, bankRouting: e.target.value })}
                       placeholder="e.g. 122105155"
-                      className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[#0D2C2C]"
+                      className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                     />
                   </div>
                 </div>
@@ -1740,15 +1744,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.paymentDetails}
                     onChange={(e) => setGlobalSender({ ...globalSender, paymentDetails: e.target.value })}
                     placeholder="e.g. ACH / Wire Transfer is preferred."
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-50/50 dark:bg-[#0A2323]/80 p-5 rounded-xl border border-gray-200/80 dark:border-[#1A3F3F] space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D2C2C] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-gray-100 dark:border-[#1A3F3F]">
-                <FileText className="w-4 h-4 text-[#C69A5D]" />
+            <div className="bg-gray-50/50 bg-[var(--surface-muted)] p-5 rounded-xl border border-gray-200/80 border-[var(--line)] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--ink)] dark:text-white flex items-center space-x-2 pb-1.5 border-b border-[var(--line)]">
+                <FileText className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Default Notes & Terms</span>
               </h3>
 
@@ -1760,7 +1764,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.notes}
                     onChange={(e) => setGlobalSender({ ...globalSender, notes: e.target.value })}
                     placeholder="Thank you for your business!"
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -1770,7 +1774,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={globalSender.terms}
                     onChange={(e) => setGlobalSender({ ...globalSender, terms: e.target.value })}
                     placeholder="Payment is due within 14 days of issue."
-                    className="w-full bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] focus:border-[#0D2C2C] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[#0D2C2C]"
+                    className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
               </div>
@@ -1780,18 +1784,18 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <button
                 type="button"
                 onClick={handleSaveGlobalSettings}
-                className="flex-1 flex items-center justify-center space-x-1.5 py-2.5 bg-[#C69A5D] hover:bg-[#B5894D] text-[#0D2C2C] font-extrabold text-xs rounded-xl shadow-lg shadow-[#C69A5D]/20 transition-all cursor-pointer text-center"
+                className="flex-1 flex items-center justify-center space-x-1.5 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] font-extrabold text-xs rounded-xl shadow-lg shadow-[var(--accent)]/20 transition-all cursor-pointer text-center"
               >
-                <Save className="w-4 h-4 text-[#0D2C2C]" />
+                <Save className="w-4 h-4 text-[var(--ink)]" />
                 <span>Save Default Settings</span>
               </button>
               <button
                 type="button"
                 onClick={handleUseCurrentAsDefault}
-                className="flex items-center justify-center space-x-1.5 py-2.5 px-4 bg-white dark:bg-[#0B1B1B] hover:bg-gray-50 dark:hover:bg-[#1A3F3F] text-gray-700 dark:text-gray-200 font-semibold text-xs rounded-xl border border-gray-200 dark:border-[#1A3F3F] transition-all cursor-pointer text-center"
+                className="flex items-center justify-center space-x-1.5 py-2.5 px-4 bg-[var(--surface)] hover:bg-[var(--surface-muted)] text-gray-700 dark:text-gray-200 font-semibold text-xs rounded-xl border border-[var(--line)] transition-all cursor-pointer text-center"
                 title="Fill settings with currently opened invoice's details"
               >
-                <Copy className="w-4 h-4 text-[#C69A5D]" />
+                <Copy className="w-4 h-4 text-[var(--accent-text)]" />
                 <span>Use Current Sender Info</span>
               </button>
             </div>

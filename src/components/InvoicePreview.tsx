@@ -55,13 +55,16 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   const [printAreaHeight, setPrintAreaHeight] = useState<number>(1122);
 
   useEffect(() => {
-    if (!outerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      if (entries[0]) {
-        setContainerWidth(entries[0].contentRect.width);
-      }
-    });
-    observer.observe(outerRef.current);
+    const el = containerRef.current;
+    if (!el) return;
+    const measure = () => {
+      const styles = getComputedStyle(el);
+      const pad = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+      setContainerWidth(Math.max(el.clientWidth - pad, 200));
+    };
+    const observer = new ResizeObserver(measure);
+    measure();
+    observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
@@ -137,7 +140,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       case 'overdue':
         return 'bg-rose-100 text-rose-800 border-rose-200';
       default:
-        return 'bg-gray-100 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-[#1A3F3F]';
+        return 'bg-gray-100 text-gray-800 dark:text-gray-200 border-[var(--line)]';
     }
   };
 
@@ -154,64 +157,53 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   ) : null;
 
   return (
-    <div ref={outerRef} className="flex flex-col h-full bg-[#FAFAFA] border-l border-gray-200 dark:border-[#1A3F3F] text-gray-800 dark:text-gray-200 select-none w-full">
+    <div ref={outerRef} className="flex flex-col h-full min-w-0 bg-[var(--canvas)] border-l border-[var(--line)] text-gray-800 dark:text-gray-200 select-none w-full">
       {/* Zoom and Preview Head Controls */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#0D2C2C] text-white no-print border-b border-[#1A3F3F]">
-        <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-[#C69A5D] animate-pulse"></span>
-          <span className="text-xs font-bold uppercase tracking-wider text-white">Live Document Preview</span>
-          <span className="text-[10px] text-slate-300 font-mono hidden sm:inline">({theme.templateId.toUpperCase()})</span>
-        </div>
-
-        {/* Device Frames Mode */}
-        <div className="hidden sm:flex items-center space-x-1 bg-black/20 p-1 rounded-lg border border-white/10">
+      <div className="flex items-center justify-end gap-2 px-3 py-2 bg-[var(--chrome)] text-[var(--ink)] no-print border-b border-[var(--line)]">
+        <div className="hidden sm:flex items-center gap-1 bg-[var(--surface)] p-1 rounded-lg border border-[var(--line)]">
           <button
             onClick={() => setDeviceMode('desktop')}
-            className={`p-1.5 rounded text-xs transition-all cursor-pointer ${deviceMode === 'desktop' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400 hover:text-white'}`}
-            title="Desktop Print View"
+            className={`h-7 w-7 inline-flex items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${deviceMode === 'desktop' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--ink)] hover:bg-[var(--accent-soft)]'}`}
+            title="Desktop view"
           >
             <Monitor className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setDeviceMode('tablet')}
-            className={`p-1.5 rounded text-xs transition-all cursor-pointer ${deviceMode === 'tablet' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400 hover:text-white'}`}
-            title="Tablet Preview View"
+            className={`h-7 w-7 inline-flex items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${deviceMode === 'tablet' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--ink)] hover:bg-[var(--accent-soft)]'}`}
+            title="Tablet view"
           >
             <Tablet className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setDeviceMode('mobile')}
-            className={`p-1.5 rounded text-xs transition-all cursor-pointer ${deviceMode === 'mobile' ? 'bg-[#C69A5D] text-[#0D2C2C]' : 'text-slate-400 hover:text-white'}`}
-            title="Mobile Preview View"
+            className={`h-7 w-7 inline-flex items-center justify-center rounded-lg text-xs transition-all cursor-pointer ${deviceMode === 'mobile' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--ink)] hover:bg-[var(--accent-soft)]'}`}
+            title="Mobile view"
           >
             <Smartphone className="w-3.5 h-3.5" />
           </button>
         </div>
-        
-        {/* Zoom Controls */}
-        <div className="flex items-center space-x-2 text-xs">
+
+        <div className="flex items-center gap-1 bg-[var(--surface)] p-1 rounded-lg border border-[var(--line)]">
           <button
             onClick={() => setZoom(prev => Math.max(50, prev - 10))}
-            className="p-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
-            title="Zoom Out"
+            className="h-7 w-7 inline-flex items-center justify-center rounded-lg text-[var(--ink)] hover:bg-[var(--accent-soft)] transition-colors cursor-pointer"
+            title="Zoom out"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
-          
-          <span className="text-[11px] font-mono font-bold w-9 text-center text-slate-200">{zoom}%</span>
-
+          <span className="text-[11px] font-mono font-semibold w-9 text-center text-[var(--ink)]">{zoom}%</span>
           <button
             onClick={() => setZoom(prev => Math.min(150, prev + 10))}
-            className="p-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
-            title="Zoom In"
+            className="h-7 w-7 inline-flex items-center justify-center rounded-lg text-[var(--ink)] hover:bg-[var(--accent-soft)] transition-colors cursor-pointer"
+            title="Zoom in"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
-
           <button
             onClick={() => setZoom(100)}
-            className="p-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
-            title="Reset Zoom"
+            className="h-7 w-7 inline-flex items-center justify-center rounded-lg text-[var(--ink)] hover:bg-[var(--accent-soft)] transition-colors cursor-pointer"
+            title="Reset zoom"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -221,7 +213,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       {/* Sheet Container */}
       <div 
         ref={containerRef}
-        className={`flex-1 overflow-auto p-4 sm:p-6 bg-[#E8EBEB] dark:bg-slate-950 w-full flex justify-center items-start ${
+        className={`flex-1 min-w-0 overflow-auto p-4 sm:p-6 bg-[var(--preview)] w-full flex justify-center items-start ${
           deviceMode === 'tablet' ? 'max-w-3xl mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : deviceMode === 'mobile' ? 'max-w-105 mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : ''
         }`}
       >
@@ -231,8 +223,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
         {/* Scaled viewport container */}
         {(() => {
           const targetWidth = 794; // 210mm in pixels at 96dpi
-          const paddingOffset = containerWidth < 640 ? 32 : 48;
-          const availableWidth = Math.max(containerWidth - paddingOffset, 200);
+          const availableWidth = containerWidth;
           const autoScale = availableWidth < targetWidth ? (availableWidth / targetWidth) : 1;
           const finalScale = autoScale * (zoom / 100);
 
@@ -244,7 +235,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 position: 'relative',
                 transition: 'width 0.15s ease-out, height 0.15s ease-out'
               }}
-              className="no-print mx-auto"
+              className="no-print mx-auto shrink-0"
             >
               <div
                 ref={printAreaRef}
@@ -262,10 +253,13 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                   '--accent-color': theme.accentColor,
                 } as React.CSSProperties}
                 className={`
-                  print-card bg-white text-slate-800 shadow-2xl rounded-lg ${cardPadding} flex flex-col justify-between transition-shadow duration-300
+                  invoice-sheet print-card relative bg-white text-slate-800 shadow-[0_16px_50px_rgba(28,25,23,0.12)] rounded-none border border-black/5 ${cardPadding} flex flex-col justify-between transition-shadow duration-300
                   ${theme.templateId === 'dark' ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-800'}
                 `}
               >
+          {theme.templateId === 'modern' && (
+            <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: theme.primaryColor }} />
+          )}
           {/* Template 1: Premium Rich Teal (Default) */}
           {theme.templateId === 'teal' && (
             <div className="w-full">
@@ -276,7 +270,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
               >
                 <div className="text-left">
                   <h1 className="text-3xl font-bold text-white tracking-tight uppercase">Invoice</h1>
-                  <p className="text-teal-100 text-sm mt-1">Invoice No: {invoiceNumber}</p>
+                  <p className="text-white/80 text-sm mt-1">Invoice No: {invoiceNumber}</p>
                 </div>
                 <div>
                   {sender.logoUrl ? (
@@ -364,13 +358,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
           {/* Template 3: Modern Minimal */}
           {theme.templateId === 'modern' && (
-            <div className="w-full relative">
-              {/* Modern Left Border Bar */}
-              <div 
-                className={`absolute ${isCompact ? '-left-6 -top-6 -bottom-6' : '-left-10 -top-10 -bottom-10'} w-2`}
-                style={{ backgroundColor: theme.primaryColor }}
-              />
-              
+            <div className="w-full">
               <div className={`flex justify-between items-start ${isCompact ? 'mb-5' : 'mb-10'}`}>
                 <div>
                   {sender.logoUrl && (
@@ -636,7 +624,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 className={`grid grid-cols-12 gap-2 ${isCompact ? 'py-1' : 'py-2'} px-3 border-b-2 font-bold uppercase tracking-wider`}
                 style={{ 
                   borderColor: theme.primaryColor,
-                  backgroundColor: theme.templateId === 'teal' ? '#f0fdfa' : (theme.templateId === 'dark' ? '#1e293b' : '#f8fafc'),
+                  backgroundColor: theme.templateId === 'dark' ? '#1e293b' : '#f4f6f8',
                   color: theme.templateId === 'dark' ? '#f1f5f9' : theme.primaryColor
                 }}
               >

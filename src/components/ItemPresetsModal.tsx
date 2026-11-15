@@ -59,13 +59,13 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
       aria-label="Preset Catalog Library"
     >
       <div 
-        className="w-full max-w-xl bg-white dark:bg-[#0B1B1B] border border-gray-200 dark:border-[#1A3F3F] text-slate-800 dark:text-white rounded-2xl shadow-2xl overflow-hidden animate-scaleUp flex flex-col max-h-[85vh]"
+        className="w-full max-w-xl bg-[var(--surface)] border border-[var(--line)] text-slate-800 dark:text-white rounded-2xl shadow-2xl overflow-hidden animate-scaleUp flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-[#1A3F3F] bg-gray-50/50 dark:bg-[#0A2323] shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--line)] bg-gray-50/50 bg-[var(--surface-muted)] shrink-0">
           <div className="flex items-center space-x-2">
-            <Layers className="w-5 h-5 text-[#C69A5D]" />
+            <Layers className="w-5 h-5 text-[var(--accent-text)]" />
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white">Service Item Presets Catalog</h3>
             </div>
@@ -79,7 +79,7 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
         </div>
 
         {/* Filters */}
-        <div className="p-4 border-b border-gray-100 dark:border-[#1A3F3F] space-y-3 shrink-0">
+        <div className="p-4 border-b border-[var(--line)] space-y-3 shrink-0">
           <div className="relative">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
             <input
@@ -87,7 +87,7 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search service templates..."
-              className="w-full bg-gray-50 dark:bg-[#0A2323] border border-gray-200 dark:border-[#1A3F3F] rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-[#0D2C2C] dark:focus:border-[#C69A5D]"
+              className="w-full bg-gray-50 bg-[var(--surface-muted)] border border-[var(--line)] rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-[var(--accent)] dark:focus:border-[var(--accent)]"
             />
           </div>
 
@@ -98,7 +98,7 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-[#0D2C2C] dark:bg-[#C69A5D] text-white dark:text-[#0D2C2C]'
+                    ? 'bg-[var(--accent)] dark:bg-[var(--accent)] text-white text-[var(--on-accent)]'
                     : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
@@ -116,11 +116,11 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
               <div
                 key={idx}
                 onClick={() => handleSelectPreset(preset)}
-                className="p-3.5 rounded-xl border border-gray-200 dark:border-[#1A3F3F] bg-white dark:bg-[#0B1B1B] hover:border-[#0D2C2C] dark:hover:border-[#C69A5D] hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
+                className="p-3.5 rounded-xl border border-[var(--line)] bg-[var(--surface)] hover:border-[var(--accent)] hover:border-[var(--accent)] hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
               >
                 <div className="min-w-0 pr-3">
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs font-bold text-gray-900 dark:text-white group-hover:text-[#0D2C2C] dark:group-hover:text-[#C69A5D] transition-colors">
+                    <span className="text-xs font-bold text-gray-900 dark:text-white group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent-text)] transition-colors">
                       {preset.title}
                     </span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-slate-400 font-mono">
@@ -131,7 +131,7 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-3 shrink-0">
-                  <span className="text-xs font-bold font-mono text-[#0D2C2C] dark:text-[#C69A5D]">
+                  <span className="text-xs font-bold font-mono text-[var(--ink)] text-[var(--accent-text)]">
                     {formatter.format(preset.defaultRate)}
                   </span>
                   <button
@@ -139,7 +139,7 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
                     className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                       isJustAdded 
                         ? 'bg-emerald-600 text-white' 
-                        : 'bg-[#F0F7F7] dark:bg-white/10 text-[#0D2C2C] dark:text-white group-hover:bg-[#0D2C2C] dark:group-hover:bg-[#C69A5D] group-hover:text-white dark:group-hover:text-[#0D2C2C]'
+                        : 'bg-[var(--accent-soft)] text-[var(--accent-text)] group-hover:bg-[var(--accent)] group-hover:text-[var(--on-accent)]'
                     }`}
                   >
                     {isJustAdded ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -150,7 +150,7 @@ export const ItemPresetsModal: React.FC<ItemPresetsModalProps> = ({
           })}
         </div>
 
-        <div className="p-3 border-t border-gray-100 dark:border-[#1A3F3F] bg-gray-50 dark:bg-[#0A2323] text-center text-[10px] text-gray-400">
+        <div className="p-3 border-t border-[var(--line)] bg-gray-50 bg-[var(--surface-muted)] text-center text-[10px] text-gray-400">
           Items will be added to your current invoice line items list with 1x quantity.
         </div>
       </div>

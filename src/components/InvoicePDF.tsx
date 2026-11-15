@@ -46,6 +46,13 @@ try {
   console.warn('Could not register external fonts in react-pdf:', e);
 }
 
+Font.registerHyphenationCallback((word) => {
+  if (word.length <= 16) return [word];
+  const parts: string[] = [];
+  for (let i = 0; i < word.length; i += 16) parts.push(word.slice(i, i + 16));
+  return parts;
+});
+
 // Function to register custom uploaded font if present
 export const registerCustomFont = (name: string, dataUrl: string) => {
   try {
@@ -68,8 +75,8 @@ const formatCurrency = (val: number) => {
 };
 
 const getStyles = (theme: InvoiceTheme) => {
-  const primary = theme.primaryColor || '#0f766e';
-  const accent = theme.accentColor || '#b45309';
+  const primary = theme.primaryColor || '#1e3a8a';
+  const accent = theme.accentColor || '#c2410c';
   const templateId = theme.templateId || 'teal';
   const isDark = templateId === 'dark';
   const isCompact = theme.pdfLayout === 'compact';
@@ -91,6 +98,8 @@ const getStyles = (theme: InvoiceTheme) => {
       lineHeight: isCompact ? 1.3 : 1.4,
       backgroundColor: isDark ? '#111827' : '#ffffff',
       color: isDark ? '#f3f4f6' : '#1f2937',
+      borderLeftWidth: templateId === 'modern' ? 6 : 0,
+      borderLeftColor: primary,
     },
     
     // Header Structures based on Templates
@@ -274,7 +283,7 @@ const getStyles = (theme: InvoiceTheme) => {
     },
     tableHeader: {
       flexDirection: 'row',
-      backgroundColor: templateId === 'teal' ? '#f0fdfa' : (isDark ? '#1f2937' : '#f9fafb'),
+      backgroundColor: isDark ? '#1f2937' : '#f4f6f8',
       borderBottomWidth: 2,
       borderBottomColor: primary,
       paddingVertical: isCompact ? 4 : 6,
@@ -297,19 +306,24 @@ const getStyles = (theme: InvoiceTheme) => {
       alignItems: 'center',
     },
     colDesc: {
-      flex: 3,
-      paddingRight: 10,
+      flexGrow: 1,
+      flexShrink: 1,
+      flexBasis: 0,
+      paddingRight: 8,
     },
     colQty: {
-      width: 50,
+      width: 42,
+      flexShrink: 0,
       textAlign: 'center',
     },
     colRate: {
-      width: 80,
+      width: 78,
+      flexShrink: 0,
       textAlign: 'right',
     },
     colAmt: {
-      width: 90,
+      width: 84,
+      flexShrink: 0,
       textAlign: 'right',
       fontWeight: 'bold',
     },
@@ -518,6 +532,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
     paid: { bg: '#dcfce7', text: '#166534' },
     pending: { bg: '#fef3c7', text: '#92400e' },
     overdue: { bg: '#fee2e2', text: '#991b1b' },
+    advance_paid: { bg: '#dbeafe', text: '#1e3a8a' },
   };
 
   const currentStatusStyle = statusColors[status] || statusColors.pending;
@@ -529,12 +544,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Teal template header
   const renderTealHeader = () => (
-    <View style={styles.headerTeal} fixed>
+    <View style={styles.headerTeal}>
       <View style={[styles.headerTealLeft, { maxWidth: '60%', flex: 1, marginRight: 20 }]}>
         <Text style={styles.headerTealTitle}>INVOICE</Text>
         <Text style={styles.headerTealSubtitle}>No: {invoiceNumber}</Text>
       </View>
-      <View style={[styles.headerTealRight, { maxWidth: '40%', shrink: 0 }]}>
+      <View style={[styles.headerTealRight, { maxWidth: '40%', flexShrink: 0 }]}>
         {sender.logoUrl ? (
           <Image src={sender.logoUrl} style={styles.logo} />
         ) : (
@@ -548,12 +563,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Dark template header
   const renderDarkHeader = () => (
-    <View style={styles.headerDark} fixed>
+    <View style={styles.headerDark}>
       <View style={{ flexDirection: 'column', maxWidth: '60%', flex: 1, marginRight: 20 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff' }}>INVOICE</Text>
         <Text style={{ fontSize: 9, color: theme.primaryColor, marginTop: 4 }}>{invoiceNumber}</Text>
       </View>
-      <View style={{ maxWidth: '40%', shrink: 0, alignItems: 'flex-end' }}>
+      <View style={{ maxWidth: '40%', flexShrink: 0, alignItems: 'flex-end' }}>
         {sender.logoUrl ? (
           <Image src={sender.logoUrl} style={styles.logo} />
         ) : (
@@ -567,12 +582,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Indigo template header
   const renderIndigoHeader = () => (
-    <View style={styles.headerIndigo} fixed>
+    <View style={styles.headerIndigo}>
       <View style={{ flexDirection: 'column', maxWidth: '60%', flex: 1, marginRight: 20 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff', letterSpacing: 1.5 }}>INVOICE</Text>
         <Text style={{ fontSize: 9, color: theme.accentColor || '#fda4af', marginTop: 4, fontWeight: 'bold' }}>No: {invoiceNumber}</Text>
       </View>
-      <View style={{ maxWidth: '40%', shrink: 0, alignItems: 'flex-end' }}>
+      <View style={{ maxWidth: '40%', flexShrink: 0, alignItems: 'flex-end' }}>
         {sender.logoUrl ? (
           <Image src={sender.logoUrl} style={styles.logo} />
         ) : (
@@ -586,12 +601,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Emerald template header
   const renderEmeraldHeader = () => (
-    <View style={styles.headerEmerald} fixed>
+    <View style={styles.headerEmerald}>
       <View style={{ flexDirection: 'column', maxWidth: '60%', flex: 1, marginRight: 20 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff', letterSpacing: 1 }}>INVOICE</Text>
         <Text style={{ fontSize: 9, color: theme.accentColor || '#fef08a', marginTop: 4, fontWeight: 'bold' }}>No: {invoiceNumber}</Text>
       </View>
-      <View style={{ maxWidth: '40%', shrink: 0, alignItems: 'flex-end' }}>
+      <View style={{ maxWidth: '40%', flexShrink: 0, alignItems: 'flex-end' }}>
         {sender.logoUrl ? (
           <Image src={sender.logoUrl} style={styles.logo} />
         ) : (
@@ -605,7 +620,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Classic template header
   const renderClassicHeader = () => (
-    <View style={styles.headerClassic} fixed>
+    <View style={styles.headerClassic}>
       <View style={{ maxWidth: '60%', flex: 1, marginRight: 20 }}>
         {sender.logoUrl ? (
           <Image src={sender.logoUrl} style={styles.logo} />
@@ -615,7 +630,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
           </Text>
         )}
       </View>
-      <View style={{ alignItems: 'flex-end', maxWidth: '40%', shrink: 0 }}>
+      <View style={{ alignItems: 'flex-end', maxWidth: '40%', flexShrink: 0 }}>
         <Text style={styles.titleText}>INVOICE</Text>
         <Text style={{ fontSize: 10, color: '#4b5563', marginTop: 4 }}>#{invoiceNumber}</Text>
       </View>
@@ -624,18 +639,19 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Modern template header
   const renderModernHeader = () => (
-    <View style={styles.headerModern} fixed>
-      <View style={styles.modernBar} />
+    <View style={styles.headerModern}>
       <View style={{ flex: 1, marginRight: 20, maxWidth: '60%' }}>
         {sender.logoUrl && <Image src={sender.logoUrl} style={[styles.logo, { marginBottom: 5 }]} />}
         <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#111827' }}>{sender.name || 'Your Company'}</Text>
         <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 2 }}>{sender.email}</Text>
       </View>
-      <View style={{ alignItems: 'flex-end', maxWidth: '40%', shrink: 0 }}>
+      <View style={{ alignItems: 'flex-end', maxWidth: '40%', flexShrink: 0 }}>
         <Text style={[styles.titleText, { letterSpacing: 2 }]}>INVOICE</Text>
         <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 4 }}>#{invoiceNumber}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, color: currentStatusStyle.text, marginTop: 4 }]}>
-          <Text>{status.replace('_', ' ')}</Text>
+        <Text style={{ fontSize: 8, color: '#4b5563', marginTop: 3 }}>Issued {issueDate}</Text>
+        <Text style={{ fontSize: 8, color: '#4b5563', marginTop: 2 }}>Due {dueDate}</Text>
+        <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, marginTop: 4 }]}>
+          <Text style={{ color: currentStatusStyle.text }}>{status.replace('_', ' ')}</Text>
         </View>
       </View>
     </View>
@@ -643,12 +659,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
 
   // Render Simple template header
   const renderSimpleHeader = () => (
-    <View style={styles.headerSimple} fixed>
+    <View style={styles.headerSimple}>
       <View style={{ flex: 1, marginRight: 20, maxWidth: '60%' }}>
         <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#111827' }}>{sender.name || 'Your Company'}</Text>
         <Text style={{ fontSize: 8, color: '#4b5563', marginTop: 3 }}>Invoice No: {invoiceNumber}</Text>
       </View>
-      <View style={{ alignItems: 'flex-end', maxWidth: '40%', shrink: 0 }}>
+      <View style={{ alignItems: 'flex-end', maxWidth: '40%', flexShrink: 0 }}>
         <Text style={{ fontSize: 16, fontWeight: 'bold', textTransform: 'uppercase', color: '#111827' }}>INVOICE</Text>
         <Text style={{ fontSize: 8, color: '#4b5563', marginTop: 3 }}>Issue Date: {issueDate}</Text>
       </View>
@@ -706,12 +722,12 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
               </View>
             </View>
             
-            <View style={{ alignItems: 'right' }}>
+            <View style={{ alignItems: 'flex-end' }}>
               <Text style={{ fontSize: 8.5, color: theme.templateId === 'dark' ? '#9ca3af' : '#6b7280', textTransform: 'uppercase' }}>
                 Status
               </Text>
-              <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg, color: currentStatusStyle.text }]}>
-                <Text>{status.replace('_', ' ')}</Text>
+              <View style={[styles.statusBadge, { backgroundColor: currentStatusStyle.bg }]}>
+                <Text style={{ color: currentStatusStyle.text }}>{status.replace('_', ' ')}</Text>
               </View>
             </View>
           </View>
