@@ -109,6 +109,61 @@ export const CURRENCIES: CurrencyOption[] = [
   { code: 'SAR', symbol: 'SR', name: 'Saudi Riyal', locale: 'ar-SA' },
 ];
 
+export function finiteNumber(value: unknown, fallback = 0): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : fallback;
+  if (typeof value === 'string' && value.trim() !== '' && value !== '-' && value !== '.' && value !== '-.') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+  return fallback;
+}
+
+export function localISODate(date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export interface InvoiceTotals {
+  subtotal: number;
+  discountAmount: number;
+  taxAmount: number;
+  gstAmount: number;
+  shippingFee: number;
+  advanceAmount: number;
+  total: number;
+  balanceDue: number;
+}
+
+export function calculateInvoiceTotals(invoice?: Partial<Invoice> | null): InvoiceTotals {
+  const items = Array.isArray(invoice?.items) ? invoice.items : [];
+  const subtotal = items.reduce((sum, item) => {
+    return sum + finiteNumber(item?.quantity) * finiteNumber(item?.rate);
+  }, 0);
+  const rawDiscount = Math.max(0, finiteNumber(invoice?.discountRate));
+  const discountAmount = invoice?.discountType === 'flat'
+    ? Math.min(rawDiscount, subtotal)
+    : subtotal * (Math.min(rawDiscount, 100) / 100);
+  const taxable = Math.max(0, subtotal - discountAmount);
+  const gstEnabled = !!invoice?.gstEnabled;
+  const taxAmount = gstEnabled ? 0 : taxable * (finiteNumber(invoice?.taxRate) / 100);
+  const gstAmount = gstEnabled ? taxable * (finiteNumber(invoice?.gstRate) / 100) : 0;
+  const shippingFee = Math.max(0, finiteNumber(invoice?.shippingFee));
+  const total = subtotal - discountAmount + taxAmount + gstAmount + shippingFee;
+  const advanceAmount = Math.min(Math.max(0, finiteNumber(invoice?.advanceAmount)), Math.max(0, total));
+  return {
+    subtotal,
+    discountAmount,
+    taxAmount,
+    gstAmount,
+    shippingFee,
+    advanceAmount,
+    total,
+    balanceDue: total - advanceAmount,
+  };
+}
+
 export const getCurrencyFormatter = (currencyCode?: string) => {
   const code = currencyCode || 'USD';
   const option = CURRENCIES.find(c => c.code.toUpperCase() === code.toUpperCase()) || CURRENCIES[0];

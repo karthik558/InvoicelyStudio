@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Invoice, AppSettings } from './types';
+import { Invoice, AppSettings, localISODate } from './types';
 import { sampleInvoicesList } from './data/sampleInvoice';
 
 // Lazy load components for enhanced performance & instant startup
@@ -113,9 +113,21 @@ import {
   Layers
 } from 'lucide-react';
 
+function readStoredSender() {
+  const savedSettings = localStorage.getItem('invoicely_global_sender');
+  if (!savedSettings) return null;
+  try {
+    return JSON.parse(savedSettings);
+  } catch {
+    return null;
+  }
+}
+
 const createStarterInvoice = (defaultSender?: any): Invoice => {
-  const today = new Date().toISOString().split('T')[0];
-  const twoWeeksLater = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString().split('T')[0];
+  const today = localISODate();
+  const due = new Date();
+  due.setDate(due.getDate() + 14);
+  const twoWeeksLater = localISODate(due);
 
   const sender = defaultSender || {
     name: '',
@@ -376,6 +388,13 @@ export default function App() {
   // Get active invoice
   const activeInvoice = invoices.find((inv) => inv.id === selectedId) || invoices[0];
 
+  useEffect(() => {
+    if (invoices.length === 0) return;
+    if (!invoices.some((inv) => inv.id === selectedId)) {
+      setSelectedId(invoices[0].id);
+    }
+  }, [invoices, selectedId]);
+
   // --- LOCAL PERSISTENCE ---
   const saveToLocalStorage = (updatedInvoices: Invoice[]) => {
     localStorage.setItem('invoice_studio_data_v1', JSON.stringify(updatedInvoices));
@@ -476,23 +495,24 @@ export default function App() {
   };
 
   const getNextInvoiceNumber = (list: Invoice[]) => {
-    const numbers = list.map((i) => i.invoiceNumber);
     let maxNum = 100;
-    for (const num of numbers) {
-      const match = num.match(/\d+$/);
+    for (const inv of list) {
+      const match = String(inv.invoiceNumber || '').match(/(\d+)(?:-COPY(?:-\d+)?)?$/);
       if (match) {
-        const parsed = parseInt(match[0], 10);
+        const parsed = parseInt(match[1], 10);
         if (parsed > maxNum) maxNum = parsed;
       }
     }
-    return `INV-2026-0${maxNum + 1}`;
+    return `INV-${new Date().getFullYear()}-${String(maxNum + 1).padStart(4, '0')}`;
   };
 
   const handleNewInvoice = () => {
     const newNum = getNextInvoiceNumber(invoices);
     const nextId = `invoice-${Date.now()}`;
-    const today = new Date().toISOString().split('T')[0];
-    const twoWeeksLater = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString().split('T')[0];
+    const today = localISODate();
+    const due = new Date();
+    due.setDate(due.getDate() + 14);
+    const twoWeeksLater = localISODate(due);
 
     // Read default sender settings if they exist
     const savedSettings = localStorage.getItem('invoicely_global_sender');
@@ -570,6 +590,7 @@ export default function App() {
       ],
       taxRate: 0,
       discountRate: 0,
+      discountType: 'percentage',
       shippingFee: 0,
       gstRate: 18,
       gstEnabled: false,
@@ -599,7 +620,13 @@ export default function App() {
 
   const handleDuplicateInvoice = () => {
     if (!activeInvoice) return;
-    const newNum = `${activeInvoice.invoiceNumber}-COPY`;
+    const baseNumber = activeInvoice.invoiceNumber.replace(/-COPY(?:-\d+)?$/, '');
+    let newNum = `${baseNumber}-COPY`;
+    let copyIndex = 2;
+    while (invoices.some((inv) => inv.invoiceNumber === newNum)) {
+      newNum = `${baseNumber}-COPY-${copyIndex}`;
+      copyIndex += 1;
+    }
     const nextId = `invoice-${Date.now()}`;
     
     const duplicated: Invoice = {
@@ -631,10 +658,11 @@ export default function App() {
         const remaining = invoices.filter((inv) => inv.id !== targetId);
         
         if (remaining.length === 0) {
-          // If none left, auto create one so app doesn't break
-          setInvoices([]);
-          localStorage.removeItem('invoice_studio_data_v1');
-          handleNewInvoice();
+          const starter = createStarterInvoice(readStoredSender());
+          setInvoices([starter]);
+          setSelectedId(starter.id);
+          saveToLocalStorage([starter]);
+          showToast('Invoice deleted. A blank invoice is ready.');
           return;
         }
 
@@ -701,8 +729,8 @@ export default function App() {
   };
 
   const handleSave = () => {
-    // Explicit manual save trigger
-    const updated = invoices.map(i => i.id === selectedId ? { ...i, updatedAt: Date.now() } : i);
+    if (!activeInvoice) return;
+    const updated = invoices.map(i => i.id === activeInvoice.id ? { ...i, updatedAt: Date.now() } : i);
     const sorted = [...updated].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
     setInvoices(sorted);
     saveToLocalStorage(sorted);

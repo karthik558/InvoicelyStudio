@@ -67,9 +67,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   // Filter invoices matching query
   const matchingInvoices = invoices.filter((inv) =>
-    inv.invoiceNumber.toLowerCase().includes(query.toLowerCase()) ||
-    inv.receiver.name.toLowerCase().includes(query.toLowerCase()) ||
-    inv.sender.name.toLowerCase().includes(query.toLowerCase())
+    (inv.invoiceNumber || '').toLowerCase().includes(query.toLowerCase()) ||
+    (inv.receiver?.name || '').toLowerCase().includes(query.toLowerCase()) ||
+    (inv.sender?.name || '').toLowerCase().includes(query.toLowerCase())
   );
 
   // Static action commands

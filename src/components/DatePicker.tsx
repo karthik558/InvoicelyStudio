@@ -245,10 +245,11 @@ export function DatePicker({ value, onChange, label, className = '', align = 'le
                   onClick={() => handleSelectDay(cell)}
                   className={`
                     py-1.5 text-[11px] text-center font-medium transition-all relative cursor-pointer outline-none focus:z-10
-                    ${cell.isCurrentMonth ? 'bg-[var(--surface)] text-gray-800 dark:text-gray-200' : 'bg-gray-50/60 bg-[var(--surface-muted)] text-gray-300 dark:text-gray-600'}
-                    ${selected 
-                      ? 'bg-[var(--accent)] text-[var(--on-accent)] font-extrabold shadow-xs z-10' 
-                      : 'hover:bg-gray-100 hover:bg-[var(--surface-muted)] hover:text-[var(--on-accent)] dark:hover:text-[var(--accent-text)]'
+                    ${selected
+                      ? 'bg-[var(--accent)] text-[var(--on-accent)] font-extrabold shadow-xs z-10'
+                      : cell.isCurrentMonth
+                        ? 'bg-[var(--surface)] text-[var(--ink)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent-text)]'
+                        : 'bg-[var(--surface-muted)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent-text)]'
                     }
                   `}
                 >

@@ -177,7 +177,7 @@ html.dark .app-ui [class*="bg-gray-100"],
 html.dark .app-ui [class*="bg-white"] {
   background-color: var(--surface) !important;
 }
-html.dark .app-ui :where(input, textarea, select) {
+html.dark .app-ui :where(input:not([type="color"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select) {
   background-color: var(--surface) !important;
   color: var(--ink) !important;
   border-color: var(--line);

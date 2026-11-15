@@ -4,11 +4,24 @@
  */
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId, CURRENCIES } from '../types';
+import { Invoice, LineItem, InvoiceStatus, InvoiceTemplateId, CURRENCIES, finiteNumber } from '../types';
 import { sampleInvoice } from '../data/sampleInvoice';
 import { CustomSelect } from './CustomSelect';
 
 const DatePicker = React.lazy(() => import('./DatePicker').then(m => ({ default: m.DatePicker })));
+
+const MAX_IMAGE_BYTES = 500 * 1024;
+
+function keepNumberDraft(raw: string): number | string {
+  if (raw === '' || raw === '-' || raw === '.' || raw === '-.' || raw.endsWith('.')) return raw;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function showNumber(value: unknown): string | number {
+  if (value === undefined || value === null) return '';
+  return value as string | number;
+}
 import { 
   FileText, 
   Users, 
@@ -259,7 +272,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         (updated as any)[field] = value;
         if (field === 'gstEnabled' && value === true) {
           updated.taxRate = 0;
-          if (!updated.gstRate) {
+          if (updated.gstRate === undefined || updated.gstRate === null || updated.gstRate === '') {
             updated.gstRate = 18;
           }
           if (!updated.gstType) {
@@ -273,7 +286,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           (updated as any)[k] = v;
           if (k === 'gstEnabled' && v === true) {
             updated.taxRate = 0;
-            if (!updated.gstRate) {
+            if (updated.gstRate === undefined || updated.gstRate === null || updated.gstRate === '') {
               updated.gstRate = 18;
             }
             if (!updated.gstType) {
@@ -292,10 +305,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const handleItemChange = (itemId: string, field: keyof LineItem, value: any) => {
     const updatedItems = invoice.items.map((item) => {
       if (item.id === itemId) {
-        const updatedItem = { ...item, [field]: value };
+        const nextValue = field === 'quantity' || field === 'rate' ? keepNumberDraft(String(value)) : value;
+        const updatedItem = { ...item, [field]: nextValue };
         if (field === 'quantity' || field === 'rate') {
-          const qty = field === 'quantity' ? Number(value) : item.quantity;
-          const rate = field === 'rate' ? Number(value) : item.rate;
+          const qty = finiteNumber(field === 'quantity' ? nextValue : item.quantity);
+          const rate = finiteNumber(field === 'rate' ? nextValue : item.rate);
           updatedItem.amount = qty * rate;
         }
         return updatedItem;
@@ -337,9 +351,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     });
   };
 
+  const rejectOversizedImage = (file: File, label: string) => {
+    if (file.size <= MAX_IMAGE_BYTES) return false;
+    triggerLocalAlert('File Too Large', `${label} must be 500KB or smaller.`);
+    return true;
+  };
+
   const handleGlobalLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    e.target.value = '';
+    if (file && !rejectOversizedImage(file, 'The logo')) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setGlobalSender({ ...globalSender, logoUrl: reader.result as string });
@@ -355,7 +376,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   // Base64 Logo parser
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    e.target.value = '';
+    if (file && !rejectOversizedImage(file, 'The logo')) {
       setLogoFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -373,7 +395,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   // Base64 QR code parser
   const handleQrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    e.target.value = '';
+    if (file && !rejectOversizedImage(file, 'The QR image')) {
       setQrFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -390,7 +413,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
   const handleSigUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    e.target.value = '';
+    if (file && !rejectOversizedImage(file, 'The signature image')) {
       setSigFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -415,6 +439,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       const isTTFOrOTF = file.name.endsWith('.ttf') || file.name.endsWith('.otf');
       if (!isTTFOrOTF) {
         triggerLocalAlert('Invalid Font Type', 'Please upload a standard true-type font file (.ttf) or open-type font file (.otf).');
+        e.target.value = '';
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        triggerLocalAlert('File Too Large', 'Custom fonts must be 2MB or smaller.');
+        e.target.value = '';
         return;
       }
       setFontFileName(file.name);
@@ -908,7 +938,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         type="number"
                         min="1"
                         step="any"
-                        value={item.quantity || ''}
+                        value={showNumber(item.quantity)}
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
                         className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono"
@@ -920,7 +950,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         type="number"
                         min="0"
                         step="any"
-                        value={item.rate || ''}
+                        value={showNumber(item.rate)}
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
                         className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 outline-none transition-colors font-mono"
@@ -929,7 +959,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <div className="col-span-4 space-y-1.5 text-right">
                       <span className="text-[9px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 block">Total</span>
                       <div className="py-1 text-xs font-bold text-gray-900 dark:text-gray-200 font-mono pr-1">
-                        {currencySymbol}{(item.quantity * item.rate).toFixed(2)}
+                        {currencySymbol}{(finiteNumber(item.quantity) * finiteNumber(item.rate)).toFixed(2)}
                       </div>
                     </div>
                   </div>
@@ -956,9 +986,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     max="100"
                     step="0.01"
                     disabled={!!invoice.gstEnabled}
-                    value={invoice.gstEnabled ? 0 : (invoice.taxRate || '')}
+                    value={invoice.gstEnabled ? 0 : showNumber(invoice.taxRate)}
                     onFocus={(e) => e.target.select()}
-                    onChange={(e) => updateField(null, 'taxRate', Number(e.target.value))}
+                    onChange={(e) => updateField(null, 'taxRate', keepNumberDraft(e.target.value))}
                     className={`w-full border rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)] transition-colors ${
                       invoice.gstEnabled 
                         ? 'bg-gray-100/80 border-[var(--line)] text-gray-400 dark:text-gray-500 cursor-not-allowed select-none' 
@@ -1003,9 +1033,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     min="0"
                     max={invoice.discountType === 'flat' ? undefined : 100}
                     step="0.01"
-                    value={invoice.discountRate || ''}
+                    value={showNumber(invoice.discountRate)}
                     onFocus={(e) => e.target.select()}
-                    onChange={(e) => updateField(null, 'discountRate', Number(e.target.value))}
+                    onChange={(e) => updateField(null, 'discountRate', keepNumberDraft(e.target.value))}
                     className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
@@ -1016,9 +1046,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="number"
                     min="0"
                     step="0.01"
-                    value={invoice.shippingFee || ''}
+                    value={showNumber(invoice.shippingFee)}
                     onFocus={(e) => e.target.select()}
-                    onChange={(e) => updateField(null, 'shippingFee', Number(e.target.value))}
+                    onChange={(e) => updateField(null, 'shippingFee', keepNumberDraft(e.target.value))}
                     className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
@@ -1029,9 +1059,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     type="number"
                     min="0"
                     step="0.01"
-                    value={invoice.advanceAmount || ''}
+                    value={showNumber(invoice.advanceAmount)}
                     onFocus={(e) => e.target.select()}
-                    onChange={(e) => updateField(null, 'advanceAmount', Number(e.target.value))}
+                    onChange={(e) => updateField(null, 'advanceAmount', keepNumberDraft(e.target.value))}
                     className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                   />
                 </div>
@@ -1084,9 +1114,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       max="100"
                       step="0.1"
                       placeholder="e.g. 18"
-                      value={invoice.gstRate !== undefined ? (invoice.gstRate || '') : 18}
+                      value={showNumber(invoice.gstRate ?? 18)}
                       onFocus={(e) => e.target.select()}
-                      onChange={(e) => updateField(null, 'gstRate', Number(e.target.value))}
+                      onChange={(e) => updateField(null, 'gstRate', keepNumberDraft(e.target.value))}
                       className="w-full bg-[var(--surface)] border border-[var(--line)] focus:border-[var(--accent)] rounded-lg px-2.5 py-1.5 text-xs text-gray-800 dark:text-gray-200 outline-none font-mono focus:ring-1 focus:ring-[var(--accent)]"
                     />
                   </div>

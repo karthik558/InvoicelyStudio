@@ -80,8 +80,10 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 hover:bg-[var(--accent)]/5 hover:bg-[var(--surface-muted)] transition-colors focus:outline-none flex flex-col ${
-                option.value === value ? 'bg-[var(--accent)]/5 bg-[var(--surface-muted)] font-semibold text-[var(--on-accent)] text-[var(--accent-text)]' : 'text-gray-700 dark:text-gray-200'
+              className={`w-full text-left px-3 py-2 transition-colors focus:outline-none flex flex-col ${
+                option.value === value
+                  ? 'bg-[var(--accent-soft)] font-semibold text-[var(--accent-text)]'
+                  : 'text-[var(--ink)] hover:bg-[var(--surface-muted)]'
               }`}
             >
               <span>{option.label}</span>

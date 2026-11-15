@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
-import { Invoice, InvoiceTheme, getCurrencyFormatter } from '../types';
+import { Invoice, InvoiceTheme, calculateInvoiceTotals, finiteNumber, getCurrencyFormatter } from '../types';
 
 // Register standard fonts
 try {
@@ -490,7 +490,7 @@ interface InvoicePDFDocumentProps {
 }
 
 export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice }) => {
-  const { theme, sender, receiver, items, invoiceNumber, issueDate, dueDate, status, taxRate, discountRate, discountType, shippingFee, notes, terms } = invoice;
+  const { theme, sender, receiver, items, invoiceNumber, issueDate, dueDate, status, taxRate, discountRate, discountType, notes, terms } = invoice;
   const styles = getStyles(theme);
   const isDark = theme.templateId === 'dark';
 
@@ -518,14 +518,18 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
     }
   };
   
-  // Calculate Totals
-  const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const discountAmount = discountType === 'flat' ? discountRate : subtotal * (discountRate / 100);
+  const lineItems = Array.isArray(items) ? items : [];
+  const {
+    subtotal,
+    discountAmount,
+    taxAmount,
+    gstAmount,
+    shippingFee: pricedShipping,
+    advanceAmount,
+    total,
+    balanceDue,
+  } = calculateInvoiceTotals(invoice);
   const gstEnabled = !!invoice.gstEnabled;
-  const taxAmount = gstEnabled ? 0 : (subtotal - discountAmount) * (taxRate / 100);
-  const gstAmount = gstEnabled ? (subtotal - discountAmount) * ((invoice.gstRate || 0) / 100) : 0;
-  const advanceAmount = invoice.advanceAmount || 0;
-  const total = subtotal - discountAmount + taxAmount + gstAmount + shippingFee - advanceAmount;
 
   // Status colors
   const statusColors = {
@@ -790,20 +794,20 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
           </View>
 
           {/* Table Rows */}
-          {items.map((item, index) => (
+          {lineItems.map((item, index) => (
             <View key={item.id || index} style={styles.tableRow} wrap={false}>
               <View style={styles.colDesc}>
                 <Text style={styles.itemDescText}>{item.description}</Text>
               </View>
               <View style={styles.colQty}>
-                <Text style={[styles.itemNumText, { textAlign: 'center' }]}>{item.quantity}</Text>
+                <Text style={[styles.itemNumText, { textAlign: 'center' }]}>{finiteNumber(item.quantity)}</Text>
               </View>
               <View style={styles.colRate}>
-                <Text style={[styles.itemNumText, { textAlign: 'right' }]}>{formatCurrency(item.rate)}</Text>
+                <Text style={[styles.itemNumText, { textAlign: 'right' }]}>{formatCurrency(finiteNumber(item.rate))}</Text>
               </View>
               <View style={styles.colAmt}>
                 <Text style={[styles.itemNumText, { textAlign: 'right', fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }]}>
-                  {formatCurrency(item.quantity * item.rate)}
+                  {formatCurrency(finiteNumber(item.quantity) * finiteNumber(item.rate))}
                 </Text>
               </View>
             </View>
@@ -908,10 +912,10 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
               })()
             )}
 
-            {shippingFee > 0 && (
+            {pricedShipping > 0 && (
               <View style={styles.totalRow}>
                 <Text style={{ color: '#6b7280' }}>Shipping:</Text>
-                <Text style={{ fontWeight: 'bold' }}>{formatCurrency(shippingFee)}</Text>
+                <Text style={{ fontWeight: 'bold' }}>{formatCurrency(pricedShipping)}</Text>
               </View>
             )}
 
@@ -919,7 +923,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
               <>
                 <View style={styles.totalRow}>
                   <Text style={{ color: '#6b7280', fontWeight: 'bold' }}>Total Amount:</Text>
-                  <Text style={{ fontWeight: 'bold' }}>{formatCurrency(subtotal - discountAmount + taxAmount + gstAmount + shippingFee)}</Text>
+                  <Text style={{ fontWeight: 'bold' }}>{formatCurrency(total)}</Text>
                 </View>
                 <View style={styles.totalRow}>
                   <Text style={{ color: '#059669', fontWeight: 'bold' }}>Advance Paid:</Text>
@@ -928,7 +932,7 @@ export const InvoicePDFDocument: React.FC<InvoicePDFDocumentProps> = ({ invoice 
                 <View style={styles.grandTotalRow}>
                   <Text style={{ fontWeight: 'bold', color: theme.templateId === 'dark' ? '#ffffff' : '#111827' }}>Balance Due:</Text>
                   <Text style={[styles.grandTotalText, { color: theme.primaryColor }]}>
-                    {formatCurrency(total)}
+                    {formatCurrency(balanceDue)}
                   </Text>
                 </View>
               </>

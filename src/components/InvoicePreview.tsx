@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Invoice, getCurrencyFormatter } from '../types';
+import { Invoice, calculateInvoiceTotals, finiteNumber, getCurrencyFormatter } from '../types';
 
 import { Monitor, Tablet, Smartphone, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
@@ -39,8 +39,6 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
     taxRate,
     discountRate,
     discountType,
-    shippingFee,
-    advanceAmount,
     notes,
     terms,
     theme,
@@ -82,17 +80,10 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
   }, [invoice, items]);
 
   // Compute values with memoization
-  const { subtotal, discountAmount, taxAmount, gstAmount, total, balanceDue } = useMemo(() => {
-    const sub = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-    const disc = discountType === 'flat' ? discountRate : sub * (discountRate / 100);
-    const gstEnabled = !!invoice.gstEnabled;
-    const tax = gstEnabled ? 0 : (sub - disc) * (taxRate / 100);
-    const gst = gstEnabled ? (sub - disc) * ((invoice.gstRate || 0) / 100) : 0;
-    const tot = sub - disc + tax + gst + shippingFee;
-    const advance = advanceAmount || 0;
-    const balance = tot - advance;
-    return { subtotal: sub, discountAmount: disc, taxAmount: tax, gstAmount: gst, total: tot, balanceDue: balance };
-  }, [items, discountRate, discountType, taxRate, shippingFee, invoice.gstEnabled, invoice.gstRate, advanceAmount]);
+  const { subtotal, discountAmount, taxAmount, gstAmount, total, balanceDue, shippingFee: pricedShipping, advanceAmount: pricedAdvance } = useMemo(
+    () => calculateInvoiceTotals(invoice),
+    [invoice]
+  );
 
   // Format currency
   const formatCurrency = (val: number) => {
@@ -636,7 +627,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
 
               {/* Rows */}
               <div className={`divide-y border-b ${theme.templateId === 'dark' ? 'divide-slate-800 border-slate-800' : 'divide-slate-100 border-slate-100'}`}>
-                {items.map((item, idx) => (
+                {(items ?? []).map((item, idx) => (
                   <div 
                     key={item.id || idx} 
                     className={`grid grid-cols-12 gap-2 ${pyTableRow} px-3 items-center text-xs ${
@@ -653,7 +644,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                       {formatCurrency(item.rate)}
                     </div>
                     <div className={`col-span-2 text-right font-mono font-bold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-900'}`}>
-                      {formatCurrency(item.quantity * item.rate)}
+                      {formatCurrency(finiteNumber(item.quantity) * finiteNumber(item.rate))}
                     </div>
                   </div>
                 ))}
@@ -777,14 +768,14 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                 })()
               )}
 
-              {shippingFee > 0 && (
+              {pricedShipping > 0 && (
                 <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-slate-300' : 'text-slate-500'}`}>
                   <span>Shipping:</span>
-                  <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(shippingFee)}</span>
+                  <span className={`font-mono font-semibold ${theme.templateId === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>{formatCurrency(pricedShipping)}</span>
                 </div>
               )}
 
-              {(advanceAmount && advanceAmount > 0) ? (
+              {pricedAdvance > 0 ? (
                 <>
                   <div 
                     className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}
@@ -797,7 +788,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
                   </div>
                   <div className={`flex justify-between ${theme.templateId === 'dark' ? 'text-emerald-400 font-medium' : 'text-emerald-600 font-semibold'}`}>
                     <span>Advance Paid:</span>
-                    <span className="font-mono">-{formatCurrency(advanceAmount)}</span>
+                    <span className="font-mono">-{formatCurrency(pricedAdvance)}</span>
                   </div>
                   <div 
                     className={`flex justify-between items-center ${isCompact ? 'pt-1.5' : 'pt-2.5'} border-t font-bold text-sm`}

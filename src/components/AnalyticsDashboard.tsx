@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Invoice, getCurrencyFormatter } from '../types';
+import { Invoice, calculateInvoiceTotals, getCurrencyFormatter } from '../types';
 import { 
   TrendingUp, 
   CheckCircle, 
@@ -30,14 +30,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   onFilterStatus
 }) => {
   // Compute analytics taking advance payments into account
-  const getInvoiceTotal = (inv: Invoice) => {
-    const subtotal = inv.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-    const discount = inv.discountType === 'flat' ? inv.discountRate : subtotal * (inv.discountRate / 100);
-    const gstEnabled = !!inv.gstEnabled;
-    const tax = gstEnabled ? 0 : (subtotal - discount) * (inv.taxRate / 100);
-    const gst = gstEnabled ? (subtotal - discount) * ((inv.gstRate || 0) / 100) : 0;
-    return subtotal - discount + tax + gst + (inv.shippingFee || 0);
-  };
+  const currencies = Array.from(new Set(invoices.map((inv) => inv.currency || 'USD'))) as string[];
+  const primaryCurrency = currencies[0] || 'USD';
+  const scopedInvoices = currencies.length > 1
+    ? invoices.filter((inv) => (inv.currency || 'USD') === primaryCurrency)
+    : invoices;
+  const excludedCount = invoices.length - scopedInvoices.length;
+
+  const getInvoiceTotal = (inv: Invoice) => calculateInvoiceTotals(inv).total;
 
   const getInvoiceCollected = (inv: Invoice) => {
     const total = getInvoiceTotal(inv);
@@ -60,17 +60,16 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     return Math.max(0, total - collected);
   };
 
-  const totalInvoiced = invoices.reduce((sum, inv) => sum + getInvoiceTotal(inv), 0);
-  const totalCollected = invoices.reduce((sum, inv) => sum + getInvoiceCollected(inv), 0);
-  const totalPending = invoices.reduce((sum, inv) => sum + getInvoicePending(inv), 0);
-  const totalOverdue = invoices.reduce((sum, inv) => sum + getInvoiceOverdue(inv), 0);
+  const totalInvoiced = scopedInvoices.reduce((sum, inv) => sum + getInvoiceTotal(inv), 0);
+  const totalCollected = scopedInvoices.reduce((sum, inv) => sum + getInvoiceCollected(inv), 0);
+  const totalPending = scopedInvoices.reduce((sum, inv) => sum + getInvoicePending(inv), 0);
+  const totalOverdue = scopedInvoices.reduce((sum, inv) => sum + getInvoiceOverdue(inv), 0);
 
-  const paidInvoicesCount = invoices.filter(i => i.status === 'paid').length;
-  const pendingInvoicesCount = invoices.filter(i => i.status === 'pending' || i.status === 'advance_paid' || i.status === 'draft').length;
-  const overdueInvoicesCount = invoices.filter(i => i.status === 'overdue').length;
+  const paidInvoicesCount = scopedInvoices.filter(i => i.status === 'paid').length;
+  const pendingInvoicesCount = scopedInvoices.filter(i => i.status === 'pending' || i.status === 'advance_paid').length;
+  const overdueInvoicesCount = scopedInvoices.filter(i => i.status === 'overdue').length;
 
-  const defaultCurrency = invoices[0]?.currency || 'USD';
-  const formatter = getCurrencyFormatter(defaultCurrency);
+  const formatter = getCurrencyFormatter(primaryCurrency);
 
   if (!isOpen) return null;
 
@@ -83,7 +82,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </div>
           <div>
             <h3 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--ink)]">Financial Dashboard Summary</h3>
-            <p className="text-[9px] sm:text-[10px] text-slate-400">Live metrics across {invoices.length} invoices</p>
+            <p className="text-[9px] sm:text-[10px] text-[var(--muted)]">
+              {excludedCount > 0
+                ? `${primaryCurrency} totals. ${excludedCount} invoice${excludedCount === 1 ? '' : 's'} in other currencies are left out so the figures are not mixed.`
+                : `Live metrics across ${scopedInvoices.length} invoices`}
+            </p>
           </div>
         </div>
 
@@ -101,7 +104,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div className="text-xs sm:text-sm font-bold font-mono text-[var(--ink)] mt-1 truncate">
               {formatter.format(totalInvoiced)}
             </div>
-            <span className="text-[8px] sm:text-[9px] text-slate-400 block mt-0.5">{invoices.length} invoices</span>
+            <span className="text-[8px] sm:text-[9px] text-slate-400 block mt-0.5">{scopedInvoices.length} invoices</span>
           </div>
 
           {/* Paid / Collected */}

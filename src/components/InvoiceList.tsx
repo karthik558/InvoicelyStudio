@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useMemo } from 'react';
-import { Invoice, InvoiceStatus, getCurrencyFormatter } from '../types';
+import { Invoice, InvoiceStatus, calculateInvoiceTotals, getCurrencyFormatter } from '../types';
 import { CustomSelect } from './CustomSelect';
 import { 
   Search, 
@@ -60,22 +60,15 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
   };
 
   // Calculate invoice totals
-  const getInvoiceTotal = (inv: Invoice) => {
-    const subtotal = inv.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-    const discount = inv.discountType === 'flat' ? inv.discountRate : subtotal * (inv.discountRate / 100);
-    const gstEnabled = !!inv.gstEnabled;
-    const tax = gstEnabled ? 0 : (subtotal - discount) * (inv.taxRate / 100);
-    const gst = gstEnabled ? (subtotal - discount) * ((inv.gstRate || 0) / 100) : 0;
-    return subtotal - discount + tax + gst + inv.shippingFee;
-  };
+  const getInvoiceTotal = (inv: Invoice) => calculateInvoiceTotals(inv).total;
 
   // Filter & Sort Invoices with useMemo optimization
   const sortedInvoices = useMemo(() => {
     const filtered = invoices.filter((inv) => {
       const matchesSearch = 
-        inv.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
-        inv.receiver.name.toLowerCase().includes(search.toLowerCase()) ||
-        inv.sender.name.toLowerCase().includes(search.toLowerCase());
+        (inv.invoiceNumber || '').toLowerCase().includes(search.toLowerCase()) ||
+        (inv.receiver?.name || '').toLowerCase().includes(search.toLowerCase()) ||
+        (inv.sender?.name || '').toLowerCase().includes(search.toLowerCase());
       
       const matchesStatus = filterStatus === 'all' || inv.status === filterStatus;
 
