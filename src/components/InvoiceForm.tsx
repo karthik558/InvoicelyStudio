@@ -563,7 +563,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Editor Fields Area (Scrollable) */}
-      <div ref={editorScrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 no-scrollbar">
+      <div ref={editorScrollRef} className="flex-1 overflow-y-auto p-5 pb-28 lg:pb-5 space-y-5 no-scrollbar">
         
         {/* TAB 1: DETAILS */}
         {activeTab === 'details' && (

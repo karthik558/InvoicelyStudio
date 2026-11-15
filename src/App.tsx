@@ -895,23 +895,37 @@ export default function App() {
             {appTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          {/* Mobile View Tabs (Form vs Preview) */}
-          <div className="flex lg:hidden bg-[var(--surface-muted)] p-0.5 h-9 rounded-lg border border-[var(--line)] shrink-0 items-center">
-            <button
-              onClick={() => setActiveMobileView('edit')}
-              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'edit' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--muted)]'}`}
-              title="Editor"
-            >
-              <Edit className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setActiveMobileView('preview')}
-              className={`p-1.5 rounded transition-all cursor-pointer ${activeMobileView === 'preview' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--muted)]'}`}
-              title="Preview"
-            >
-              <Eye className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Mobile editor / preview — same 36px squares as the other header actions */}
+          <button
+            onClick={() => {
+              setActiveMobileView('edit');
+              setIsSidebarOpen(false);
+            }}
+            className={`lg:hidden flex items-center justify-center h-9 w-9 rounded-lg border transition-all cursor-pointer shrink-0 ${
+              activeMobileView === 'edit'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]'
+                : 'bg-[var(--surface)] border-[var(--line)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
+            }`}
+            title="Editor"
+            aria-label="Editor"
+          >
+            <Edit className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => {
+              setActiveMobileView('preview');
+              setIsSidebarOpen(false);
+            }}
+            className={`lg:hidden flex items-center justify-center h-9 w-9 rounded-lg border transition-all cursor-pointer shrink-0 ${
+              activeMobileView === 'preview'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]'
+                : 'bg-[var(--surface)] border-[var(--line)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
+            }`}
+            title="Preview"
+            aria-label="Preview"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
 
           {/* Dynamic react-pdf Download Link Trigger (Lazy Loaded) */}
           {activeInvoice && (
@@ -1108,76 +1122,87 @@ export default function App() {
 
       </main>
 
-      {/* Version 3.0 Mobile Bottom Navigation Dock */}
-      <nav className="lg:hidden h-14 bg-[var(--chrome)] border-t border-[var(--line)] text-[var(--ink)] flex items-center justify-around px-2 shrink-0 z-30 no-print select-none">
-        {/* 1. Sidebar Registry Toggle */}
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 text-[var(--muted)] hover:text-[var(--ink)] transition-colors relative cursor-pointer"
-          title="Invoice Registry"
-        >
-          <div className="relative">
-            <FileText className="w-4 h-4" />
-            <span className="absolute -top-1 -right-2 bg-[var(--accent)] text-[var(--on-accent)] text-[8px] font-black px-1 rounded-full">
+      <nav
+        className="lg:hidden fixed bottom-4 left-1/2 z-40 -translate-x-1/2 no-print select-none"
+        style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+        aria-label="Mobile navigation"
+      >
+        <div className="flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--surface)]/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl">
+          <button
+            onClick={() => setIsSidebarOpen(prev => !prev)}
+            className={`relative flex h-11 w-11 items-center justify-center rounded-full transition-colors cursor-pointer ${
+              isSidebarOpen
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
+                : 'text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
+            }`}
+            title="Invoices"
+            aria-label="Invoices"
+            aria-expanded={isSidebarOpen}
+          >
+            <FileText className="w-5 h-5" />
+            <span className={`absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full text-[9px] font-semibold leading-4 text-center ${
+              isSidebarOpen ? 'bg-[var(--on-accent)] text-[var(--accent)]' : 'bg-[var(--accent)] text-[var(--on-accent)]'
+            }`}>
               {invoices.length}
             </span>
-          </div>
-          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Invoices</span>
-        </button>
-
-        {/* 2. Form Editor Tab */}
-        <button
-          onClick={() => setActiveMobileView('edit')}
-          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer relative ${
-            activeMobileView === 'edit' ? 'text-[var(--accent-text)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'
-          }`}
-          title="Invoice Editor"
-        >
-          <Edit className="w-4 h-4" />
-          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Editor</span>
-          {activeMobileView === 'edit' && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[var(--accent)]"></span>
-          )}
-        </button>
-
-        {/* 3. Live Preview Tab */}
-        <button
-          onClick={() => setActiveMobileView('preview')}
-          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all cursor-pointer relative ${
-            activeMobileView === 'preview' ? 'text-[var(--accent-text)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'
-          }`}
-          title="Live Preview"
-        >
-          <Eye className="w-4 h-4" />
-          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Preview</span>
-          {activeMobileView === 'preview' && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-[var(--accent)]"></span>
-          )}
-        </button>
-
-        {/* 4. Catalog Presets Trigger */}
-        <button
-          onClick={() => setIsItemPresetsModalOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 text-[var(--muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
-          title="Service Catalog Presets"
-        >
-          <Layers className="w-4 h-4 text-[var(--accent-text)]" />
-          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Catalog</span>
-        </button>
-
-        {/* 5. Command Palette Trigger */}
-        <button
-          onClick={() => setIsCommandPaletteOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 text-[var(--muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
-          title="Search & Commands"
-        >
-          <Search className="w-4 h-4" />
-          <span className="text-[9px] font-bold mt-1 uppercase tracking-wider">Search</span>
-        </button>
+          </button>
+          <button
+            onClick={() => {
+              setActiveMobileView('edit');
+              setIsSidebarOpen(false);
+            }}
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors cursor-pointer ${
+              activeMobileView === 'edit'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
+                : 'text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
+            }`}
+            title="Editor"
+            aria-label="Editor"
+          >
+            <Edit className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => {
+              setActiveMobileView('preview');
+              setIsSidebarOpen(false);
+            }}
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors cursor-pointer ${
+              activeMobileView === 'preview'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
+                : 'text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)]'
+            }`}
+            title="Preview"
+            aria-label="Preview"
+          >
+            <Eye className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => {
+              setIsSidebarOpen(false);
+              setIsItemPresetsModalOpen(true);
+            }}
+            className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)] transition-colors cursor-pointer"
+            title="Catalog"
+            aria-label="Catalog"
+          >
+            <Layers className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => {
+              setIsSidebarOpen(false);
+              setIsCommandPaletteOpen(true);
+            }}
+            className="flex h-11 w-11 items-center justify-center rounded-full text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--ink)] transition-colors cursor-pointer"
+            title="Search"
+            aria-label="Search"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+        </div>
       </nav>
 
       {/* Sleek footer */}
-      <footer className="hidden sm:flex h-9 bg-[var(--chrome)] border-t border-[var(--line)] items-center justify-between px-6 shrink-0 z-20 no-print text-[var(--muted)] gap-4">
+      <footer className="hidden lg:flex h-9 bg-[var(--chrome)] border-t border-[var(--line)] items-center justify-between px-6 shrink-0 z-20 no-print text-[var(--muted)] gap-4">
         <div className="flex items-center gap-4">
           <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Copyright © 2026 Invoicely Studio</span>
         </div>

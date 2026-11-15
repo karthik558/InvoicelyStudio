@@ -204,7 +204,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice }) => {
       {/* Sheet Container */}
       <div 
         ref={containerRef}
-        className={`flex-1 min-w-0 overflow-auto p-4 sm:p-6 bg-[var(--preview)] w-full flex justify-center items-start ${
+        className={`flex-1 min-w-0 overflow-auto p-4 pb-28 sm:p-6 sm:pb-28 lg:pb-6 bg-[var(--preview)] w-full flex justify-center items-start ${
           deviceMode === 'tablet' ? 'max-w-3xl mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : deviceMode === 'mobile' ? 'max-w-105 mx-auto border-x border-slate-300 dark:border-slate-800 shadow-2xl' : ''
         }`}
       >
